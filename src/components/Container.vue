@@ -7,9 +7,11 @@
         <!-- 左上边部分 -->
         <el-table
           :data="tableDataAge"
+          fixed
+          :row-class-name="tableRowClassNameForTypeAge"
           show-header = "false"
           highlight-current-row = "true"
-          style="width: 100%">
+          style="width: 100%;">
           <el-table-column
             prop="age"
             width="100"
@@ -20,17 +22,20 @@
         </el-table>
 
         <!-- 左下边部分 -->
-        <el-table
+       <el-table
         :data="tableDataType"
+        fixed
+        :row-class-name="tableRowClassNameForTypeAge"
         show-header = "false"
-        highlight-current-row = "true"
+        highlight-current-row
         style="width: 100%;">
-        <el-table-column
-          prop="type"
-          width="100"
-          align="center">
-        </el-table-column>
+          <el-table-column
+            prop="type"
+            width="100"
+            align="center">
+          </el-table-column>
       </el-table>
+
       </el-aside>
 
       <el-main>
@@ -39,6 +44,7 @@
 
          <el-table
            :data="tableDataTeam"
+           fixed
            show-header = "false"
            highlight-current-row = "true"
            style="width: 100%;position: absolute;left: 30%;top: 9.5%;">
@@ -52,7 +58,8 @@
          <el-table
            :data="tableDataStudent"
            :show-header = "show"
-           border="4px"
+           border
+           :row-class-name="tableRowClassName"
            highlight-current-row = "true"
            style="width: 100%;position: absolute;left: 43%;top: 12.7%;">
            <el-table-column
@@ -73,6 +80,18 @@
 <script>
 export default {
   name: ' Container ',
+  methods: {
+    tableRowClassName({row, rowIndex}) {
+      if( rowIndex === 0){
+        return 'student-title'
+      }else{
+        return ''
+      }
+    },
+    tableRowClassNameForTypeAge({row, rowIndex}){
+      return 'tablerow-age-type'
+    }
+  },
   data () {
     return {
       show : false,
@@ -125,21 +144,17 @@ export default {
         student:"王小利"
       }]
     }
-  },
-  methods: {
-    handleOpen (key, keyPath) {
-      console.log(key, keyPath)
-    },
-    handleClose (key, keyPath) {
-      console.log(key, keyPath)
-    }
   }
 }
 </script>
 <style>
-.table-column{
-  font-size: 1000px !important;;
-
+.el-table .student-title{
+   background: #FE8083;
+   color: white;
+   font-size: 17px;
+ }
+.el-table .tablerow-age-type{
+    border-color: black;
 }
 .addButton{
   border-radius: 0px;
