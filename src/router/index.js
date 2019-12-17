@@ -9,8 +9,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Calender',
-      component: Calender
+      name: 'Container',
+      component: Container
     }
   ]
 })

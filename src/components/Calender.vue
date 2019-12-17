@@ -4,30 +4,24 @@
   <template
     slot="dateCell"
     slot-scope="{date, data}">
-    <p @click="data.isSelected ? 'show' : ''">
-          {{ data.day.split('-').slice(1).join('-') }}
+    <p :class="data.isSelected ? 'is-selected' : ''" @click="fun(data,date)">
+      {{ data.day.split('-').slice(2).join() }}
     </p>
   </template>
 </el-calendar>
 </template>
-<script>
-  export default{
-    methods: {
-      show ({date, data}) {
-        console.log(data)
-      }
-
-    },
-    data () {
-      return {
-        value :  new Date()
-      }
-    }
-
-  }
-</script>
 <style>
-  .is-selected {
-    color: #1989FA;
+ p .is-selected {
+    color: black;
   }
 </style>
+<script>
+export default {
+  name: 'Calender',
+  methods: {
+    fun(data, date) {
+     console.log(data)
+    }
+  }
+}
+</script>

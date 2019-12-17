@@ -1,85 +1,76 @@
 <template>
-  <el-container>
-    <el-header>Team学员信息</el-header>
-    <el-container>
-      <el-aside width="200px"
-      style="position: absolute;left: 10%;">
+  <div>
+  <el-header>Team学员信息</el-header>
+  <el-row>
+    <el-col :span="4" offset="8">
         <!-- 左上边部分 -->
-        <el-table
-          :data="tableDataAge"
-          fixed
-          :row-class-name="tableRowClassNameForTypeAge"
-          show-header = "false"
-          highlight-current-row = "true"
-          style="width: 100%;">
-          <el-table-column
-            prop="age"
-            width="100"
-            align="center"
-            class="table-column"
-           >
-          </el-table-column>
-        </el-table>
-
-        <!-- 左下边部分 -->
-       <el-table
-        :data="tableDataType"
+      <el-table
+        :data="tableDataAge"
         fixed
         :row-class-name="tableRowClassNameForTypeAge"
         show-header = "false"
-        highlight-current-row
-        style="width: 100%;">
-          <el-table-column
-            prop="type"
-            width="100"
-            align="center">
-          </el-table-column>
+        highlight-current-row = "true"
+        >
+        <el-table-column
+          prop="age"
+          width="100"
+          align="center"
+          class="table-column"
+         >
+        </el-table-column>
       </el-table>
 
-      </el-aside>
+      <!-- 左下边部分 -->
+     <el-table
+      :data="tableDataType"
+      fixed
+      :row-class-name="tableRowClassNameForTypeAge"
+      show-header = "false"
+      highlight-current-row
+     >
+        <el-table-column
+          prop="type"
+          align="center">
+        </el-table-column>
+    </el-table>
 
-      <el-main>
+    </el-col>
 
         <!-- 右边部分 -->
 
-         <el-table
-           :data="tableDataTeam"
-           fixed
-           show-header = "false"
-           highlight-current-row = "true"
-           style="width: 100%;position: absolute;left: 30%;top: 9.5%;">
-           <el-table-column
-             prop="team"
-             width="100"
-             align="center">
-           </el-table-column>
-         </el-table>
-
-         <el-table
-           :data="tableDataStudent"
-           :show-header = "show"
-           border
-           :row-class-name="tableRowClassName"
-           highlight-current-row = "true"
-           style="width: 100%;position: absolute;left: 43%;top: 12.7%;">
-           <el-table-column
-             prop="student"
-             align="left">
-           </el-table-column>
-
-         </el-table>
-        <el-button size="large"
-          class="addButton">添加新学员</el-button>
-          <el-button size="large"
-            class="addTemporaryButton">添加临时学员</el-button>
-      </el-main>
-
-    </el-container>
-  </el-container>
+       <el-col :span="6" :offset="-3">
+       <el-table
+         :data="tableDataTeam"
+         fixed
+         show-header = "false"
+         highlight-current-row = "true"
+         style="width: 57%;">
+         <el-table-column
+            prop="team"
+           align="center">
+         </el-table-column>
+       </el-table>
+       </el-col>
+    <el-col :span="2">
+       <el-table
+         :data="tableDataStudent"
+         :show-header = "false"
+         border
+         :row-class-name="tableRowClassName"
+         highlight-current-row = "true"
+         >
+         <el-table-column
+           prop="student"
+           align="left">
+         </el-table-column>
+       </el-table>
+     </el-col>
+  </el-row>
+  </div>
 </template>
 <script>
 export default {
-  name: ' Container ',
+  name: 'Container',
   methods: {
     tableRowClassName({row, rowIndex}) {
       if( rowIndex === 0){
@@ -94,7 +85,6 @@ export default {
   },
   data () {
     return {
-      show : false,
       tableDataAge: [{
         age: ' 3-4岁 '
       },
@@ -147,7 +137,18 @@ export default {
   }
 }
 </script>
+
+
 <style>
+.el-row {
+  margin-bottom: 20px;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+.el-col {
+  border-radius: 4px;
+}
 .el-table .student-title{
    background: #FE8083;
    color: white;
@@ -158,23 +159,17 @@ export default {
 }
 .addButton{
   border-radius: 0px;
-  position: absolute;
   color: #FFFFFF;
   background-color: #FE8083;
   width:130px;
   height: 42px;
-  top: 45%;
-  right: 21%;
 }
 .addTemporaryButton{
   border-radius: 0px;
-  position: absolute;
   color: #FFFFFF;
   background-color: #989999;
   width:130px;
   height: 42px;
-  top: 49.7%;
-  right: 21%;
 }
 
 </style>
