@@ -1,6 +1,6 @@
 <template>
   <div >
-    <h1>学员信息</h1>
+    <h1>Team学员信息</h1>
   <el-container>
     <el-aside style="width: 6.25rem;">
       </el-aside>
