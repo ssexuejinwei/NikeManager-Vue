@@ -1,12 +1,11 @@
-<template id ="Student">
-  <div>
+<template>
+  <div >
     <h1>学员信息</h1>
-  <el-container >
-
-    <el-aside>
+  <el-container>
+    <el-aside style="width: 6.25rem;">
       </el-aside>
 
-    <el-aside style="width: 7.5rem;">
+    <el-aside style="width: 13.5rem;">
         <el-menu
         :default-active="activeIndexAge"
         @select="handleSelectAge"
@@ -58,29 +57,146 @@
 
     <el-container style="height: 37.5rem; border: solid #000000;border-left: 0;">
 
-      <el-main style="padding: 0; !important;" width="100%">
+      <el-main style="padding: 0; !important;" width="80%">
         <el-table :data="tableData"
           :border="true">
           <el-table-column prop="student"
-          label="学生名单"
+          label="学员名单"
           :class="borderBottom"
-          style="width: 100%; border-bottom: solid !important;">
+          >
           </el-table-column>
         </el-table>
         <el-row>
           <el-col :span="4" :offset="10" >
-          <el-button class ="addButton">添加新学员</el-button>
+          <el-button class ="addButton"@click="outerVisible = true">添加新学员</el-button>
           </el-col>
           </el-row>
           <el-row style = "margin-top: 0.125rem;">
             <el-col :span="4" :offset="10" >
-          <el-button class ="addTemporaryButton" >添加临时学员</el-button>
+          <el-button class ="addTemporaryButton" @click="addTemporaryStudent" >添加临时学员</el-button>
           </el-col>
           </el-row>
       </el-main>
 
     </el-container>
+    <el-aside style="width: 6.5625rem;"></el-aside>
   </el-container>
+
+  <!-- Form -->
+  <el-dialog title="基本信息" :visible.sync="outerVisible ">
+    <el-form :model="studentForm" style="border: solid;">
+      <el-form-item label="姓名" :label-width="formLabelWidth">
+        <el-input v-model="studentForm.name" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="性别" :label-width="formLabelWidth">
+        <el-input v-model="studentForm.sex" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="生日" :label-width="formLabelWidth">
+        <el-input v-model="studentForm.birth" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="身高" :label-width="formLabelWidth">
+        <el-input v-model="studentForm.height" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="体重" :label-width="formLabelWidth">
+        <el-input v-model="studentForm.weight" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="联系方式" :label-width="formLabelWidth">
+        <el-input v-model="studentForm.contact" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="积分" :label-width="formLabelWidth">
+        <el-input v-model="studentForm.points" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="家长微信open ID" :label-width="formLabelWidth">
+        <el-input v-model="studentForm.wechat" autocomplete="off"></el-input>
+      </el-form-item>
+    </el-form>
+
+    <el-dialog
+          width="30%"
+          :visible.sync="innerVisible"
+          append-to-body>
+           <el-row>
+             <el-col :span="6">体能训练</el-col>
+             <el-col :span="6">
+               <el-switch
+                 v-model="physicalTrainingYes"
+                 active-color="#13ce66"
+                 active-text="是">
+               </el-switch>
+             </el-col>
+             <el-col :span="6">
+               <el-switch
+                 v-model="physicalTrainingNo"
+                 active-color="#13ce66"
+                 active-text="否"
+                 >
+               </el-switch>
+             </el-col>
+             <el-col :span="6">
+               <el-switch
+                 v-model="physicalTrainingYear"
+                 active-color="#13ce66"
+                 active-text="一年以上"
+                 >
+               </el-switch>
+             </el-col>
+           </el-row>
+           <el-row>
+               <el-col :span="6">球类训练</el-col>
+               <el-col :span="6">
+                 <el-switch
+                   v-model="ballTrainingYes"
+                   active-color="#13ce66"
+                   active-text="是"
+                   >
+                 </el-switch>
+               </el-col>
+               <el-col :span="6">
+                 <el-switch
+                   v-model="ballTrainingNo"
+                   active-color="#13ce66"
+                   active-text="否"
+                   >
+                 </el-switch>
+               </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="6">希望选择的运动项目</el-col>
+                <el-col :span="6">
+                  <el-switch
+                    v-model="footballChoice"
+                    active-color="#13ce66"
+                    active-text="足球"
+                    >
+                  </el-switch>
+                </el-col>
+                <el-col :span="6">
+                  <el-switch
+                    v-model="basketballChoice"
+                    active-color="#13ce66"
+                    active-text="篮球"
+                   >
+                  </el-switch>
+                </el-col>
+             </el-row>
+             <el-row>
+               <el-col :span="6">
+                 我的队友
+               </el-col>
+               <el-col :span="6">
+                 <el-input v-model="inputTeammateName" placeholder="输入队友姓名"></el-input>
+               </el-col>
+             </el-row>
+          <div slot="footer" class="dialog-footer">
+            <el-button class ="addTemporaryButton" @click="finish" >Team分配</el-button>
+          </div>
+        </el-dialog>
+    <div slot="footer" class="dialog-footer">
+      <el-button class ="addTemporaryButton" @click="innerVisible = true;outerVisible= false " >下一步</el-button>
+    </div>
+
+  </el-dialog>
+
   </div>
 </template>
 
@@ -89,9 +205,30 @@
     name:"StudentEntry",
       data() {
         return {
+          physicalTrainingYes:false,
+          physicalTrainingNo:false,
+          physicalTrainingYear:true,
+          ballTrainingYes: true,
+          ballTrainingNo : false,
+          footballChoice: true,
+          basketballChoice:false,
+          inputTeammateName:'',
           activeIndexAge:'1',
           activeIndexType:'1',
           activeIndexTeam:'1',
+          outerVisible : false,
+          innerVisible : false,
+          studentForm: {
+            name: '小苹果',
+            sex: '女',
+            birth: '2016.06.01',
+            height: '90cm',
+            weight: '25kg',
+            contact : '15822221456',
+            points: '5600',   //积分
+            wechat: '天使15222'   //家长微信openID
+          },
+          formLabelWidth: '120px',
           menuAge:{
             '1':'3-4岁',
             '2':'4-5岁',
@@ -124,6 +261,16 @@
         }
       },
       methods: {
+        finish(){
+          this.innerVisible = false
+          this.outerVisible = false
+          this.$alert('<div class="teamSuccess"><h1 class="teamSuccessHead">分配成功 </h1><p class="teamSuccessContent">王某某小朋友</p><p>被分配至Team-02</p>', '', {
+                    dangerouslyUseHTMLString: true
+                  });
+        },
+        addTemporaryStudent(){
+          alert("add fail")
+        },
         handleSelectAge(key) {
          this.activeIndexAge = key;
         },
@@ -138,6 +285,28 @@
 </script>
 
 <style>
+  .el-icon-close:before{
+    display: none;
+  }
+  .el-form-item .label{
+    border: solid;
+  }
+  .teamSuccess{
+    background-color:#FE8083;
+    color:white;
+    text-align: center;
+  }
+  .teamSuccessContent{
+    font-size: larger;
+  }
+  .teamSuccessHead{
+    font-size: large;
+  }
+  .el-table th{
+    border-bottom: solid black !important;
+    background-color: #FE8083;
+    color:white;
+  }
   .el-table td{
     border-bottom: solid black !important;
   }
@@ -147,7 +316,7 @@
   .el-menu-item.is-active {
     background-color: #FE8083 !important;
     border-bottom:solid 0.125rem !important;
-    font-size: large !important;
+    font-size: x-large !important;
     border: 1px solid !important;
   }
   .el-table_2_column_2  {
@@ -159,7 +328,7 @@
       font-size: large;
   }
   .leftMenu{
-    width:5.875rem;
+    width:12.5rem;
     border:solid;
     box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
   }
@@ -168,7 +337,7 @@
     border-bottom:solid ;
      /* box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04) */
   }
-  .el-row{
+ .el-row{
     margin-top: 3.5rem;
     margin-bottom:1px;
   }
