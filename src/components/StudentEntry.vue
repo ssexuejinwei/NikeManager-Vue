@@ -323,7 +323,7 @@
     border-bottom:solid;
   }
   .el-table__header-wrapper, th{
-    background-color:  #FE8083;
+   /* background-color:  #FE8083; */
       color: Black;
       font-size: large;
   }
