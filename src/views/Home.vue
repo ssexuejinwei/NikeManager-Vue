@@ -12,6 +12,9 @@
     <p>
       <router-link to="/activity">/activity</router-link>
     </p>
+    <p>
+      <router-link to="/product">/product</router-link>
+    </p>
   </div>
 </template>
 

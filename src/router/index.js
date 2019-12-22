@@ -34,7 +34,15 @@ const routes = [
   {
     path: '/activity/add',
     component: () => import('@/views/Activity/add')
-  }
+  },
+  {
+    path: '/product',
+    component: () => import('@/views/Product/index')
+  },
+  {
+    path: '/product/add',
+    component: () => import('@/views/Product/add')
+  },
 ]
 
 const router = new VueRouter({
