@@ -1,5 +1,5 @@
 <template>
-  <div >
+  <div id = "student" >
     <h1>Team学员信息</h1>
   <el-container>
     <el-aside style="width: 6.25rem;">
@@ -284,7 +284,12 @@
     }
 </script>
 
-<style>
+<style lang = "scss" >
+	#student{
+		h1{
+			text-align: center;
+		}
+	}
   .el-icon-close:before{
     display: none;
   }
