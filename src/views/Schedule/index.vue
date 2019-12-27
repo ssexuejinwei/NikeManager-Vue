@@ -14,18 +14,19 @@
 		<!-- 排课 编辑菜单 -->
 		<el-menu v-if=" data.isSelected&& (state =='schedule'|| state=='edit')"
 			@select="handleSelect"
+			menu-trigger="click"
 			class="el-menu-demo" mode="horizontal" >
-			<el-submenu :index ="state">
+			<el-submenu :index ="state" >
 				<template slot="title">
 					{{state}}
 				</template>
 			<template v-for="time in timeList">
-					<el-submenu :index = time>
+					<el-submenu :index = time >
 						<template slot="title">
 							{{time}}
 						</template>
 							<template v-for="type in typeList">
-							<el-submenu :index="type">
+							<el-submenu :index="type" >
 								<template slot="title">
 									{{type}}
 								</template>
@@ -59,9 +60,12 @@
 		</el-menu>
 
 		<!-- 考勤菜单 -->
+		<!-- <el-cascader-panel v-if=" data.isSelected&& state =='checkAttend'" options="options"></el-cascader-panel> -->
 		<el-menu v-if=" data.isSelected&& state =='checkAttend'"
 			@select="handleSelect"
-			class="el-menu-demo" mode="horizontal" >
+			menu-trigger="click"
+			mode="horizati"
+			@open = "handleOpen">
 			<el-submenu :index ="state">
 				<template slot="title">
 					{{state}}
@@ -86,14 +90,25 @@
 											  prop="name"
 											  width="180">
 											</el-table-column>
-											<el-table-column label="考勤">
-												<label 
-													:class="tableData.Attend == '签到'?'attend':'absent'"
-												>签到</label>
-												&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-												<label
-													:class="tableData.Attend == '签到'?'attend':'absent'"
-													>缺席</label>
+											<el-table-column  label="考勤" width="180">
+												<template slot-scope="scope">
+												   <el-button
+													size="small "	
+													type='text'
+													@click="handleAttend(scope.$index,scope.row)">
+													<span :class="tableData[scope.$index]['Attend']=='attend'?'attend':'normal'">
+														签到
+													</span>
+													</el-button>
+												   <el-button
+													size="small "
+													type='text'
+													@click="handleAbsent(scope.$index, scope.row)">
+													<span :class="tableData[scope.$index]['Attend']=='absent'?'absent':'normal'" >
+													缺席
+													</span>
+													</el-button>
+												 </template>
 											</el-table-column>
 										  </el-table>
 									</el-menu-item>
@@ -104,17 +119,18 @@
 			</template>
 			</el-submenu>
 		</el-menu>
+		
 		</template>
       </el-calendar>
-      <el-row>
+      <el-row class ="scheduleButton">
         <el-col :span="5" :offset="2" >
-        <el-button :type="buttonType1" @click="buttonClick('schedule')">&nbsp;排课&nbsp;</el-button>
+        <el-button :type="buttonType['schedule']" @click="buttonClick('schedule')">&nbsp;排课&nbsp;</el-button>
         </el-col>
           <el-col :span="5" :offset="2" >
-        <el-button :type="buttonType2" @click="buttonClick('checkAttend')">&nbsp;考勤&nbsp;</el-button>
+        <el-button :type="buttonType['checkAttend']" @click="buttonClick('checkAttend')">&nbsp;考勤&nbsp;</el-button>
         </el-col>
         <el-col :span="5" :offset="2" >
-        <el-button :type="buttonType3" @click="buttonClick('edit')" >&nbsp;编辑&nbsp;</el-button>
+        <el-button :type="buttonType['edit']" @click="buttonClick('edit')" >&nbsp;编辑&nbsp;</el-button>
         </el-col>
         </el-row>
     </el-main>
@@ -126,6 +142,7 @@ export default {
   name: 'Schedule',
   data() {
     return {
+		defaultOpensIndexSet : new Set(['checkAttend']),
 		coachList : ['杜教练', '赵教练', '熊教练', '林教练', '韩教练' ],
 		courseList : ['3-4岁兴趣班', '4-6岁初级足球班', '5-6岁初级篮球班'],
 		teamList : ['Team-01', 'Team-02', 'Team-03'],
@@ -133,33 +150,41 @@ export default {
 		timeList : ['16:00-17:00', '17:00-18:00', '18:00-19:00'],
 		state : 'lookup',
 		showMenu : 'none',
-		buttonType1:'info',
-		buttonType2:'info',
-		buttonType3:'info',
+		buttonType: {'schedule':'info','checkAttend':'info','edit':'info'},
 		activeIndex: '1',
 		tableData:[{
 			'name':'林一',
-			'Attend':'签到'
+			'Attend':''
 		},
 		{
 			'name':'林一',
-			'Attend':'签到'
+			'Attend':''
 		},
 		{
 			'name':'林一',
-			'Attend':'签到'
+			'Attend':''
 		},
 		{
 			'name':'林一',
-			'Attend':'签到'
+			'Attend':''
 		},
 		{
 			'name':'林一',
-			'Attend':'签到'
-		}]
+			'Attend':''
+		}],
     }
   },
   methods: {
+	handleOpen(index){
+		this.defaultOpensIndexSet.add(index)
+		console.log(this.defaultOpensIndexSet)
+	},
+	handleAttend(index, row){
+		this.tableData[index]['Attend'] = 'attend'
+	},
+	handleAbsent(index, row){
+		this.tableData[index]['Attend'] = 'absent'
+	},
 	handleEdit(index, row) {
 		console.log(index, row);
 	},
@@ -167,20 +192,13 @@ export default {
 		console.log(index,indexPath)
 	},
     buttonClick(key){
-		switch (key){
-			case 'schedule':
-				this.buttonType1=(this.buttonType1 == 'info')?'success':'info'
-				break;
-			case 'checkAttend':
-				this.buttonType2=(this.buttonType2 == 'info')?'success':'info'
-				break;
-			case 'edit':
-				this.buttonType3=(this.buttonType3 == 'info')?'success':'info'
-				break;
-			default:
-				break;
+		for(let index in this.buttonType){
+			if(index != key && this.buttonType[index] == 'success'){
+				this.buttonType[index] = 'info'
+			}
 		}
-		if( this.buttonType1 == 'success'||this.buttonType2 == 'success' ||this.buttonType3 == 'success'){
+		this.buttonType[key]=(this.buttonType[key] == 'info')?'success':'info'
+		if( this.buttonType[key] == 'success'){
 			this.state = key
 		}
 		else{
@@ -194,18 +212,22 @@ export default {
 <style lang="scss">
 $Green: #69bc38;
 $Gray: #cdcdcb;
+$Red : #92535e;
+.attend {
+	color: $Green;
+}
+.absent{
+	color:$Red;
+}
+.normal{
+	color:$Gray;
+}
 .el-container{
-	.attend {
-		text-color: $Green;
-	}
-	.absent{
-		text-color:$Gray;
-	}
 	.el-header{
 		text-align: center;
 		font-size : 1.875rem;
 	}
-	.el-row{
+	.scheduleButton{
 		margin: 0;
 		margin-left: 15.625rem;
 	}

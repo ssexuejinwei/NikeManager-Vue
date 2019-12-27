@@ -59,6 +59,7 @@
 
       <el-main style="padding: 0; !important;" width="80%">
         <el-table :data="tableData"
+		  class="studentTable"
           :border="true">
           <el-table-column prop="student"
           label="学员名单"
@@ -66,14 +67,14 @@
           >
           </el-table-column>
         </el-table>
-        <el-row>
+        <el-row class ="buttonRow">
           <el-col :span="4" :offset="10" >
-          <el-button class ="addButton"@click="outerVisible = true">添加新学员</el-button>
+          <el-button class ="addButton" @click = "outerVisible = true">添加新学员</el-button>
           </el-col>
           </el-row>
-          <el-row style = "margin-top: 0.125rem;">
+          <el-row class= "buttonRow" style = "margin-top: 0.125rem;">
             <el-col :span="4" :offset="10" >
-          <el-button class ="addTemporaryButton" @click="addTemporaryStudent" >添加临时学员</el-button>
+          <el-button class ="addTemporaryButton" @click = "tempVisible = true" >添加临时学员</el-button>
           </el-col>
           </el-row>
       </el-main>
@@ -84,7 +85,7 @@
 
   <!-- Form -->
   <el-dialog title="基本信息" :visible.sync="outerVisible ">
-    <el-form :model="studentForm" style="border: solid;">
+    <el-form :model="studentForm">
       <el-form-item label="姓名" :label-width="formLabelWidth">
         <el-input v-model="studentForm.name" autocomplete="off"></el-input>
       </el-form-item>
@@ -110,12 +111,12 @@
         <el-input v-model="studentForm.wechat" autocomplete="off"></el-input>
       </el-form-item>
     </el-form>
-
+	
     <el-dialog
           width="30%"
           :visible.sync="innerVisible"
           append-to-body>
-           <el-row>
+           <el-row class ="formRow">
              <el-col :span="6">体能训练</el-col>
              <el-col :span="6">
                <el-switch
@@ -141,7 +142,7 @@
                </el-switch>
              </el-col>
            </el-row>
-           <el-row>
+           <el-row class ="formRow">
                <el-col :span="6">球类训练</el-col>
                <el-col :span="6">
                  <el-switch
@@ -160,7 +161,7 @@
                  </el-switch>
                </el-col>
             </el-row>
-            <el-row>
+            <el-row class ="formRow">
                 <el-col :span="6">希望选择的运动项目</el-col>
                 <el-col :span="6">
                   <el-switch
@@ -179,7 +180,7 @@
                   </el-switch>
                 </el-col>
              </el-row>
-             <el-row>
+             <el-row class ="formRow">
                <el-col :span="6">
                  我的队友
                </el-col>
@@ -196,6 +197,24 @@
     </div>
 
   </el-dialog>
+  <el-dialog title="添加临时成员" :visible.sync = "tempVisible">
+	<el-table :data="tableData">
+	    <el-table-column property="student" label="学生" width="150"></el-table-column>
+	    <el-table-column  label="添加" width="200">
+			<template slot-scope="scope">
+			   <el-button
+				size="medium "
+				:disabled ="tableData[scope.$index]['add']"
+				@click="handleAddTemp(scope.$index,scope.row)">添加</el-button>
+			   <el-button
+				size="medium "
+				type="danger"
+				:disabled ="!tableData[scope.$index]['add']"
+				@click="handleDelTemp(scope.$index, scope.row)">删除</el-button>
+			 </template>
+	   </el-table-column>
+	</el-table>
+  </el-dialog>
 
   </div>
 </template>
@@ -205,62 +224,84 @@
     name:"StudentEntry",
       data() {
         return {
-          physicalTrainingYes:false,
-          physicalTrainingNo:false,
-          physicalTrainingYear:true,
-          ballTrainingYes: true,
-          ballTrainingNo : false,
-          footballChoice: true,
-          basketballChoice:false,
-          inputTeammateName:'',
-          activeIndexAge:'1',
-          activeIndexType:'1',
-          activeIndexTeam:'1',
-          outerVisible : false,
-          innerVisible : false,
-          studentForm: {
-            name: '小苹果',
-            sex: '女',
-            birth: '2016.06.01',
-            height: '90cm',
-            weight: '25kg',
-            contact : '15822221456',
-            points: '5600',   //积分
-            wechat: '天使15222'   //家长微信openID
-          },
-          formLabelWidth: '120px',
-          menuAge:{
-            '1':'3-4岁',
-            '2':'4-5岁',
-            '3':'5-6岁'
-          },
-          tableData:[
-          {
-            student:"林一"
-          },
-          {
-            student:"林二"
-          },
-          {
-            student:"李别"
-          },
-          {
-            student:"王小利"
-          },
-          {
-            student:"时小某"
-          },
-          {
-            student:"李别"
-          },
-          {
-            student:"王小利"
-          }],
-          borderBottom : 'borderBottom',
-          leftMenu : 'leftMenu'
-        }
+			physicalTrainingYes:false,
+			physicalTrainingNo:false,
+			physicalTrainingYear:true,
+			ballTrainingYes: true,
+			ballTrainingNo : false,
+			footballChoice: true,
+			basketballChoice:false,
+			inputTeammateName:'',
+			activeIndexAge:'1',
+			activeIndexType:'1',
+			activeIndexTeam:'1',
+			outerVisible : false,
+			innerVisible : false,
+			tempVisible: false,
+			studentForm: {
+			name: '小苹果',
+			sex: '女',
+			birth: '2016.06.01',
+			height: '90cm',
+			weight: '25kg',
+			contact : '15822221456',
+			points: '5600',   //积分
+			wechat: '天使15222'   //家长微信openID
+			},
+			formLabelWidth: '120px',
+			menuAge:{
+			'1':'3-4岁',
+			'2':'4-5岁',
+			'3':'5-6岁'
+			},
+			tableData:[
+			{
+			"student":"林一",
+			"add" : false
+			},
+			{
+			"student":"林二",
+			"add": false
+			},
+			{
+			"student":"李别",
+			"add": false
+			},
+			{
+			"student":"王小利",
+			"add": false
+			},
+			{
+			"student":"时小某",
+			"add" : false
+			},
+			{
+			"student":"李别",
+			"add" : false
+			},
+			{
+			"student":"王小利",
+			"add" : false
+			}],
+			borderBottom : 'borderBottom',
+			leftMenu : 'leftMenu'
+			}
       },
       methods: {
+		handleAddTemp(index, row){
+			console.log(this.tableData[index]['student'],row)
+			this.$alert('添加成功', {
+			          confirmButtonText: '确定',
+					  })
+			this.tableData[index]['add'] = true
+		},
+		handleDelTemp(index,row){
+			this.$alert('删除成功', {
+			          confirmButtonText: '确定',
+					  })
+			this.tableData[index]['add'] = false
+		},
+		
         finish(){
           this.innerVisible = false
           this.outerVisible = false
@@ -289,6 +330,9 @@
 		h1{
 			text-align: center;
 		}
+		.addTempStudentCol{
+			border: none !important;
+		}
 	}
   .el-icon-close:before{
     display: none;
@@ -296,27 +340,30 @@
   .el-form-item .label{
     border: solid;
   }
-  .teamSuccess{
+/*  .teamSuccess{
     background-color:#FE8083;
     color:white;
     text-align: center;
-  }
+  } */
   .teamSuccessContent{
     font-size: larger;
   }
   .teamSuccessHead{
     font-size: large;
   }
-  .el-table th{
-    border-bottom: solid black !important;
+   .studentTable th{
+	  border-bottom: solid black;
+    /* border-bottom: solid black !important; */
     background-color: #FE8083;
     color:white;
   }
-  .el-table td{
-    border-bottom: solid black !important;
+   .studentTable td{
+	  border-bottom: solid black ;
+    /* border-bottom: solid black !important; */
   }
-  .el-table .border{
-    border: solid 100px !important;
+   .studentTable .border{
+	 border: solid 100px ;
+    /* border: solid 100px !important; */
   }
   .el-menu-item.is-active {
     background-color: #FE8083 !important;
@@ -342,7 +389,7 @@
     border-bottom:solid ;
      /* box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04) */
   }
- .el-row{
+ .buttonRow, .formRow{
     margin-top: 3.5rem;
     margin-bottom:1px;
   }
