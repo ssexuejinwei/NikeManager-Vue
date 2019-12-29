@@ -1,29 +1,28 @@
 <template>
   <div>
-    <el-table :data="shownData" border>
-      <el-table-column prop="id" label="编号" />
+    <el-table :data="data" border>
+      <el-table-column prop="id" label="订单编号" />
       <el-table-column prop="created" label="创建时间">
         <template slot-scope="scope">
           {{ format(scope.row.created) }}
         </template>
       </el-table-column>
-      <el-table-column prop="score" label="消耗积分" />
-      <el-table-column prop="address" label="送货地址" />
-      <el-table-column prop="express_number" label="物流单号" />
-      <el-table-column label="交易状态">
+      <el-table-column prop="reasons" label="申请理由">
         <template slot-scope="scope">
-          <el-tag style="margin-right: 0.5rem" type="info">待完成订单</el-tag>
-          <el-button size="small" :disabled="scope.row.state === 'complete'">完成订单</el-button>
+          <el-tag v-for="r in scope.row.reasons" :key="r" style="margin-right: 8px">{{r}}</el-tag>
         </template>
       </el-table-column>
+      <el-table-column prop="state" label="申请状态" />
     </el-table>
     <div class="table-action">
-      <router-link to="/order/add">
-        <el-button>添加新订单</el-button>
-      </router-link>
-      <router-link to="/order/service">
-        <el-button>售后</el-button>
-      </router-link>
+      <div>
+        <router-link to="/order/service/return">
+          <el-button style="margin-right: 16px">退货申请</el-button>
+        </router-link>
+        <router-link to="/order/service/exchange">
+          <el-button>换货申请</el-button>
+        </router-link>
+      </div>
       <div>
         <el-pagination
           layout="total, prev, pager, next, jumper"
@@ -44,17 +43,14 @@ import { format } from 'date-fns'
 const mock = () => ({
   id: (Math.random() * 1000000).toFixed(0),
   created: Date.now(),
-  score: 3600,
-  address: '上海xxxx',
-  express_number: '1243432',
-  state: _.sample(['complete', 'pending'])
+  reasons: ['尺码问题', '商品发错', '质量问题'],
+  state: _.sample(['退款', '换货'])
 })
 
 export default {
   data() {
     return {
-      data: Array.from({ length: 10 }).map(() => mock()),
-      // 分页
+      data: Array.from({length: 9}).map(mock),
       current: 1,
       pageSize: 5,
     }
