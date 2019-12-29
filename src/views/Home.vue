@@ -15,6 +15,9 @@
     <p>
       <router-link to="/product">/product</router-link>
     </p>
+    <p>
+      <router-link to="/order">/order</router-link>
+    </p>
   </div>
 </template>
 

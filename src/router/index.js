@@ -40,6 +40,20 @@ const routes = [
     path: '/product/add',
     component: () => import('@/views/Product/add')
   },
+  {
+    path: '/order',
+    component: () => import('@/views/Order/_layout'),
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/Order/index'),
+      },
+      {
+        path: 'add',
+        component: () => import('@/views/Order/add-order')
+      }
+    ]
+  },
 ]
 
 const router = new VueRouter({
