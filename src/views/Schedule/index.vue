@@ -64,7 +64,7 @@
 		<el-menu v-if=" data.isSelected&& state =='checkAttend'"
 			@select="handleSelect"
 			menu-trigger="click"
-			mode="horizati"
+			mode="horizontal"
 			@open = "handleOpen">
 			<el-submenu :index ="state">
 				<template slot="title">
