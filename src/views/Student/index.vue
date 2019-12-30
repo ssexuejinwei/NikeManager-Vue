@@ -92,13 +92,13 @@
       <el-form-item label="性别" :label-width="formLabelWidth">
         <el-input v-model="studentForm.sex" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="生日" :label-width="formLabelWidth">
+      <el-form-item label="生日" :label-width="formLabelWidth" placeholder="2019-12-12">
         <el-input v-model="studentForm.birth" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="身高" :label-width="formLabelWidth">
+      <el-form-item label="身高(cm)" :label-width="formLabelWidth">
         <el-input v-model="studentForm.height" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="体重" :label-width="formLabelWidth">
+      <el-form-item label="体重(kg)" :label-width="formLabelWidth">
         <el-input v-model="studentForm.weight" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="联系方式" :label-width="formLabelWidth">
@@ -117,78 +117,43 @@
           :visible.sync="innerVisible"
           append-to-body>
            <el-row class ="formRow">
-             <el-col :span="6">体能训练</el-col>
-             <el-col :span="6">
-               <el-switch
-                 v-model="physicalTrainingYes"
-                 active-color="#13ce66"
-                 active-text="是">
-               </el-switch>
-             </el-col>
-             <el-col :span="6">
-               <el-switch
-                 v-model="physicalTrainingNo"
-                 active-color="#13ce66"
-                 active-text="否"
-                 >
-               </el-switch>
-             </el-col>
-             <el-col :span="6">
-               <el-switch
-                 v-model="physicalTrainingYear"
-                 active-color="#13ce66"
-                 active-text="一年以上"
-                 >
-               </el-switch>
+             <el-col :span="10">体能训练</el-col>
+             <el-col :span="14">
+               <el-radio-group size="medium" v-model="physicalTrainingRadio">
+                  <el-radio :label="0">否</el-radio>
+                  <el-radio :label="1">是</el-radio>
+                  <el-radio :label="2">一年以上</el-radio>
+                </el-radio-group>
              </el-col>
            </el-row>
            <el-row class ="formRow">
-               <el-col :span="6">球类训练</el-col>
-               <el-col :span="6">
-                 <el-switch
-                   v-model="ballTrainingYes"
-                   active-color="#13ce66"
-                   active-text="是"
-                   >
-                 </el-switch>
+               <el-col :span="10">球类训练</el-col>
+               <el-col :span="12">
+                 <el-radio-group size="medium" v-model="ballTrainingRadio">
+                    <el-radio :label="0">否</el-radio>
+                    <el-radio :label="1">是</el-radio>
+                  </el-radio-group>
                </el-col>
-               <el-col :span="6">
-                 <el-switch
-                   v-model="ballTrainingNo"
-                   active-color="#13ce66"
-                   active-text="否"
-                   >
-                 </el-switch>
                </el-col>
             </el-row>
             <el-row class ="formRow">
-                <el-col :span="6">希望选择的运动项目</el-col>
-                <el-col :span="6">
-                  <el-switch
-                    v-model="footballChoice"
-                    active-color="#13ce66"
-                    active-text="足球"
-                    >
-                  </el-switch>
-                </el-col>
-                <el-col :span="6">
-                  <el-switch
-                    v-model="basketballChoice"
-                    active-color="#13ce66"
-                    active-text="篮球"
-                   >
-                  </el-switch>
+                <el-col :span="10">希望选择的运动项目</el-col>
+                <el-col  :span="12">
+                  <el-radio-group size="medium" v-model="ballChoiceRadio">
+                     <el-radio :label="0">篮球</el-radio>
+                     <el-radio :label="1">足球</el-radio>
+                   </el-radio-group>
                 </el-col>
              </el-row>
              <el-row class ="formRow">
-               <el-col :span="6">
+               <el-col :span="10">
                  我的队友
                </el-col>
-               <el-col :span="6">
+               <el-col :span="12">
                  <el-input v-model="inputTeammateName" placeholder="输入队友姓名"></el-input>
                </el-col>
              </el-row>
-          <div slot="footer" class="dialog-footer">
+          <div slot="footer" class="dialog-footer" style="text-align: center;">
             <el-button class ="addTemporaryButton" @click="finish" >Team分配</el-button>
           </div>
         </el-dialog>
@@ -224,87 +189,99 @@
     name:"StudentEntry",
       data() {
         return {
-			physicalTrainingYes:false,
-			physicalTrainingNo:false,
-			physicalTrainingYear:true,
-			ballTrainingYes: true,
-			ballTrainingNo : false,
-			footballChoice: true,
-			basketballChoice:false,
-			inputTeammateName:'',
-			activeIndexAge:'1',
-			activeIndexType:'1',
-			activeIndexTeam:'1',
-			outerVisible : false,
-			innerVisible : false,
-			tempVisible: false,
-			studentForm: {
-			name: '小苹果',
-			sex: '女',
-			birth: '2016.06.01',
-			height: '90cm',
-			weight: '25kg',
-			contact : '15822221456',
-			points: '5600',   //积分
-			wechat: '天使15222'   //家长微信openID
-			},
-			formLabelWidth: '120px',
-			menuAge:{
-			'1':'3-4岁',
-			'2':'4-5岁',
-			'3':'5-6岁'
-			},
-			tableData:[
-			{
-			"student":"林一",
-			"add" : false
-			},
-			{
-			"student":"林二",
-			"add": false
-			},
-			{
-			"student":"李别",
-			"add": false
-			},
-			{
-			"student":"王小利",
-			"add": false
-			},
-			{
-			"student":"时小某",
-			"add" : false
-			},
-			{
-			"student":"李别",
-			"add" : false
-			},
-			{
-			"student":"王小利",
-			"add" : false
-			}],
-			borderBottom : 'borderBottom',
-			leftMenu : 'leftMenu'
-			}
-      },
+        physicalTrainingRadio:0,
+        ballTrainingRadio: 0,
+        ballChoiceRadio: 0,
+        inputTeammateName:'',
+        activeIndexAge:'1',
+        activeIndexType:'1',
+        activeIndexTeam:'1',
+        outerVisible : false,
+        innerVisible : false,
+        tempVisible: false,
+        studentForm: {
+        name: '',
+        sex: '',
+        birth: '',
+        height: '',
+        weight: '',
+        contact : '',
+        points: '',   //积分
+        wechat: ''   //家长微信openID
+        },
+        formLabelWidth: '120px',
+        menuAge:{
+        '1':'3-4岁',
+        '2':'4-5岁',
+        '3':'5-6岁'
+        },
+        tableData:[
+        {
+        "student":"林一",
+        "add" : false
+        },
+        {
+        "student":"林二",
+        "add": false
+        },
+        {
+        "student":"李别",
+        "add": false
+        },
+        {
+        "student":"王小利",
+        "add": false
+        },
+        {
+        "student":"时小某",
+        "add" : false
+        },
+        {
+        "student":"李别",
+        "add" : false
+        },
+        {
+        "student":"王小利",
+        "add" : false
+        }],
+        borderBottom : 'borderBottom',
+        leftMenu : 'leftMenu'
+        }
+        },
       methods: {
-		handleAddTemp(index, row){
-			console.log(this.tableData[index]['student'],row)
-			this.$alert('添加成功', {
-			          confirmButtonText: '确定',
-					  })
-			this.tableData[index]['add'] = true
-		},
-		handleDelTemp(index,row){
-			this.$alert('删除成功', {
-			          confirmButtonText: '确定',
-					  })
-			this.tableData[index]['add'] = false
-		},
-		
+        handleAddTemp(index, row){
+          console.log(this.tableData[index]['student'],row)
+          this.$alert('添加成功', {
+                    confirmButtonText: '确定',
+                })
+          this.tableData[index]['add'] = true
+        },
+        handleDelTemp(index,row){
+          this.$alert('删除成功', {
+                    confirmButtonText: '确定',
+                })
+          this.tableData[index]['add'] = false
+        },
+        
         finish(){
           this.innerVisible = false
           this.outerVisible = false
+          // var student = this.studentForm
+          // var data = {
+          //   name : student.name,
+          //   sex : student.sex == "男"?0:1,
+          //   birthday : student.birth,
+          //   height : parseInt(student.height),
+          //   weight : parseInt(student.weight),
+          //   tel : student.contact,
+          //   score : parseInt(student.points),
+          //   physical_training : this.ballTrainingRadio,
+          //   ballTraining : this.ballChoiceRadio,
+          //   mateName : this.inputTeammateName
+          // }
+          // this.$http.post('/sellerctr/addStudent',data,false).then((result) =>{
+          //   console.log(result)
+          // })
           this.$alert('<div class="teamSuccess"><h1 class="teamSuccessHead">分配成功 </h1><p class="teamSuccessContent">王某某小朋友</p><p>被分配至Team-02</p>', '', {
                     dangerouslyUseHTMLString: true
                   });
@@ -322,6 +299,7 @@
          this.activeIndexTeam = key;
         }
       }
+      
     }
 </script>
 

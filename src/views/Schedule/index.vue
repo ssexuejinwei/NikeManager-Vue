@@ -13,8 +13,9 @@
     </p>
     <!-- 排课 编辑菜单 -->
     <el-menu v-if=" data.isSelected&& (state =='schedule'|| state=='edit')"
-      @select="handleSelect"
-      menu-trigger="click"
+      @select="handleSelect(data)"
+      menu-trigger="hover "
+      @open = "handleOpen(data)"
       class="el-menu-demo" mode="horizontal" >
       <el-submenu :index ="state" >
         <template slot="title">
@@ -63,9 +64,9 @@
     <!-- <el-cascader-panel v-if=" data.isSelected&& state =='checkAttend'" options="options"></el-cascader-panel> -->
     <el-menu v-if=" data.isSelected&& state =='checkAttend'"
       @select="handleSelect"
-      menu-trigger="click"
+      menu-trigger="hover "
       mode="horizontal"
-      @open = "handleOpen">
+      @open = "handleOpen(data)">
       <el-submenu :index ="state">
         <template slot="title">
           {{state}}
@@ -142,7 +143,6 @@ export default {
   name: 'Schedule',
   data() {
     return {
-    defaultOpensIndexSet : new Set(['checkAttend']),
     coachList : ['杜教练', '赵教练', '熊教练', '林教练', '韩教练' ],
     courseList : ['3-4岁兴趣班', '4-6岁初级足球班', '5-6岁初级篮球班'],
     teamList : ['Team-01', 'Team-02', 'Team-03'],
@@ -175,44 +175,49 @@ export default {
     }
   },
   methods: {
-  handleOpen(index){
-    this.defaultOpensIndexSet.add(index)
-    console.log(this.defaultOpensIndexSet)
-  },
-  handleAttend(index, row, e){
-    if (e) {
-      e.stopPropagation()
-    }
-    this.tableData[index]['Attend'] = 'attend'
-  },
-  handleAbsent(index, row, e){
-    if (e) {
-      e.stopPropagation()
-    }
-    this.tableData[index]['Attend'] = 'absent'
-  },
-  handleEdit(index, row) {
-    console.log(index, row);
-  },
-  handleSelect(index,indexPath){
-    console.log(index,indexPath)
-  },
+    handleOpen(index,data){
+      console.log("open"+ index + data)
+    },
+    handleAttend(index, row, e){
+      if (e) {
+        e.stopPropagation()
+      }
+      this.tableData[index]['Attend'] = 'attend'
+    },
+    handleAbsent(index, row, e){
+      if (e) {
+        e.stopPropagation()
+      }
+      this.tableData[index]['Attend'] = 'absent'
+    },
+    handleEdit(index, row) {
+      console.log(index, row);
+    },
+    handleSelect(index,indexPath,data){
+      console.log(index,indexPath,data)
+    },
     buttonClick(key){
-    for(let index in this.buttonType){
-      if(index != key && this.buttonType[index] == 'success'){
-        this.buttonType[index] = 'info'
+      
+      for(let index in this.buttonType){
+        if(index != key && this.buttonType[index] == 'success'){
+          this.buttonType[index] = 'info'
+        }
+      }
+      this.buttonType[key]=(this.buttonType[key] == 'info')?'success':'info'
+      if( this.buttonType[key] == 'success'){
+        this.state = key
+      }
+      else{
+        this.state = 'lookup'
+        this.showMenu = false
       }
     }
-    this.buttonType[key]=(this.buttonType[key] == 'info')?'success':'info'
-    if( this.buttonType[key] == 'success'){
-      this.state = key
+  },
+  created:function(){
+      // this.$http.get('/',false).then((result) =>{
+      //   console.log(result)
+      // })
     }
-    else{
-      this.state = 'lookup'
-      this.showMenu = false
-    }
-    },
-  }
 }
 </script>
 <style lang="scss">
