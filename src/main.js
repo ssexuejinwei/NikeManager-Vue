@@ -4,8 +4,12 @@ import router from './router'
 import store from './store'
 import './plugins/element.js'
 import http from './http/http'
-// axios 拦截器
+import axios from 'axios' 
 import './http/axios'
+Vue.prototype.$axios = axios; 
+axios.defaults.baseURL = '/api'
+// axios 拦截器
+
 Vue.config.productionTip = false
 Vue.prototype.$http = http;
 new Vue({

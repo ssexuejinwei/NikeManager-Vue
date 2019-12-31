@@ -46,6 +46,7 @@ export default {
   methods: {
     submit(e) {
       e.preventDefault();
+      // console.log(this.loading,this.error)
       this.$store.dispatch('user/login', this.form).then(() => {
         // redirect to /
       })

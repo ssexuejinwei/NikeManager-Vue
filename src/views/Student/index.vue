@@ -85,29 +85,37 @@
 
   <!-- Form -->
   <el-dialog title="基本信息" :visible.sync="outerVisible ">
-    <el-form :model="studentForm">
-      <el-form-item label="姓名" :label-width="formLabelWidth">
+    <el-form :model="studentForm" :rules="rules" >
+      <el-form-item label="姓名" prop="name" :label-width="formLabelWidth">
         <el-input v-model="studentForm.name" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="性别" :label-width="formLabelWidth">
-        <el-input v-model="studentForm.sex" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item label="生日" :label-width="formLabelWidth" placeholder="2019-12-12">
-        <el-input v-model="studentForm.birth" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item label="身高(cm)" :label-width="formLabelWidth">
+      <el-form-item label="性别" prop="sex" :label-width="formLabelWidth">
+          <el-radio-group v-model="studentForm.sex" >
+            <el-radio label="男"></el-radio>
+            <el-radio label="女"></el-radio>
+          </el-radio-group>
+       </el-form-item>
+       <el-form-item label="生日" prop="birth" :label-width="formLabelWidth">
+          <el-col :span="11">
+               <el-date-picker type="date" 
+               placeholder="选择日期"
+                v-model="studentForm.birth" 
+                style="width: 100%;"></el-date-picker>
+             </el-col>
+       </el-form-item>
+      <el-form-item label="身高(cm)" prop="height" :label-width="formLabelWidth">
         <el-input v-model="studentForm.height" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="体重(kg)" :label-width="formLabelWidth">
+      <el-form-item label="体重(kg)" prop="weight" :label-width="formLabelWidth">
         <el-input v-model="studentForm.weight" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="联系方式" :label-width="formLabelWidth">
-        <el-input v-model="studentForm.contact" autocomplete="off"></el-input>
+      <el-form-item label="联系方式" prop="tel" :label-width="formLabelWidth">
+        <el-input v-model="studentForm.tel" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="积分" :label-width="formLabelWidth">
+      <el-form-item label="积分" prop="points" :label-width="formLabelWidth">
         <el-input v-model="studentForm.points" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="家长微信open ID" :label-width="formLabelWidth">
+      <el-form-item label="家长微信open ID" prop="wechat" :label-width="formLabelWidth">
         <el-input v-model="studentForm.wechat" autocomplete="off"></el-input>
       </el-form-item>
     </el-form>
@@ -185,68 +193,123 @@
 </template>
 
 <script>
+  import qs from 'qs'
+
   export default {
     name:"StudentEntry",
       data() {
+        //电话号码验证规则
+        var checkPhone = (rule, value, callback) => {
+            const phoneReg = /^1[3|4|5|7|8][0-9]{9}$/
+            if (!value) {
+              return callback(new Error('电话号码不能为空'))
+            }
+            setTimeout(() => {
+              // Number.isInteger是es6验证数字是否为整数的方法,实际输入的数字总是识别成字符串
+              // 所以在前面加了一个+实现隐式转换
+         
+              if (!Number.isInteger(+value)) {
+                callback(new Error('请输入数字值'))
+              } else {
+                if (phoneReg.test(value)) {
+                  callback()
+                } else {
+                  callback(new Error('电话号码格式不正确'))
+                }
+              }
+            }, 100)
+          }
         return {
-        physicalTrainingRadio:0,
-        ballTrainingRadio: 0,
-        ballChoiceRadio: 0,
-        inputTeammateName:'',
-        activeIndexAge:'1',
-        activeIndexType:'1',
-        activeIndexTeam:'1',
-        outerVisible : false,
-        innerVisible : false,
-        tempVisible: false,
-        studentForm: {
-        name: '',
-        sex: '',
-        birth: '',
-        height: '',
-        weight: '',
-        contact : '',
-        points: '',   //积分
-        wechat: ''   //家长微信openID
-        },
-        formLabelWidth: '120px',
-        menuAge:{
-        '1':'3-4岁',
-        '2':'4-5岁',
-        '3':'5-6岁'
-        },
-        tableData:[
-        {
-        "student":"林一",
-        "add" : false
-        },
-        {
-        "student":"林二",
-        "add": false
-        },
-        {
-        "student":"李别",
-        "add": false
-        },
-        {
-        "student":"王小利",
-        "add": false
-        },
-        {
-        "student":"时小某",
-        "add" : false
-        },
-        {
-        "student":"李别",
-        "add" : false
-        },
-        {
-        "student":"王小利",
-        "add" : false
-        }],
-        borderBottom : 'borderBottom',
-        leftMenu : 'leftMenu'
-        }
+          physicalTrainingRadio:0,
+          ballTrainingRadio: 0,
+          ballChoiceRadio: 0,
+          inputTeammateName:'',
+          activeIndexAge:'1',
+          activeIndexType:'1',
+          activeIndexTeam:'1',
+          outerVisible : false,
+          innerVisible : false,
+          tempVisible: false,
+          studentForm: {
+            name: '徐厚',
+            sex: 0,
+            birth: '',
+            height: '134',
+            weight: '34',
+            tel : '18714234876',
+            points: '123',   //积分
+            wechat: 'www11'   //家长微信openID
+          },
+          formLabelWidth: '140px',
+          menuAge:{
+          '1':'3-4岁',
+          '2':'4-5岁',
+          '3':'5-6岁'
+          },
+          tableData:[
+            {
+            "student":"林一",
+            "add" : false
+            },
+            {
+            "student":"林二",
+            "add": false
+            },
+            {
+            "student":"李别",
+            "add": false
+            },
+            {
+            "student":"王小利",
+            "add": false
+            },
+            {
+            "student":"时小某",
+            "add" : false
+            },
+            {
+            "student":"李别",
+            "add" : false
+            },
+            {
+            "student":"王小利",
+            "add" : false
+          }],
+          borderBottom : 'borderBottom',
+          leftMenu : 'leftMenu',
+          rules : {
+            name:[
+              {required:true, message:'请输入姓名', trigger:'blur'},
+              { min: 2, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+            ],
+            sex:[
+              { required: true, message: '请填写身高', trigger: 'blur' }
+            ],
+            birth:[
+              { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
+            ],
+            height: [
+              { required: true, message: '请填写身高', trigger: 'blur' },
+              { type: 'number', message: '身高必须为数字值'}
+            ],
+            weight: [
+              { required: true, message: '请填写体重', trigger: 'blur' },
+              { type: 'number', message: '体重必须为数字值'}
+            ],
+            tel: [
+              { required: true, message: '请填写联系方式', trigger: 'blur' },
+              { validator: checkPhone, trigger: 'blur' }
+            ],
+            points: [
+              { required: true, message: '请填写积分', trigger: 'blur' },
+              { type: 'number', message: '积分必须为数字值'}
+            ],
+            wechat: [
+              { required: true, message: '请填写微信', trigger: 'blur' }
+            ],
+            
+          }
+         }
         },
       methods: {
         handleAddTemp(index, row){
@@ -266,22 +329,50 @@
         finish(){
           this.innerVisible = false
           this.outerVisible = false
-          // var student = this.studentForm
-          // var data = {
-          //   name : student.name,
-          //   sex : student.sex == "男"?0:1,
-          //   birthday : student.birth,
-          //   height : parseInt(student.height),
-          //   weight : parseInt(student.weight),
-          //   tel : student.contact,
-          //   score : parseInt(student.points),
-          //   physical_training : this.ballTrainingRadio,
-          //   ballTraining : this.ballChoiceRadio,
-          //   mateName : this.inputTeammateName
-          // }
-          // this.$http.post('/sellerctr/addStudent',data,false).then((result) =>{
-          //   console.log(result)
+          var student = this.studentForm
+          var data = {
+            name : student.name,
+            sex : student.sex == "男"?0:1,
+            birthday : student.birth,
+            height : parseInt(student.height),
+            weight : parseInt(student.weight),
+            tel : student.contact,
+            score : parseInt(student.points),
+            physical_trainin : this.ballTrainingRadio,
+            ball_training : this.ballChoiceRadio,
+            choose_sports : this.ballChoiceRadio,
+            mateName : this.inputTeammateName
+          }
+          console.log(data)
+          // this.$axios.post()
+          // /sellerctr/getTeam
+          // this.$axios.get('/sellerctr/getTeam').then(response =>{
+          //   console.log(response)
           // })
+          let token ="a1f6lJiUatGyCOU1hIWdlRBpH9uyuLQgPvHKCLy2"
+          var loginInfo = {
+                                user_name:'test123',
+                                psw:'test123',
+                              }
+          // this.$axios.post('http://124.251.4.221/course/public/index.php/index/sellerctr/login',
+          //  qs.stringify(loginInfo), {
+          //   headers: {
+          //     'Content-Type': 'application/x-www-form-urlencoded',
+          //   }
+          // }).then((response) => {
+          //   console.log(response)
+          // })
+          // this.$axios.post('http://124.251.4.221/course/public/index.php/index/sellerctr/addStudent',
+          //  qs.stringify(data), {
+          //   headers: {
+          //     'Content-Type': 'application/x-www-form-urlencoded',
+          //     'token' :'a5abOIgimFcFOHSyV/69/hj0MA8O1+TrvkubCwNY'
+          //   }
+          // }).then((response) => {
+          //   console.log(response)
+          // })
+          
+          
           this.$alert('<div class="teamSuccess"><h1 class="teamSuccessHead">分配成功 </h1><p class="teamSuccessContent">王某某小朋友</p><p>被分配至Team-02</p>', '', {
                     dangerouslyUseHTMLString: true
                   });
