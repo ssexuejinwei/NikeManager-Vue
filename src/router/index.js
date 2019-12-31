@@ -3,11 +3,16 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 Vue.use(VueRouter)
 
+/** @type {import('vue-router').RouteConfig[]} */
 const routes = [
   {
     path: '/',
     name: 'home',
     component: Home
+  },
+  {
+    path: '/auth',
+    component: () => import('@/views/Auth/index'),
   },
   {
     path: '/Student',
