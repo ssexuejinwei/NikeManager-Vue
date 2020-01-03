@@ -253,12 +253,12 @@
           innerVisible : false,
           tempVisible: false,
           studentForm: {
-            name: '叶问',
-            sex: '男',
+            name: '',
+            sex: '',
             birth: '',
-            height: '134',
-            weight: '34',
-            tel : '18314785647'
+            height: '',
+            weight: '',
+            tel : ''
             // points: '123',   //积分
             // wechat: 'www11'   //家长微信openID
           },
@@ -266,35 +266,7 @@
           menuAge:['3-4岁','4-5岁','5-6岁'],
           menuType:['篮球','足球'],
           menuTeam:['team-01','team-02','team-03'],
-          tableData:[
-            {
-            "student":"林一",
-            "add" : false
-            },
-            {
-            "student":"林二",
-            "add": false
-            },
-            {
-            "student":"李别",
-            "add": false
-            },
-            {
-            "student":"王小利",
-            "add": false
-            },
-            {
-            "student":"时小某",
-            "add" : false
-            },
-            {
-            "student":"李别",
-            "add" : false
-            },
-            {
-            "student":"王小利",
-            "add" : false
-          }],
+          tableData:[],
           borderBottom : 'borderBottom',
           leftMenu : 'leftMenu',
           rules : {
@@ -333,7 +305,7 @@
       watch: {
         activeIndexTeam(newValue, oldValue) {
           let isHave = false
-          for(let info in this.infoArray){
+          for(let info of this.infoArray){
             if( info['ageKey']== this.activeIndexAge && info['type'] == this.activeIndexType && info['teamName'] == this.activeIndexTeam){
                 this.tableData = info['tableData']
                 isHave = true
@@ -358,9 +330,11 @@
                   }
                 }
               }
+              this.menuTeam = this.menuTeam.sort()
               this.activeIndexTeam = this.menuTeam[0]
               break;
             case 'getStudent':
+              this.infoArray = []
               let api_1 = 'sellerctr/getTeam'
               this.menuTeam =[] // 初始化team数组
               this.$axios.get(api_1).then((response) => {
@@ -407,7 +381,7 @@
                 }
                })
                break;
-            case 'addNew':
+            case 'addStudent':
               // let url = 'http://124.251.4.221/course/public/index.php/index'
               let api = '/sellerctr/addStudent'
               let student = this.studentForm
@@ -460,7 +434,8 @@
         finish(){
           this.innerVisible = false
           this.outerVisible = false
-          this.update('addNew')
+          this.update('addStudent')
+          this.update('getStudent')
         },
         addTemporaryStudent(){
           alert("add fail")
