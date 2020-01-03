@@ -8,12 +8,17 @@
     <el-aside style="width: 13.5rem;">
         <el-menu
         :default-active="activeIndexAge"
-        @select="handleSelectAge"
+        @select="handleSelect"
         active-text-color="#ffffff"
         align="center"
         :class='leftMenu'
         style="height:10.4375rem;">
-        <el-menu-item index="1" class="borderBottom">
+        <template v-for="ageData in menuAge">
+          <el-menu-item :index="ageData" :key="ageData">
+              {{ageData}}
+          </el-menu-item>
+        </template>
+        <!-- <el-menu-item index="1" class="borderBottom">
           <template slot="title">3-4岁</template>
         </el-menu-item>
           <el-menu-item class="borderBottom" index="2" >
@@ -21,29 +26,39 @@
         </el-menu-item>
           <el-menu-item  index="3">
           <template slot="title">5-6岁</template>
-        </el-menu-item>
+        </el-menu-item> -->
           </el-menu>
       <br>
         <el-menu active-text-color="#ffffff"
         :class='leftMenu'
         :default-active="activeIndexType"
-        @select="handleSelectType"
+        @select="handleSelect"
         style="height:7rem;">
-        <el-menu-item index="1" :class="borderBottom">
+        <template v-for="typeData in menuType">
+          <el-menu-item :index="typeData" :key="typeData">
+              {{typeData}}
+          </el-menu-item>
+        </template>
+        <!-- <el-menu-item index="1" :class="borderBottom">
           <template slot="title">篮球</template>
         </el-menu-item>
           <el-menu-item index="2">
           <template slot="title">足球</template>
-        </el-menu-item>
+        </el-menu-item> -->
           </el-menu>
       </el-aside>
     <el-aside width="200px" style="height: 37.5rem; border:solid #000000;">
       <el-menu active-text-color="#ffffff"
       :default-active="activeIndexTeam"
-      @select="handleSelectTeam"
+      @select="handleSelect"
       align="center"
-      style="height: 10.4375rem; border-bottom:solid #000000;">
-        <el-menu-item index="1" :class = "borderBottom">
+      style="height: 10.4375rem;">
+      <template v-for="teamData in menuTeam">
+        <el-menu-item :index="teamData" :key="teamData" :class="teamClass(teamData)">
+            {{teamData}}
+        </el-menu-item>
+      </template>
+        <!-- <el-menu-item index="1" :class = "borderBottom">
           <template slot="title">Team-01</template>
         </el-menu-item>
         <el-menu-item index="2" :class = "borderBottom">
@@ -51,15 +66,18 @@
         </el-menu-item>
         <el-menu-item index="3" >
           <template slot="title">Team-03</template>
-        </el-menu-item>
+        </el-menu-item> -->
       </el-menu>
     </el-aside>
 
     <el-container style="height: 37.5rem; border: solid #000000;border-left: 0;">
 
       <el-main style="padding: 0; !important;" width="80%">
-        <el-table :data="tableData"
-		  class="studentTable"
+        <el-table 
+          v-loading="loading"
+          element-loading-text="拼命加载中"
+          :data="tableData"
+          class="studentTable"
           :border="true">
           <el-table-column prop="student"
           label="学员名单"
@@ -100,6 +118,8 @@
                <el-date-picker type="date" 
                placeholder="选择日期"
                 v-model="studentForm.birth" 
+                format="yyyy 年 MM 月 dd 日"
+                value-format="yyyy-MM-dd"
                 style="width: 100%;"></el-date-picker>
              </el-col>
        </el-form-item>
@@ -112,12 +132,12 @@
       <el-form-item label="联系方式" prop="tel" :label-width="formLabelWidth">
         <el-input v-model="studentForm.tel" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="积分" prop="points" :label-width="formLabelWidth">
+<!--      <el-form-item label="积分" prop="points" :label-width="formLabelWidth">
         <el-input v-model="studentForm.points" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item label="家长微信open ID" prop="wechat" :label-width="formLabelWidth">
+      </el-form-item> -->
+<!--      <el-form-item label="家长微信open ID" prop="wechat" :label-width="formLabelWidth">
         <el-input v-model="studentForm.wechat" autocomplete="off"></el-input>
-      </el-form-item>
+      </el-form-item> -->
     </el-form>
 	
     <el-dialog
@@ -220,32 +240,32 @@
             }, 100)
           }
         return {
+          infoArray : [], //为每一个学生相关的数据对象
+          loading : false,
           physicalTrainingRadio:0,
           ballTrainingRadio: 0,
           ballChoiceRadio: 0,
           inputTeammateName:'',
-          activeIndexAge:'1',
-          activeIndexType:'1',
-          activeIndexTeam:'1',
+          activeIndexAge:'3-4岁',
+          activeIndexType:'篮球',
+          activeIndexTeam:'team-01',
           outerVisible : false,
           innerVisible : false,
           tempVisible: false,
           studentForm: {
-            name: '徐厚',
-            sex: 0,
+            name: '叶问',
+            sex: '男',
             birth: '',
             height: '134',
             weight: '34',
-            tel : '18714234876',
-            points: '123',   //积分
-            wechat: 'www11'   //家长微信openID
+            tel : '18314785647'
+            // points: '123',   //积分
+            // wechat: 'www11'   //家长微信openID
           },
           formLabelWidth: '140px',
-          menuAge:{
-          '1':'3-4岁',
-          '2':'4-5岁',
-          '3':'5-6岁'
-          },
+          menuAge:['3-4岁','4-5岁','5-6岁'],
+          menuType:['篮球','足球'],
+          menuTeam:['team-01','team-02','team-03'],
           tableData:[
             {
             "student":"林一",
@@ -285,12 +305,12 @@
             sex:[
               { required: true, message: '请填写身高', trigger: 'blur' }
             ],
-            birth:[
-              { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
-            ],
             height: [
               { required: true, message: '请填写身高', trigger: 'blur' },
               { type: 'number', message: '身高必须为数字值'}
+            ],
+            birth:[
+               {required: true, message: '请选择日期', trigger: 'change' }
             ],
             weight: [
               { required: true, message: '请填写体重', trigger: 'blur' },
@@ -303,15 +323,126 @@
             points: [
               { required: true, message: '请填写积分', trigger: 'blur' },
               { type: 'number', message: '积分必须为数字值'}
-            ],
-            wechat: [
-              { required: true, message: '请填写微信', trigger: 'blur' }
-            ],
-            
+            ]
           }
          }
         },
+      created() {
+        this.update('getStudent')
+      },
+      watch: {
+        activeIndexTeam(newValue, oldValue) {
+          let isHave = false
+          for(let info in this.infoArray){
+            if( info['ageKey']== this.activeIndexAge && info['type'] == this.activeIndexType && info['teamName'] == this.activeIndexTeam){
+                this.tableData = info['tableData']
+                isHave = true
+            }
+          }
+          if(!isHave){
+            this.tableData=[]
+          }
+        }
+      },
       methods: {
+        update(type){
+          let token ="53edC0rPUOuC3yxXKzyKrJBvpi5YJTOjlc0Gpccv"
+          switch (type){
+            case'readStudent':
+              this.menuTeam =[] // 初始化team数组
+              for(let info of this.infoArray){
+                if( info['ageKey'] == this.activeIndexAge && info['type'] == this.activeIndexType ){
+                  this.menuTeam.push(info['teamName'])
+                  if(info['teamName'] == this.menuTeam[0]){
+                    this.tableData = info['tableData']
+                  }
+                }
+              }
+              this.activeIndexTeam = this.menuTeam[0]
+              break;
+            case 'getStudent':
+              let api_1 = 'sellerctr/getTeam'
+              this.menuTeam =[] // 初始化team数组
+              this.$axios.get(api_1).then((response) => {
+                // console.log(response)
+                let dataArray = response['data']['data']
+                // let teamObj = {'3-4岁':[],'4-5岁':[],'5-6岁':[]}
+                //遍历team数组
+                let i = 0
+                for (let data of dataArray){
+                  let id = data['id']
+                  let age_min = data['age_min']
+                  let age_max = data['age_max']
+                  let name = data['name']
+                  let choose_sports = data['choose_sports'] =='0'?'篮球':'足球'
+                  let ageKey = age_min+'-'+age_max+'岁'
+                  //初始化team 数组
+                  if( ageKey== this.activeIndexAge && choose_sports == this.activeIndexType){
+                    this.menuTeam.push(name)
+                  }
+                  this.activeIndexTeam = this.menuTeam[0]
+                  //get 具体成员
+                  let api_2 = '/sellerctr/getStudentsByTeamId?id=' + id
+                  this.$axios.get(api_2).then((response) => {
+                      i++
+                      let studentArray = response['data']['data']
+                      let tableData = []
+                      for(let student of studentArray){
+                        let stuObj = {'student' : student['name'],'add':false}
+                        tableData.push(stuObj)
+                      }
+                      //封装相同岁数相同类型的数据
+                      let obj ={
+                        teamID : id,
+                        ageKey : ageKey,
+                        teamName : name,
+                        type : choose_sports,
+                        tableData : tableData
+                      }
+                      if( obj['ageKey'] == this.activeIndexAge && obj['type'] == this.activeIndexType &&obj['teamName'] == this.activeIndexTeam){
+                        this.tableData = obj['tableData']
+                      }
+                      this.infoArray.push(obj)
+                    })//api-2请求完成
+                }
+               })
+               break;
+            case 'addNew':
+              // let url = 'http://124.251.4.221/course/public/index.php/index'
+              let api = '/sellerctr/addStudent'
+              let student = this.studentForm
+              let teamName = ''
+              var data = {
+                name : student.name,
+                sex : student.sex == "男"?0:1,
+                birthday : student.birth,
+                height : parseInt(student.height),
+                weight : parseInt(student.weight),
+                tel : student.tel,
+                physical_training : this.ballTrainingRadio,
+                ball_training : this.ballChoiceRadio,
+                choose_sports : this.ballChoiceRadio,
+                mateName : this.inputTeammateName
+              }
+              
+              this.$axios.post(api,
+               qs.stringify(data), {
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                  'token' :token
+                }
+              }).then((response) => {
+                teamName = response['data']['data']['team_name']
+                this.$alert('<div class="teamSuccess"><h1 class="teamSuccessHead">分配成功 </h1><p class="teamSuccessContent">'+student.name+'小朋友</p><p>被分配至'+teamName+'</p>', '', {
+                          dangerouslyUseHTMLString: true
+                        });
+              })
+              break;
+            default:
+              break;
+          }
+          
+        },
         handleAddTemp(index, row){
           console.log(this.tableData[index]['student'],row)
           this.$alert('添加成功', {
@@ -329,65 +460,35 @@
         finish(){
           this.innerVisible = false
           this.outerVisible = false
-          var student = this.studentForm
-          var data = {
-            name : student.name,
-            sex : student.sex == "男"?0:1,
-            birthday : student.birth,
-            height : parseInt(student.height),
-            weight : parseInt(student.weight),
-            tel : student.contact,
-            score : parseInt(student.points),
-            physical_trainin : this.ballTrainingRadio,
-            ball_training : this.ballChoiceRadio,
-            choose_sports : this.ballChoiceRadio,
-            mateName : this.inputTeammateName
-          }
-          console.log(data)
-          // this.$axios.post()
-          // /sellerctr/getTeam
-          // this.$axios.get('/sellerctr/getTeam').then(response =>{
-          //   console.log(response)
-          // })
-          let token ="a1f6lJiUatGyCOU1hIWdlRBpH9uyuLQgPvHKCLy2"
-          var loginInfo = {
-                                user_name:'test123',
-                                psw:'test123',
-                              }
-          // this.$axios.post('http://124.251.4.221/course/public/index.php/index/sellerctr/login',
-          //  qs.stringify(loginInfo), {
-          //   headers: {
-          //     'Content-Type': 'application/x-www-form-urlencoded',
-          //   }
-          // }).then((response) => {
-          //   console.log(response)
-          // })
-          // this.$axios.post('http://124.251.4.221/course/public/index.php/index/sellerctr/addStudent',
-          //  qs.stringify(data), {
-          //   headers: {
-          //     'Content-Type': 'application/x-www-form-urlencoded',
-          //     'token' :'a5abOIgimFcFOHSyV/69/hj0MA8O1+TrvkubCwNY'
-          //   }
-          // }).then((response) => {
-          //   console.log(response)
-          // })
-          
-          
-          this.$alert('<div class="teamSuccess"><h1 class="teamSuccessHead">分配成功 </h1><p class="teamSuccessContent">王某某小朋友</p><p>被分配至Team-02</p>', '', {
-                    dangerouslyUseHTMLString: true
-                  });
+          this.update('addNew')
         },
         addTemporaryStudent(){
           alert("add fail")
         },
-        handleSelectAge(key) {
-         this.activeIndexAge = key;
+        
+        handleSelect(key){
+          if(key.indexOf('team')!=-1){
+            this.activeIndexTeam = key
+          }
+          else if(key.indexOf('岁')!=-1){
+            this.activeIndexAge = key
+            this.update('readStudent')
+          }
+          else{
+            this.activeIndexType = key
+            this.update('readStudent')
+          }
+         
+          
+         
         },
-        handleSelectType(key) {
-         this.activeIndexType = key;
-        },
-        handleSelectTeam(key) {
-         this.activeIndexTeam = key;
+        teamClass(index){
+          if(index == this.menuTeam[this.menuTeam.length -1]){
+            return 'borderBottom'
+          }
+          else{
+            return ''
+          }
         }
       }
       
