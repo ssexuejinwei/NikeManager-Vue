@@ -9,8 +9,10 @@
           action="#"
           list-type="picture-card"
           accept="image/*"
-          :auto-upload="false"
-          :on-remove="handleRemove"
+          :limit="3"
+          :http-request="handleUpload"
+          :on-success="handleUploadSuccess"
+          :on-change="handleUploadChange"
         >
           <i class="el-icon-plus"></i>
         </el-upload>
@@ -53,6 +55,8 @@
 </template>
 
 <script>
+import Axios from 'axios'
+
 export default {
   data() {
     return {
@@ -62,11 +66,31 @@ export default {
         date1: null,
         date2: null,
         information: ''
-      }
+      },
+      fileList: []
     }
   },
   methods: {
-    handleRemove() {}
+    handleUpload(param) {
+      const file = param.file
+
+      const formData = new FormData()
+      formData.append('image_url', file)
+
+      return Axios.post('/sellerctr/save', formData, {
+        onUploadProgress: param.onProgress
+      })
+    },
+    handleUploadSuccess(res, rawFile) {
+      if (res?.data?.data?.fileName) {
+        rawFile.url = process.env.VUE_APP_UPLOAD_PUBLIC_URL + res?.data?.data?.fileName
+      }
+    },
+    handleUploadChange(file, fileList) {
+      this.fileList = fileList
+    },
+
+    onSubmit() {}
   }
 }
 </script>
