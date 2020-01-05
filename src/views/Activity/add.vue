@@ -18,6 +18,9 @@
       <el-form-item label="活动人数" required>
         <el-input v-model="form.capacity"></el-input>
       </el-form-item>
+      <el-form-item label="报名积分" required>
+        <el-input v-model="form.score"></el-input>
+      </el-form-item>
       <el-form-item label="报名时间" required>
         <el-date-picker
           v-model="form.date1"
@@ -43,6 +46,7 @@
       </el-form-item>
       <el-form-item size="large">
         <el-button type="primary" @click="onSubmit">上传活动</el-button>
+        <el-button @click="onSubmit">保存到未上架</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -54,6 +58,7 @@ export default {
     return {
       form: {
         capacity: 0,
+        score: 0,
         date1: null,
         date2: null,
         information: ''

@@ -3,23 +3,39 @@
     <header>
       <h1>全店活动</h1>
     </header>
-    <div class="list">
-      <a-card
-        class="list-item"
-        v-for="(activity, id) in activities"
-        :key="id"
-        :start="activity.start"
-        :end="activity.end"
-        :count="activity.count"
-        :capacity="activity.capacity"
-        :status="activity.status"
-        :img="activity.img"
-      />
-      <router-link class="list-item" to="/activity/add">
-        <a-card-add />
-      </router-link>
-      <!--占位-->
-      <i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i />
+    <div class="content">
+      <el-menu>
+        <el-menu-item index="0">
+          <span slot="title">全部活动</span>
+        </el-menu-item>
+        <el-menu-item index="1">
+          <span slot="title">进行中</span>
+        </el-menu-item>
+        <el-menu-item index="2">
+          <span slot="title">已结束</span>
+        </el-menu-item>
+        <el-menu-item index="2">
+          <span slot="title">未上架</span>
+        </el-menu-item>
+      </el-menu>
+      <div class="list">
+        <a-card
+          class="list-item"
+          v-for="(activity, id) in activities"
+          :key="id"
+          :start="activity.start"
+          :end="activity.end"
+          :count="activity.count"
+          :capacity="activity.capacity"
+          :status="activity.status"
+          :img="activity.img"
+        />
+        <router-link class="list-item" to="/activity/add">
+          <a-card-add />
+        </router-link>
+        <!--占位-->
+        <i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i />
+      </div>
     </div>
   </div>
 </template>
@@ -51,6 +67,10 @@ export default {
 
 <style lang="scss" scoped>
 @import './common';
+
+.content {
+  display: flex;
+}
 
 .list {
   $gap: 1rem;
