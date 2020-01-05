@@ -38,26 +38,23 @@
 </template>
 
 <script>
-import _ from 'lodash'
+import Axios from 'axios'
+// import _ from 'lodash'
 import { format } from 'date-fns'
-
-const mock = () => ({
-  id: (Math.random() * 1000000).toFixed(0),
-  created: Date.now(),
-  score: 3600,
-  address: '上海xxxx',
-  express_number: '1243432',
-  state: _.sample(['complete', 'pending'])
-})
 
 export default {
   data() {
     return {
-      data: Array.from({ length: 10 }).map(() => mock()),
+      data: [],
       // 分页
       current: 1,
       pageSize: 5,
+
+      isLoading: false
     }
+  },
+  created() {
+    this.getOrders()
   },
   computed: {
     total() {
@@ -71,6 +68,40 @@ export default {
   methods: {
     format(date) {
       return format(date, 'yyyy.MM.dd HH:mm:ss')
+    },
+
+    async getOrders() {
+      this.isLoading = true
+      try {
+        const { data } = await Axios.get('/sellerctr/getOrder', {
+          params: {
+            cur_page: this.current,
+            page_size: this.pageSize,
+            state: '',
+          }
+        })
+
+        console.log(data)
+
+        data.data.forEach(d => {
+          d.address = JSON.parse(d.address)
+          if (d.address) {
+            d.address.address = JSON.parse(d.address.address)
+          }
+        })
+
+        this.data = data.data.map(d => ({
+          id: d.id,
+          created: new Date(d.create_time),
+          score: d.score,
+          address: [d.address?.address?.region?.label, d.address?.name, d.address?.tel].join(' '),
+          express_number: d.express_number
+        }))
+      } catch(e) {
+        console.error(e)
+      } finally {
+        this.isLoading = false
+      }
     }
   }
 }

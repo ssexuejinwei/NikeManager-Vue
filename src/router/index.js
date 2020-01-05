@@ -1,53 +1,75 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
+
+import store from '../store'
+
 Vue.use(VueRouter)
+
+const ifNotAuthenticated = (to, from, next) => {
+  if (!store.getters['user/isLogin']) {
+    next()
+    return
+  }
+  next('/')
+}
+
+const ifAuthenticated = (to, from, next) => {
+  if (store.getters['user/isLogin']) {
+    next()
+    return
+  }
+  next('/auth')
+}
 
 /** @type {import('vue-router').RouteConfig[]} */
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: Home
+    component: Home,
+    beforeEnter: ifAuthenticated,
   },
   {
     path: '/auth',
     component: () => import('@/views/Auth/index'),
+    beforeEnter: ifNotAuthenticated
   },
   {
     path: '/Student',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import('@/views/Student/index')
+    component: () => import('@/views/Student/index'),
+    beforeEnter: ifAuthenticated,
   },
   {
     path: '/Schedule',
     name: 'Schedule',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import('@/views/Schedule/index')
+    component: () => import('@/views/Schedule/index'),
+    beforeEnter: ifAuthenticated,
   },
   {
     path: '/activity',
-    component: () => import('@/views/Activity/index')
+    component: () => import('@/views/Activity/index'),
+    beforeEnter: ifAuthenticated,
   },
   {
     path: '/activity/add',
-    component: () => import('@/views/Activity/add')
+    component: () => import('@/views/Activity/add'),
+    beforeEnter: ifAuthenticated,
   },
   {
     path: '/product',
-    component: () => import('@/views/Product/index')
+    component: () => import('@/views/Product/index'),
+    beforeEnter: ifAuthenticated,
   },
   {
     path: '/product/add',
-    component: () => import('@/views/Product/add')
+    component: () => import('@/views/Product/add'),
+    beforeEnter: ifAuthenticated,
   },
   {
     path: '/order',
     component: () => import('@/views/Order/_layout'),
+    beforeEnter: ifAuthenticated,
     children: [
       {
         path: '',

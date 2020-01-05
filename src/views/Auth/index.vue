@@ -48,7 +48,7 @@ export default {
       e.preventDefault();
       // console.log(this.loading,this.error)
       this.$store.dispatch('user/login', this.form).then(() => {
-        // redirect to /
+        this.$router.replace('/')
       })
     }
   }
