@@ -77,6 +77,7 @@
           v-loading="loading"
           element-loading-text="拼命加载中"
           :data="tableData"
+          height="406"
           class="studentTable"
           :border="true">
           <el-table-column prop="student"
@@ -256,11 +257,9 @@
             name: '',
             sex: '',
             birth: '',
-            height: '',
+            height:'',
             weight: '',
-            tel : ''
-            // points: '123',   //积分
-            // wechat: 'www11'   //家长微信openID
+            tel : '18314785647'
           },
           formLabelWidth: '140px',
           menuAge:['3-4岁','4-5岁','5-6岁'],
@@ -278,15 +277,15 @@
               { required: true, message: '请填写身高', trigger: 'blur' }
             ],
             height: [
-              { required: true, message: '请填写身高', trigger: 'blur' },
-              { type: 'number', message: '身高必须为数字值'}
+              { required: true, message: '请填写身高', trigger: 'blur' }
+              // { type: 'number', message: '身高必须为数字值'}
             ],
             birth:[
                {required: true, message: '请选择日期', trigger: 'change' }
             ],
             weight: [
-              { required: true, message: '请填写体重', trigger: 'blur' },
-              { type: 'number', message: '体重必须为数字值'}
+              { required: true, message: '请填写体重', trigger: 'blur' }
+              // { type: 'number', message: '体重必须为数字值'}
             ],
             tel: [
               { required: true, message: '请填写联系方式', trigger: 'blur' },
@@ -407,6 +406,7 @@
                 }
               }).then((response) => {
                 teamName = response['data']['data']['team_name']
+                console.log(teamName)
                 this.$alert('<div class="teamSuccess"><h1 class="teamSuccessHead">分配成功 </h1><p class="teamSuccessContent">'+student.name+'小朋友</p><p>被分配至'+teamName+'</p>', '', {
                           dangerouslyUseHTMLString: true
                         });
