@@ -6,10 +6,14 @@ module.exports = {
         target: 'http://124.251.4.221/course/public/index.php/index/',
         changeOrigin: true,
         pathRewrite: {
-                     '^/api': ''
-                   }
+            '^/api': ''
+          }
         }
+    },
+    overlay: {
+      warnings: true,
+      errors: true
     }
   },
-  lintOnSave: false
+  lintOnSave: false,
 }
