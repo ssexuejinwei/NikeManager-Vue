@@ -44,8 +44,9 @@ export default {
     ...mapState('user', ['loading', 'error'])
   },
   methods: {
-    submit(e) {
+    async submit(e) {
       e.preventDefault();
+      if (!await this.$refs.form.validate()) return
       // console.log(this.loading,this.error)
       this.$store.dispatch('user/login', this.form).then(() => {
         this.$router.replace('/')

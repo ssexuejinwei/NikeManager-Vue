@@ -316,7 +316,6 @@
       },
       methods: {
         update(type){
-          let token ="53edC0rPUOuC3yxXKzyKrJBvpi5YJTOjlc0Gpccv"
           switch (type){
             case'readStudent':
               this.menuTeam =[] // 初始化team数组
@@ -398,13 +397,7 @@
                 mateName : this.inputTeammateName
               }
               
-              this.$axios.post(api,
-               qs.stringify(data), {
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded',
-                  'token' :token
-                }
-              }).then((response) => {
+              this.$axios.post(api, qs.stringify(data)).then((response) => {
                 teamName = response['data']['data']['team_name']
                 console.log(teamName)
                 this.$alert('<div class="teamSuccess"><h1 class="teamSuccessHead">分配成功 </h1><p class="teamSuccessContent">'+student.name+'小朋友</p><p>被分配至'+teamName+'</p>', '', {
