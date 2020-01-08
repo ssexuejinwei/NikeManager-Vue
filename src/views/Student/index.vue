@@ -93,7 +93,7 @@
           </el-row>
           <el-row class= "buttonRow" style = "margin-top: 0.125rem;">
             <el-col :span="4" :offset="10" >
-          <el-button class ="addTemporaryButton" @click = "tempVisible = true" >添加临时学员</el-button>
+          <el-button class ="addTemporaryButton" @click = "addTemporaryStudent" >添加临时学员</el-button>
           </el-col>
           </el-row>
       </el-main>
@@ -186,27 +186,28 @@
           </div>
         </el-dialog>
     <div slot="footer" class="dialog-footer">
-      <el-button class ="addTemporaryButton" @click="innerVisible = true;outerVisible= false " >下一步</el-button>
+      <el-button class ="addTemporaryButton" @click="innerVisible = true;outerVisible= false" >下一步</el-button>
     </div>
 
   </el-dialog>
   <el-dialog title="添加临时成员" :visible.sync = "tempVisible">
-  <el-table :data="tableData">
-      <el-table-column property="student" label="学生" width="150"></el-table-column>
+  <el-table :data="tempTableData">
+      <el-table-column property="student_name" label="学生" width="150"></el-table-column>
       <el-table-column  label="添加" width="200">
       <template slot-scope="scope">
          <el-button
         size="medium "
-        :disabled ="tableData[scope.$index]['add']"
+        :disabled ="tempTableData[scope.$index]['add']"
         @click="handleAddTemp(scope.$index,scope.row)">添加</el-button>
-         <el-button
-        size="medium "
-        type="danger"
-        :disabled ="!tableData[scope.$index]['add']"
-        @click="handleDelTemp(scope.$index, scope.row)">删除</el-button>
        </template>
      </el-table-column>
   </el-table>
+  <el-pagination
+      @current-change="handleCurrentChange"
+      :page-size="page_size"
+      layout="prev, pager, next, jumper"
+      :total="1000">
+    </el-pagination>
   </el-dialog>
 
   </div>
@@ -240,6 +241,9 @@
             }, 100)
           }
         return {
+          cur_page :1,
+          page_size:10,
+          current_teamId : 0,
           infoArray : [], //为每一个学生相关的数据对象
           loading : false,
           physicalTrainingRadio:0,
@@ -265,6 +269,7 @@
           menuType:['篮球','足球'],
           menuTeam:['team-01','team-02','team-03'],
           tableData:[],
+          tempTableData:[],
           borderBottom : 'borderBottom',
           leftMenu : 'leftMenu',
           rules : {
@@ -312,9 +317,44 @@
           if(!isHave){
             this.tableData=[]
           }
+          for(let info of this.infoArray){
+            if(info['teamName'] == this.activeIndexTeam){
+              this.current_teamId = info['teamID']
+              break
+            }
+          }
         }
       },
       methods: {
+        handleCurrentChange(val){
+          this.cur_page = val;
+          this.getTempStudent(this.current_teamId)
+        },
+        getTempStudent(teamId){
+          let api = '/sellerctr/getChangeTemaStudent'
+          let cur_page = this.cur_page
+          let page_size = this.page_size
+          this.tempTableData = []
+          this.$axios.get(api,{
+            params:{
+              cur_page :cur_page,
+              page_size : page_size,
+              team_id : teamId
+            }
+          }).then((response)=>{
+            let list = response['data']['data']
+            for( let student of list){
+              let student_id = student['id']
+              let name = student['name']
+              let obj ={
+                student_id : student_id,
+                student_name : name,
+                add : false
+              }
+              this.tempTableData.push(obj)
+            }
+          })
+        },
         update(type){
           switch (type){
             case'readStudent':
@@ -352,6 +392,9 @@
                     this.menuTeam.push(name)
                   }
                   this.activeIndexTeam = this.menuTeam[0]
+                  if(this.menuTeam.length == 1){
+                    this.current_teamId = id
+                  }
                   //get 具体成员
                   let api_2 = '/sellerctr/getStudentsByTeamId?id=' + id
                   this.$axios.get(api_2).then((response) => {
@@ -368,7 +411,7 @@
                         ageKey : ageKey,
                         teamName : name,
                         type : choose_sports,
-                        tableData : tableData
+                        tableData : tableData,
                       }
                       if( obj['ageKey'] == this.activeIndexAge && obj['type'] == this.activeIndexType &&obj['teamName'] == this.activeIndexTeam){
                         this.tableData = obj['tableData']
@@ -399,10 +442,12 @@
               
               this.$axios.post(api, qs.stringify(data)).then((response) => {
                 teamName = response['data']['data']['team_name']
-                console.log(teamName)
+                // console.log(teamName)
                 this.$alert('<div class="teamSuccess"><h1 class="teamSuccessHead">分配成功 </h1><p class="teamSuccessContent">'+student.name+'小朋友</p><p>被分配至'+teamName+'</p>', '', {
                           dangerouslyUseHTMLString: true
                         });
+              }).catch((error)=>{
+                this.$alert('表单填写错误，添加失败')
               })
               break;
             }
@@ -412,19 +457,35 @@
           
         },
         handleAddTemp(index, row){
-          console.log(this.tableData[index]['student'],row)
-          this.$alert('添加成功', {
-                    confirmButtonText: '确定',
-                })
-          this.tableData[index]['add'] = true
+          let api = '/sellerctr/changeTeam'
+          let team_id= this.current_teamId
+          let data = {
+            team_id : team_id,
+            student_id : this.tempTableData[index]['student_id']
+          }
+          this.$axios.post(api, qs.stringify(data)).then( (response)=>{
+            let code = response['data']['code']
+            let name = ''
+            if( code == 0){
+              let response_teamid = response['data']['data']['team_id']
+              for (let info of this.infoArray){
+                if(info['teamID'] == response_teamid){
+                  name = info['teamName']
+                }
+              }
+              this.$alert('成功添加至'+name, {
+                        confirmButtonText: '确定',
+                    })
+              this.tempTableData[index]['add'] = true
+              this.update('getStudent')
+            }
+            else{
+              this.$alert('添加失败', {
+                        confirmButtonText: '确定',
+                    })
+            }
+          })
         },
-        handleDelTemp(index){
-          this.$alert('删除成功', {
-                    confirmButtonText: '确定',
-                })
-          this.tableData[index]['add'] = false
-        },
-        
         finish(){
           this.innerVisible = false
           this.outerVisible = false
@@ -432,7 +493,10 @@
           this.update('getStudent')
         },
         addTemporaryStudent(){
-          alert("add fail")
+          this.tempVisible = true
+          let teamId= this.current_teamId
+          this.tempTableData = []
+          this.getTempStudent(teamId)
         },
         
         handleSelect(key){
