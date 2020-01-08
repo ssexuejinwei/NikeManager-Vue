@@ -9,14 +9,19 @@
           action="#"
           list-type="picture-card"
           accept="image/*"
-          :auto-upload="false"
-          :on-remove="handleRemove"
+          :limit="3"
+          :http-request="handleUpload"
+          :on-success="handleUploadSuccess"
+          :on-change="handleUploadChange"
         >
           <i class="el-icon-plus"></i>
         </el-upload>
       </el-form-item>
       <el-form-item label="活动人数" required>
         <el-input v-model="form.capacity"></el-input>
+      </el-form-item>
+      <el-form-item label="报名积分" required>
+        <el-input v-model="form.score"></el-input>
       </el-form-item>
       <el-form-item label="报名时间" required>
         <el-date-picker
@@ -43,25 +48,49 @@
       </el-form-item>
       <el-form-item size="large">
         <el-button type="primary" @click="onSubmit">上传活动</el-button>
+        <el-button @click="onSubmit">保存到未上架</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script>
+import Axios from 'axios'
+
 export default {
   data() {
     return {
       form: {
         capacity: 0,
+        score: 0,
         date1: null,
         date2: null,
         information: ''
-      }
+      },
+      fileList: []
     }
   },
   methods: {
-    handleRemove() {}
+    handleUpload(param) {
+      const file = param.file
+
+      const formData = new FormData()
+      formData.append('image_url', file)
+
+      return Axios.post('/sellerctr/save', formData, {
+        onUploadProgress: param.onProgress
+      })
+    },
+    handleUploadSuccess(res, rawFile) {
+      if (res?.data?.data?.fileName) {
+        rawFile.url = process.env.VUE_APP_UPLOAD_PUBLIC_URL + res?.data?.data?.fileName
+      }
+    },
+    handleUploadChange(file, fileList) {
+      this.fileList = fileList
+    },
+
+    onSubmit() {}
   }
 }
 </script>
