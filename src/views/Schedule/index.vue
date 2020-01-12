@@ -15,7 +15,7 @@
             <el-dialog :title='getTitle(data.day)' :visible.sync="(state =='schedule'|| state=='edit')&&scheduleVisible&&data.isSelected">
              <el-cascader-panel :options="options" @change='scheduleChange'></el-cascader-panel>
                <div slot="footer" class="dialog-footer">
-                 <el-button @click="scheduleVisible = false">取 消</el-button>
+                 <el-button @click="cancelSchedule">取 消</el-button>
                  <el-button type="primary" @click="submitSchedule">确 定</el-button>
                </div>
             </el-dialog>
@@ -247,6 +247,10 @@ export default {
   },
   
   methods: {
+    cancelSchedule(){
+      this.scheduleVisible = false
+      this.buttonType['schedule'] = 'info'
+    },
     submitSchedule(){
       let api = '/sellerctr/schedule'
       console.log(this.schedule['id']==='')
