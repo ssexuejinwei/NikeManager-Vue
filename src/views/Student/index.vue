@@ -528,7 +528,7 @@
     }
 </script>
 
-<style lang = "scss" >
+<style lang = "scss">
   #student{
     h1{
       text-align: center;

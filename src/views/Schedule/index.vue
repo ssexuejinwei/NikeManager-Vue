@@ -1,134 +1,87 @@
 <template>
-  <el-container id="schedule">
-    <el-header>排课系统</el-header>
-      <el-main>
+  <div id='schedule'>
+    <el-container class='container'>
+      <el-header>排课系统</el-header>
+      <el-main class ='main'>
+
         <el-calendar>
           <template
             slot="dateCell"
-            slot-scope="{date, data}"
-          >
-          <p :id="getDate(date,data)"
-            :class="data.isSelected ?'is-selected':''">
-            {{data.day.split('-').slice(2).join('')}}
-      </p>
-      <!-- 排课 编辑菜单 -->
-      <el-menu v-if=" data.isSelected&& (state =='schedule'|| state=='edit')"
-        @select="((index,indexPath) => {handleSelect(index,indexPath)})"
-        menu-trigger="hover "
-        @open = "handleOpen"
-        class="el-menu-demo" mode="horizontal" >
-        <el-submenu :index ="state" >
-          <template slot="title">
-            {{state}}
-          </template>
-        <template v-for="time in timeList">
-            <el-submenu :index = "time" :key="time" >
-              <template slot="title">
-                {{time}}
-              </template>
-                <template v-for="type in typeList">
-                <el-submenu 
-                :index="type" :key="type" >
-                  <template slot="title">
-                    {{type}}
-                  </template>
-                  <div v-if="type == 'Team'">
-                    <template v-for="metaData in teamList">
-                      <el-menu-item   :index="metaData" :key="metaData">
-                          <el-button type="text" :class="teamClick[metaData]==true?'attend':'normal'" @click="scheduleChoose($event,metaData,type,time)" >
-                            {{metaData}}
-                          </el-button>
-                      </el-menu-item>
-                    </template>
-                  </div>
-                  <div v-if="type == '课程'">
-                    <template v-for="metaData in courseList">
-                      <el-menu-item   :index="metaData" :key="metaData">
-                        <el-button type="text" :class="teamClick[metaData]==true?'attend':'normal'" @click="scheduleChoose($event,metaData,type,time)">
-                          {{metaData}}
-                        </el-button>
-                      </el-menu-item>
-                    </template>
-                  </div>
-                  <div v-if="type == '教练'">
-                    <template v-for="metaData in coachList">
-                      <el-menu-item :index="metaData" :key="metaData">
-                        <el-button type="text" :class="teamClick[metaData]==true?'attend':'normal'"  @click="scheduleChoose($event,metaData,type,time)">
-                          {{metaData}}
-                        </el-button>
-                      </el-menu-item>
-                    </template>
-                  </div>
-                </el-submenu>
-              </template>
-            </el-submenu>
-            
-        </template>
-        </el-submenu>
-      </el-menu>
-      <!-- 考勤菜单 -->
-      <!-- <el-cascader-panel v-if=" data.isSelected&& state =='checkAttend'" options="options"></el-cascader-panel> -->
-      <el-menu v-if=" data.isSelected&& state =='checkAttend'"
-        @select="handleSelect"
-        menu-trigger="hover "
-        mode="horizontal"
-        @open = "handleOpen">
-        <el-submenu :index ="state">
-          <template slot="title">
-            {{state}}
-          </template>
-        <template v-for="time in timeList">
-            <el-submenu :index ="time" :key="time">
-              <template slot="title">
-                {{time}}
-              </template>
-                <template v-for="course in courseList">
-                <el-submenu :index="course" :key="course">
-                  <template slot="title">
-                    {{course}}
-                  </template>
-                  <div>
-                    <el-menu-item index="1">
-                      <el-table
-                        :data="tableData"
-                        style="width: 100%">
-                        <el-table-column
-                          label="学生名单"
-                          prop="name"
-                          width="180">
-                        </el-table-column>
-                        <el-table-column  label="考勤" width="180">
-                          <template slot-scope="scope">
-                            <el-button
-                            size="small "	
-                            type='text'
-                            @click="handleAttend(scope.$index,scope.row, $event)">
-                            <span :class="tableData[scope.$index]['Attend']=='attend'?'attend':'normal'">
-                              签到
-                            </span>
-                            </el-button>
-                            <el-button
-                            size="small "
-                            type='text'
-                            @click="handleAbsent(scope.$index, scope.row, $event)">
-                            <span :class="tableData[scope.$index]['Attend']=='absent'?'absent':'normal'" >
-                            缺席
-                            </span>
-                            </el-button>
-                          </template>
-                        </el-table-column>
-                        </el-table>
-                    </el-menu-item>
-                  </div>
-                </el-submenu>
+            slot-scope="{date, data}">
+            <p :id="getDate(date,data)"
+              :class="data.isSelected ?'is-selected':''">
+              {{data.day.split('-').slice(2).join('')}}
+            </p>
+            <el-dialog :title='getTitle(data.day)' :visible.sync="(state =='schedule'|| state=='edit')&&scheduleVisible&&data.isSelected">
+             <el-cascader-panel :options="options" @change='scheduleChange'></el-cascader-panel>
+               <div slot="footer" class="dialog-footer">
+                 <el-button @click="scheduleVisible = false">取 消</el-button>
+                 <el-button type="primary" @click="submitSchedule">确 定</el-button>
+               </div>
+            </el-dialog>
+            <!-- 考勤菜单 -->
+            <!-- <el-cascader-panel v-if=" data.isSelected&& state =='checkAttend'" options="options"></el-cascader-panel> -->
+            <el-menu v-if=" data.isSelected&& state =='checkAttend'"
+              @select="handleSelect"
+              menu-trigger="hover "
+              mode="horizontal"
+              @open = "handleOpen">
+              <el-submenu :index ="state">
+                <template slot="title">
+                  {{state}}
                 </template>
-            </el-submenu>
-        </template>
-        </el-submenu>
-      </el-menu>
-      </template>
+                <template v-for="time in timeList">
+                  <el-submenu :index ="time" :key="time">
+                    <template slot="title">
+                      {{time}}
+                    </template>
+                      <template v-for="course in courseList">
+                        <el-submenu :index="course" :key="course">
+                          <template slot="title">
+                            {{course}}
+                          </template>
+                          <div>
+                            <el-menu-item index="1">
+                              <el-table
+                                :data="tableData"
+                                style="width: 100%">
+                                <el-table-column
+                                  label="学生名单"
+                                  prop="name"
+                                  width="180">
+                                </el-table-column>
+                                <el-table-column  label="考勤" width="180">
+                                  <template slot-scope="scope">
+                                    <el-button
+                                    size="medium"	
+                                    type='text'
+                                    @click="handleAttend(scope.$index,scope.row, $event)">
+                                    <span :class="tableData[scope.$index]['Attend']=='attend'?'attend':'normal'">
+                                      签到
+                                    </span>
+                                    </el-button>
+                                    <el-button
+                                    size="medium"
+                                    type='text'
+                                    @click="handleAbsent(scope.$index, scope.row, $event)">
+                                    <span :class="tableData[scope.$index]['Attend']=='absent'?'absent':'normal'" >
+                                    缺席
+                                    </span>
+                                    </el-button>
+                                  </template>
+                                </el-table-column>
+                              </el-table>
+                            </el-menu-item>
+                          </div>
+                        </el-submenu>
+                      </template>
+                  </el-submenu>
+                </template>
+              </el-submenu>
+            </el-menu>
+          </template>
         </el-calendar>
-        <el-row class ="scheduleButton" v-if="!isClicked">
+        <el-row class ="scheduleButton">
           <el-col :span="5" :offset="2" >
           <el-button :type="buttonType['schedule']" @click="buttonClick('schedule')">&nbsp;排课&nbsp;</el-button>
           </el-col>
@@ -139,31 +92,36 @@
           <el-button :type="buttonType['edit']" @click="buttonClick('edit')" >&nbsp;编辑&nbsp;</el-button>
           </el-col>
           </el-row>
-          <el-row v-else>
+      <!--    <el-row v-else>
             <el-col :span="5" :offset="12" >
             <el-button type="success" @click="buttonClick('submit')" >&nbsp;确定&nbsp;</el-button>
             </el-col>
-          </el-row>
+          </el-row> -->
       </el-main>
-
     </el-container>
+  </div>
 </template>
 <script>
+  import qs from 'qs'
 export default {
   name: 'Schedule',
   data() {
     return {
+      token : '',
+      isLoad : false,
+      scheduleVisible:false,
+      scheduleList:{},
       schedule:{
-        date:'',
-        duration:'',
-        team:'',
-        coach:'',
-        course:''
+        id:'',
+        start_time:'',
+        end_time:'',
+        tp_id:'',
+        coach_id:'',
+        team_id:''
       },
       teamClick:{},
       courseClick:{},
       coachClick:{},
-      isClicked:false,
       date : '', //年-月-日
       coachList : ['杜教练', '赵教练', '熊教练', '林教练', '韩教练' ],
       courseList : ['3-4岁兴趣班', '4-6岁初级足球班', '5-6岁初级篮球班'],
@@ -194,12 +152,28 @@ export default {
         'name':'林一',
         'Attend':''
       }],
+      options:[{
+          value:'16:00-17:00',
+          label:'16:00-17:00',
+          children:[]
+        },
+        {
+          value : '17:00-18:00',
+          label: '17:00-18:00',
+          children:[]
+        },
+        {
+          value:'18:00-19:00',
+          label:'18:00-19:00',
+          children:[]
+        }
+        ]
       }
   },
   created:function(){
-      // this.$http.get('/',false).then((result) =>{
-      //   console.log(result)
-      // })
+      if(localStorage.getItem('nike#token')){
+        this.token = localStorage.getItem('nike#token')
+      }
       for(var coach of this.coachList){
         this.coachClick[coach] = false
       }
@@ -209,9 +183,120 @@ export default {
       for(var course of this.courseList){
         this.courseClick[course] = false
       }
-      console.log("created")
+      let api_1 = '/sellerctr/getSchedule'
+      let api_2 = '/sellerctr/getCoach'
+      let api_3 = '/sellerctr/getTeam'
+      let api_4 = '/sellerctr/getCourse'
+      /**
+       *   获取教练和队伍的id  并将其 放在一个对象数组里
+       */
+      
+      this.$axios.get(api_1,{
+        params:{
+          start_time :'',
+          end_time : '',
+        }
+      }).then((response)=>{
+          this.scheduleList = response['data']['data']
+      })
+      
+      //获取教练
+      this.$axios.get(api_2).then((response)=>{
+        this.coachList = []
+        let data = response['data']['data']
+        for(let coach of data){
+          let obj ={
+            id:coach['id'],
+            name: coach['user_name']
+          }
+          this.coachList.push(obj)
+        }
+      })
+      //获取队伍
+      this.$axios.get(api_3).then((response)=>{
+        this.teamList = []
+        let data = response['data']['data']
+        for(let team of data){
+          let obj ={
+            id : team['id'],
+            name : team['name']
+          }
+          this.teamList.push(obj)
+        }
+      })
+      //获取课程
+      this.$axios.get(api_4).then((response)=>{
+        this.courseList = []
+        let data = response['data']['data']
+        for(let course of data){
+          let obj ={
+            id : course['id'],
+            name : course['name']
+          }
+          this.courseList.push(obj)
+        }
+      })
     },
+  watch: {
+    state(newValue, oldValue) {
+      console.log(newValue,oldValue)
+      if(newValue == 'lookup'){
+        return
+      }
+    }
+  },
+  
   methods: {
+    submitSchedule(){
+      let api = '/sellerctr/schedule'
+      console.log(this.schedule['id']==='')
+      if(this.schedule['id'] === ''){
+        this.$alert('请选择排课信息', {
+                  confirmButtonText: '确定',
+              })
+        return
+      }
+      this.$axios.post(api,qs.stringify(this.schedule),
+      {
+        headers : {
+          token : this.token,
+          'Content-Type': 'application/x-www-form-urlencoded',
+          }
+      }
+     ).then( (response)=>{
+        let code = response['data']['code']
+        let name = ''
+        if( code == 0){
+          this.schedule['id'] = ''
+          this.schedule['start_time'] = ''
+          this.schedule['end_time'] = ''
+          this.schedule['coach_id'] = '' 
+          this.schedule['team_id'] = ''
+          this.schedule['tp_id'] = ''
+          this.$alert('排课成功', {
+                    confirmButtonText: '确定',
+                })
+          this.scheduleVisible = false
+          this.buttonType['schedule'] = 'info'
+        }
+        else{
+          this.$alert('排课失败', {
+                    confirmButtonText: '确定',
+                })
+        }
+      })
+    },
+    scheduleChange(data){
+      this.schedule['id'] = 0
+      this.schedule['start_time'] = this.date +' ' + data[0].split('-')[0]
+      this.schedule['end_time'] = this.date +' ' + data[0].split('-')[1]
+      this.schedule['coach_id'] = parseInt(data[1]) 
+      this.schedule['team_id'] = parseInt(data[2]) 
+      this.schedule['tp_id'] = parseInt(data[3]) 
+    },
+    getTitle(data){
+      return '当前时间为'+data
+    },
     update(){
       //只要点击了button之后就开始获取
     },
@@ -235,7 +320,6 @@ export default {
                   confirmButtonText: '确定'})
         }
         else{
-          console.log(this.schedule)
           //全部选择完毕
           const confirmText = ['时间:'+this.schedule.date+'  '+this.schedule.duration, '队伍:'+this.schedule.team,'教练:'+this.schedule.coach,'课程:'+this.schedule.course]
           const newDatas = []
@@ -297,6 +381,39 @@ export default {
       }
     },
     getDate(date,data){
+      if( !this.isLoad){
+        let children_course = []
+        //先遍历course
+        for(let course of this.courseList){
+          let obj ={
+            value:course['id'],
+            label:course['name']
+          }
+          children_course.push(obj)
+        }
+        
+        let children_team =[]
+        for(let team of this.teamList){
+          let obj ={
+            value:team['id'],
+            label:team['name'],
+            children : children_course
+          }
+          children_team.push(obj)
+        }
+        let children_coach = []
+        for(let coach of this.coachList){
+          let obj ={
+            value : coach['id'],
+            label : coach['name'],
+            children : children_team
+          }
+          children_coach.push(obj)
+        }
+        for(let option of this.options){
+          option['children'] = children_coach
+        }
+      }
       if(data.isSelected)
       {
         this.schedule.date=data.day
@@ -306,10 +423,10 @@ export default {
     handleOpen(index){
       console.log("open"+ index )
     },
-    handleAttend(index){
-      // if (e) {
-      //   e.stopPropagation()
-      // }
+    handleAttend(index, row, e){
+      if (e) {
+        e.stopPropagation()
+      }
       this.tableData[index]['Attend'] = 'attend'
     },
     handleAbsent(index, row, e){
@@ -323,16 +440,15 @@ export default {
     },
     handleSelect(index,indexPath){
        console.log(index,indexPath)
-      // if (e) {
-      //   e.stopPropagation()
-      // }
-     
     },
     //用来按钮变色
     buttonClick(key){
-      if(key == 'submit'){
-        this.submit()
-        return
+      switch (key){
+        case 'schedule':
+          this.scheduleVisible = true
+          break;
+        default:
+          break;
       }
       for(let index in this.buttonType){
         if(index != key && this.buttonType[index] == 'success'){
@@ -342,7 +458,6 @@ export default {
       this.buttonType[key]=(this.buttonType[key] == 'info')?'success':'info'
       if( this.buttonType[key] == 'success'){
         this.state = key
-        this.isClicked = true
       }
       else{
         this.state = 'lookup'
@@ -357,8 +472,8 @@ export default {
 $Green: #69bc38;
 $Gray: #cdcdcb;
 $Red : #92535e;
-.text-button{
-  background-color:black;
+.normal{
+  color:$Gray;
 }
 .attend {
   color: $Green;
@@ -366,93 +481,17 @@ $Red : #92535e;
 .absent{
   color:$Red;
 }
-.normal{
-  color:$Gray;
-}
-
-#schedule{
-  .el-header{
-    text-align: center;
-    font-size : 1.875rem;
-  }
-  .scheduleButton{
-    margin: 0;
-    margin-left: 15.625rem;
-  }
-}
-
-.el-icon-arrow-down:before{
-
-    /* display: none; */
-  }
-.is-selected {
- /*   background-color: #FE8083; */
- /*   color: white; */
-  }
-</style>
-
-<!-- 
-scheduleList : [{
-      '16:00-17:00':[{
-        'Team': ['Team-01', 'Team-02', 'Team-03']
-      },
-      {
-        '教练':['杜教练', '赵教练', '熊教练', '林教练', '韩教练' ]
-      },
-      {
-        '课程':['3-4岁兴趣班', '4-6岁初级足球班', '5-6岁初级篮球班']
-      }],
-      '17:00-18:00':[{
-        'Team':['Team-01', 'Team-02', 'Team-03']
-      },
-      {
-        '教练':['杜教练', '赵教练', '熊教练', '林教练', '韩教练' ]
-      },
-      {
-        '课程':['3-4岁兴趣班', '4-6岁初级足球班', '5-6岁初级篮球班']
-      }],
-      '18:00-19:00':[{
-        'Team': ['Team-01', 'Team-02', 'Team-03']
-      },
-      {
-        '教练':['杜教练', '赵教练', '熊教练', '林教练', '韩教练' ]
-      },
-      {
-        '课程':['3-4岁兴趣班', '4-6岁初级足球班', '5-6岁初级篮球班']
-      }],
-      }], -->
-<!-- 多级菜单的写法 -->
-<!-- 		<el-menu v-if=" data.isSelected&& (state =='schedule'|| state=='edit')"
-      @select="selectMenu"
-      class="el-menu-demo" mode="horizontal" >
-      <el-submenu :index ="state">
-        <template slot="title">
-          {{state}}
-        </template>
-      <template v-for="item in scheduleList">
-        <template v-for="(data,index) in item">
-          <el-submenu :index = index>
-            <template slot="title">
-              {{index}}
-            </template>
-            <template v-for=" element in data">
-              <template v-for="(list,type) in element">
-              <el-submenu :index="type">
-                <template slot="title">
-                  {{type}}
-                </template>
-                <template v-for="metaData in list">
-                  <el-menu-item :index="metaData">
-                      {{metaData}}
-                  </el-menu-item>
-                </template>
-              </el-submenu>
-            </template>
-            </template>
-          </el-submenu>
-          
-        </template>
-      </template>
-      </el-submenu>
-    </el-menu> -->
+#schedule {
+  .container{
+    .el-header{
+      text-align: center;
+      font-size : 1.875rem;
+    }
+    .scheduleButton{
+      margin: 0;
+      margin-left: 15.625rem;
+    }
     
+    } 
+}
+</style>
