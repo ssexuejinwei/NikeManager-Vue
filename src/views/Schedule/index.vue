@@ -12,73 +12,59 @@
               :class="data.isSelected ?'is-selected':''">
               {{data.day.split('-').slice(2).join('')}}
             </p>
-            <el-dialog :title='getTitle(data.day)' :visible.sync="(state =='schedule'|| state=='edit')&&scheduleVisible&&data.isSelected">
-             <el-cascader-panel :options="options" @change='scheduleChange'></el-cascader-panel>
+            <!-- 排课菜单 -->
+            <el-dialog :title='getTitle(data.day,state)' :visible.sync="(state =='schedule'|| state=='edit')&&scheduleVisible&&data.isSelected">
+             <el-cascader-panel :options="options" @change='((data) =>{scheduleChange(data,state)})'></el-cascader-panel>
                <div slot="footer" class="dialog-footer">
-                 <el-button @click="cancelSchedule">取 消</el-button>
-                 <el-button type="primary" @click="submitSchedule">确 定</el-button>
+                 <el-button @click="cancelDialog(state)">取 消</el-button>
+                 <el-button type="primary" @click="submitDialog(state)">确 定</el-button>
                </div>
             </el-dialog>
+            
             <!-- 考勤菜单 -->
-            <!-- <el-cascader-panel v-if=" data.isSelected&& state =='checkAttend'" options="options"></el-cascader-panel> -->
-            <el-menu v-if=" data.isSelected&& state =='checkAttend'"
-              @select="handleSelect"
-              menu-trigger="hover "
-              mode="horizontal"
-              @open = "handleOpen">
-              <el-submenu :index ="state">
-                <template slot="title">
-                  {{state}}
-                </template>
-                <template v-for="time in timeList">
-                  <el-submenu :index ="time" :key="time">
-                    <template slot="title">
-                      {{time}}
-                    </template>
-                      <template v-for="course in courseList">
-                        <el-submenu :index="course" :key="course">
-                          <template slot="title">
-                            {{course}}
-                          </template>
-                          <div>
-                            <el-menu-item index="1">
-                              <el-table
-                                :data="tableData"
-                                style="width: 100%">
-                                <el-table-column
-                                  label="学生名单"
-                                  prop="name"
-                                  width="180">
-                                </el-table-column>
-                                <el-table-column  label="考勤" width="180">
-                                  <template slot-scope="scope">
-                                    <el-button
-                                    size="medium"	
-                                    type='text'
-                                    @click="handleAttend(scope.$index,scope.row, $event)">
-                                    <span :class="tableData[scope.$index]['Attend']=='attend'?'attend':'normal'">
-                                      签到
-                                    </span>
-                                    </el-button>
-                                    <el-button
-                                    size="medium"
-                                    type='text'
-                                    @click="handleAbsent(scope.$index, scope.row, $event)">
-                                    <span :class="tableData[scope.$index]['Attend']=='absent'?'absent':'normal'" >
-                                    缺席
-                                    </span>
-                                    </el-button>
-                                  </template>
-                                </el-table-column>
-                              </el-table>
-                            </el-menu-item>
-                          </div>
-                        </el-submenu>
-                      </template>
-                  </el-submenu>
-                </template>
-              </el-submenu>
-            </el-menu>
+            <el-dialog :title='getTitle(data.day,state)' :visible.sync="state =='checkAttend'&&checkAttendVisible&&data.isSelected">
+             <el-cascader-panel :options="options" @change='((data) =>{scheduleChange(data,state)})'></el-cascader-panel>
+               <div slot="footer" class="dialog-footer">
+                 <el-button @click="cancelDialog(state)">取 消</el-button>
+                 <el-button type="primary" @click="submitDialog(state)">下一步</el-button>
+               </div>
+            </el-dialog>
+            <!-- 考勤名单 -->
+            <el-dialog :title="getTitle(data.day,state)" :visible.sync="dialogTableVisible">
+               <el-table
+                :data="tableData"
+                style="width: 100%">
+                <el-table-column
+                  label="学生名单"
+                  prop='student_name'
+                  width="180">
+                </el-table-column>
+                <el-table-column  label="考勤" width="180">
+                  <template slot-scope="scope">
+                    <el-button
+                    size="medium"	
+                    type='text'
+                    @click="handleAttend(scope.$index,scope.row, $event)">
+                    <span :class="tableData[scope.$index]['sign_in']=='attend'?'attend':'normal'">
+                      签到
+                    </span>
+                    </el-button>
+                    <el-button
+                    size="medium"
+                    type='text'
+                    @click="handleAbsent(scope.$index, scope.row, $event)">
+                    <span :class="tableData[scope.$index]['sign_in']=='absent'?'absent':'normal'" >
+                      缺席
+                    </span>
+                    </el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <div slot="footer" class="dialog-footer">
+                <el-button @click="cancelDialog(state)">上一步</el-button>
+                <el-button type="primary" @click="submitDialog(state)">确定</el-button>
+              </div>
+            </el-dialog>
           </template>
         </el-calendar>
         <el-row class ="scheduleButton">
@@ -109,10 +95,27 @@ export default {
     return {
       token : '',
       isLoad : false,
+      dialogTableVisible : false,
       scheduleVisible:false,
+      checkAttendVisible:false,
       scheduleList:{},
+      attendSchedule:{
+        duration :'',
+        schedule_id :'',
+        team_id : '',
+        team_name:'',
+        coach_name:'',
+        course_name : ''
+      },
+      editSchedule:{
+        id : '',
+        start_time:'',
+        end_time:'',
+        tp_id:'',
+        coach_id:'',
+        team_id:''
+      },
       schedule:{
-        id:'',
         start_time:'',
         end_time:'',
         tp_id:'',
@@ -132,26 +135,7 @@ export default {
       showMenu : 'none',
       buttonType: {'schedule':'info','checkAttend':'info','edit':'info'},
       activeIndex: '1',
-      tableData:[{
-        'name':'林一',
-        'Attend':''
-      },
-      {
-        'name':'林一',
-        'Attend':''
-      },
-      {
-        'name':'林一',
-        'Attend':''
-      },
-      {
-        'name':'林一',
-        'Attend':''
-      },
-      {
-        'name':'林一',
-        'Attend':''
-      }],
+      tableData:[],
       options:[{
           value:'16:00-17:00',
           label:'16:00-17:00',
@@ -183,6 +167,18 @@ export default {
       for(var course of this.courseList){
         this.courseClick[course] = false
       }
+      this.getData()
+    },
+  watch: {
+    state(newValue, oldValue) {
+      console.log(newValue,oldValue)
+      if(newValue == 'lookup'){
+        return
+      }
+    }
+  },
+  methods: {
+    getData(){
       let api_1 = '/sellerctr/getSchedule'
       let api_2 = '/sellerctr/getCoach'
       let api_3 = '/sellerctr/getTeam'
@@ -190,7 +186,7 @@ export default {
       /**
        *   获取教练和队伍的id  并将其 放在一个对象数组里
        */
-      
+      //获取当前排课
       this.$axios.get(api_1,{
         params:{
           start_time :'',
@@ -211,146 +207,283 @@ export default {
           }
           this.coachList.push(obj)
         }
-      })
-      //获取队伍
-      this.$axios.get(api_3).then((response)=>{
-        this.teamList = []
-        let data = response['data']['data']
-        for(let team of data){
-          let obj ={
-            id : team['id'],
-            name : team['name']
+        //获取队伍
+        this.$axios.get(api_3).then((response)=>{
+          this.teamList = []
+          let data = response['data']['data']
+          for(let team of data){
+            let obj ={
+              id : team['id'],
+              name : team['name']
+            }
+            this.teamList.push(obj)
           }
-          this.teamList.push(obj)
-        }
-      })
-      //获取课程
-      this.$axios.get(api_4).then((response)=>{
-        this.courseList = []
-        let data = response['data']['data']
-        for(let course of data){
-          let obj ={
-            id : course['id'],
-            name : course['name']
-          }
-          this.courseList.push(obj)
-        }
+          //获取课程
+          this.$axios.get(api_4).then((response)=>{
+            this.courseList = []
+            let data = response['data']['data']
+            for(let course of data){
+              let obj ={
+                id : course['id'],
+                name : course['name']
+              }
+              this.courseList.push(obj)
+            }
+            this.update('schedule')
+          })
+        })
       })
     },
-  watch: {
-    state(newValue, oldValue) {
-      console.log(newValue,oldValue)
-      if(newValue == 'lookup'){
-        return
-      }
-    }
-  },
-  
-  methods: {
-    cancelSchedule(){
-      this.scheduleVisible = false
-      this.buttonType['schedule'] = 'info'
-    },
-    submitSchedule(){
-      let api = '/sellerctr/schedule'
-      console.log(this.schedule['id']==='')
-      if(this.schedule['id'] === ''){
-        this.$alert('请选择排课信息', {
-                  confirmButtonText: '确定',
-              })
-        return
-      }
-      this.$axios.post(api,qs.stringify(this.schedule),
-      {
-        headers : {
-          token : this.token,
-          'Content-Type': 'application/x-www-form-urlencoded',
-          }
-      }
-     ).then( (response)=>{
-        let code = response['data']['code']
-        let name = ''
-        if( code == 0){
-          this.schedule['id'] = ''
-          this.schedule['start_time'] = ''
-          this.schedule['end_time'] = ''
-          this.schedule['coach_id'] = '' 
-          this.schedule['team_id'] = ''
-          this.schedule['tp_id'] = ''
-          this.$alert('排课成功', {
-                    confirmButtonText: '确定',
-                })
+    cancelDialog(key){
+      switch (key){
+        case 'schedule':
           this.scheduleVisible = false
-          this.buttonType['schedule'] = 'info'
-        }
-        else{
-          this.$alert('排课失败', {
-                    confirmButtonText: '确定',
-                })
-        }
-      })
+          this.buttonType[key] = 'info'
+          break;
+        case 'checkAttend':
+          this.checkAttendVisible = false
+          this.buttonType[key] = 'info'
+          break;
+        case 'checkTable':
+          this.dialogTableVisible = false
+          this.checkAttendVisible = true
+          break;
+        default:
+          break;
+      }
+     
     },
-    scheduleChange(data){
-      this.schedule['id'] = 0
-      this.schedule['start_time'] = this.date +' ' + data[0].split('-')[0]
-      this.schedule['end_time'] = this.date +' ' + data[0].split('-')[1]
-      this.schedule['coach_id'] = parseInt(data[1]) 
-      this.schedule['team_id'] = parseInt(data[2]) 
-      this.schedule['tp_id'] = parseInt(data[3]) 
+    submitDialog(key){
+      switch (key){
+        case 'schedule':
+          let api_1 = '/sellerctr/schedule'
+           if(this.schedule['tp_id'] === ''){
+             this.$alert('请选择排课信息', {
+                       confirmButtonText: '确定',
+                   })
+             return
+           }
+           this.$axios.post(api_1,qs.stringify(this.schedule),
+           {
+             headers : {
+               token : this.token,
+               'Content-Type': 'application/x-www-form-urlencoded',
+               }
+           }
+          ).then( (response)=>{
+             let code = response['data']['code']
+             let name = ''
+             if( code == 0){
+               this.schedule['start_time'] = ''
+               this.schedule['end_time'] = ''
+               this.schedule['coach_id'] = '' 
+               this.schedule['team_id'] = ''
+               this.schedule['tp_id'] = ''
+               this.$alert('排课成功', {
+                         confirmButtonText: '确定',
+                     })
+               this.scheduleVisible = false
+               this.buttonType['schedule'] = 'info'
+             }
+             else{
+               this.$alert('排课失败', {
+                         confirmButtonText: '确定',
+                     })
+             }
+             this.getData()
+           })
+          break;
+          /**
+           * 先change函数，在submit函数，成功之后update一下,回来之后写一下update函数，将排课id放在时间段的value里面，因为用不到（或者时间段value+’：‘+排课id）
+           */
+        case 'checkAttend':
+          this.checkAttendVisible = false
+          var api_2 = '/sellerctr/getAttendance'
+           this.$axios.get(api_2,{
+            params:{
+              schedule_id :this.attendSchedule['schedule_id'],
+              team_id : this.attendSchedule['team_id']
+            }
+          }
+           ).then( (response)=>{
+             this.tableData = []
+              let studentList = response['data']['data']
+              let code = response['data']['code']
+              if( code == 0){
+                for(let student of studentList){
+                  let obj ={
+                    student_id : parseInt(student['student_id']),
+                    student_name: parseInt(student['student_name']),
+                    sign_in : student['sign_in']
+                  }
+                  this.tableData.push(obj)
+                }
+                console.log(this.tableData)
+                this.state = 'checkTable'
+                this.dialogTableVisible = true
+              }
+              else{
+                this.$alert('获取学生名单错误', {
+                          confirmButtonText: '确定',
+                      })
+              }
+            })
+          break;
+        default:
+          break;
+      }
+      
     },
-    getTitle(data){
+    scheduleChange(data,key){
+      switch (key){
+        case 'schedule':
+          this.schedule['start_time'] = this.date +' ' + data[0].split('-')[0]
+          this.schedule['end_time'] = this.date +' ' + data[0].split('-')[1]
+          this.schedule['coach_id'] = parseInt(data[1]) 
+          this.schedule['team_id'] = parseInt(data[2]) 
+          this.schedule['tp_id'] = parseInt(data[3]) 
+          break;
+        case 'checkAttend':
+          console.log(data)
+          this.attendSchedule['duration'] = data[0].split('+')[0]
+          this.attendSchedule['schedule_id'] = parseInt(data[0].split('+')[1])
+          this.attendSchedule['team_id'] = parseInt(data[2].split('+')[0])
+          this.attendSchedule['team_name'] = data[2].split('+')[1]
+          this.attendSchedule['coach_name'] = data[1].split('+')[1]
+          this.attendSchedule['course_name'] = data[3].split('+')[1]
+          console.log(this.attendSchedule)
+          break
+        default:
+          break;
+      }
+      
+    },
+    getTitle(data,key){
+      switch (key){
+        case 'schedule':
+          return '当前时间为'+data
+          break;
+        case 'checkAttend':
+          let s = this.attendSchedule['duration'] + '  '+ this.attendSchedule['course_name'] + '  ' +this.attendSchedule['coach_name']
+          return s
+          break;
+        default:
+          break;
+      }
       return '当前时间为'+data
     },
-    update(){
+    //update options
+    update(type){
+      switch (type){
+        case 'schedule':
+          this.options = [{
+          value:'16:00-17:00',
+          label:'16:00-17:00',
+          children:[]
+          },
+          {
+            value : '17:00-18:00',
+            label: '17:00-18:00',
+            children:[]
+          },
+          {
+            value:'18:00-19:00',
+            label:'18:00-19:00',
+            children:[]
+          }]
+          let children_course = []
+          //先遍历course
+          for(let course of this.courseList){
+            let obj ={
+              value:course['id'],
+              label:course['name']
+            }
+            children_course.push(obj)
+          }
+          
+          let children_team =[]
+          for(let team of this.teamList){
+            let obj ={
+              value:team['id'],
+              label:team['name'],
+              children : children_course
+            }
+            children_team.push(obj)
+          }
+          let children_coach = []
+          for(let coach of this.coachList){
+            let obj ={
+              value : coach['id'],
+              label : coach['name'],
+              children : children_team
+            }
+            children_coach.push(obj)
+          }
+          for(let option of this.options){
+            option['children'] = children_coach
+          }
+          break;
+        case 'checkAttend':
+          let scheduleArray = this.scheduleList[this.date]
+          if(typeof(scheduleArray) ==='undefined'){
+            this.$alert('今日无排课信息', {
+                      confirmButtonText: '确定',
+               })
+            return
+          }
+          this.options = []
+          //教案value的位置用来存排课的id
+          for(let schedule of scheduleArray){
+            let isHave =false
+            let scheduleID = schedule['id']
+            let courseID = schedule['tp_id']
+            let courseName = schedule['tp_name']
+            let start_time = schedule['start_time'].split(' ')[1].split(':').slice(0,2).join(':')
+            let end_time = schedule['end_time'].split(' ')[1].split(':').slice(0,2).join(':')
+            let duration = start_time + '-' + end_time
+            let obj = {
+              value:duration +'+' +scheduleID ,
+              label:duration,
+              children:[]
+            }
+            if(this.options.length != 0){
+              for(let option of this.options ){
+                if(option['value'].split('+')[0] == duration){
+                  isHave = true
+                  break
+                }
+              }
+            }
+            if(!isHave){
+              let obj_course = {
+                value : courseID + '+' +courseName,
+                label : schedule['tp_name']
+              }
+              let obj_team = {
+                value : schedule['team_id'] + '+' +schedule['team_name'] ,
+                label : schedule['team_name'],
+                children : []
+              }
+              obj_team['children'].push(obj_course)
+              let obj_coach = {
+                value : schedule['coach_id']+ '+' +schedule['coach_name'],
+                label : schedule['coach_name'],
+                children :[]
+              }
+              obj_coach['children'].push(obj_team)
+              obj['children'].push(obj_coach)
+              this.options.push(obj)
+            }
+          }
+          break;
+        default:
+          break;
+      }
       //只要点击了button之后就开始获取
     },
     submit(){
       switch (this.state){
         case 'schedule':
-        if(this.schedule.date == ''){
-            this.$alert('未选择时间', {
-                    confirmButtonText: '确定'})
-        }
-        else if(this.schedule.team == ''){
-          this.$alert('队伍未选择', {
-                  confirmButtonText: '确定'})
-        }
-        else if(this.schedule.coach == ''){
-          this.$alert('教练未选择', {
-                  confirmButtonText: '确定'})
-        }
-        else if(this.schedule.course == ''){
-          this.$alert('课程未选择', {
-                  confirmButtonText: '确定'})
-        }
-        else{
-          //全部选择完毕
-          const confirmText = ['时间:'+this.schedule.date+'  '+this.schedule.duration, '队伍:'+this.schedule.team,'教练:'+this.schedule.coach,'课程:'+this.schedule.course]
-          const newDatas = []
-          const h = this.$createElement
-          for (const i in confirmText) {
-            newDatas.push(h('p', null, confirmText[i]))
-          }
-           this.$confirm(h('div', null, newDatas), '排课内容', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'info'
-                  }).then(() => {
-                    this.$message({
-                      type: 'success',
-                      message: '排课成功!'
-                    });
-                    this.isClicked = false
-                  }).catch(() => {
-                    this.$message({
-                      type: 'info',
-                    });          
-                  });
-          // this.$axios.post().then(()=>{
-          //   this.schedule =[]
-          // })
-          //在成功的post回调函数中
-        }
           break;
         case 'checkAttend':
         this.isClicked = false
@@ -362,64 +495,11 @@ export default {
           break;
       }
     },
-    scheduleChoose(e,data,type,time){
-      if (e) {
-        e.stopPropagation()
-      }
-      this.schedule.duration = time
-      switch (type){
-        case 'Team':
-        this.schedule.team = data
-        this.teamClick[data] = !this.teamClick[data]
-          break;
-        case '教练':
-        this.schedule.coach = data
-        this.coachClick[data] = !this.coachClick[data]
-          break;
-        case '课程':
-        this.schedule.course = data
-        this.courseClick[data] = !this.courseClick[data]
-          break;
-        default:
-          break;
-      }
-    },
     getDate(date,data){
-      if( !this.isLoad){
-        let children_course = []
-        //先遍历course
-        for(let course of this.courseList){
-          let obj ={
-            value:course['id'],
-            label:course['name']
-          }
-          children_course.push(obj)
-        }
-        
-        let children_team =[]
-        for(let team of this.teamList){
-          let obj ={
-            value:team['id'],
-            label:team['name'],
-            children : children_course
-          }
-          children_team.push(obj)
-        }
-        let children_coach = []
-        for(let coach of this.coachList){
-          let obj ={
-            value : coach['id'],
-            label : coach['name'],
-            children : children_team
-          }
-          children_coach.push(obj)
-        }
-        for(let option of this.options){
-          option['children'] = children_coach
-        }
-      }
+      //写options
       if(data.isSelected)
       {
+        this.date = data.day
         this.schedule.date=data.day
       }
       return ' p-selected'
@@ -431,7 +511,39 @@ export default {
       if (e) {
         e.stopPropagation()
       }
-      this.tableData[index]['Attend'] = 'attend'
+      let api = '/sellerctr/attendance'
+      let student = this.tableData[index]
+      student['sign_in'] = 0
+      this.$axios.post(api,qs.stringify(student),
+       {
+         headers : {
+           token : this.token,
+           'Content-Type': 'application/x-www-form-urlencoded',
+           }
+       }
+      ).then( (response)=>{
+         let code = response['data']['code']
+         let name = ''
+         if( code == 0){
+           this.schedule['start_time'] = ''
+           this.schedule['end_time'] = ''
+           this.schedule['coach_id'] = '' 
+           this.schedule['team_id'] = ''
+           this.schedule['tp_id'] = ''
+           this.$alert('排课成功', {
+                     confirmButtonText: '确定',
+                 })
+           this.scheduleVisible = false
+           this.buttonType['schedule'] = 'info'
+         }
+         else{
+           this.$alert('排课失败', {
+                     confirmButtonText: '确定',
+                 })
+         }
+         this.getData()
+       })
+      this.tableData[index]['sign_in'] = 'attend'
     },
     handleAbsent(index, row, e){
       if (e) {
@@ -450,6 +562,11 @@ export default {
       switch (key){
         case 'schedule':
           this.scheduleVisible = true
+          this.update(key)
+          break;
+        case 'checkAttend':
+          this.checkAttendVisible = true
+          this.update(key)
           break;
         default:
           break;

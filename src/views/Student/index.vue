@@ -241,6 +241,7 @@
             }, 100)
           }
         return {
+          token :'',
           cur_page :1,
           page_size:10,
           current_teamId : 0,
@@ -303,6 +304,9 @@
          }
         },
       created() {
+        if(localStorage.getItem('nike#token')){
+          this.token = localStorage.getItem('nike#token')
+        }
         this.update('getStudent')
       },
       watch: {
@@ -440,13 +444,20 @@
                 mateName : this.inputTeammateName
               }
               
-              this.$axios.post(api, qs.stringify(data)).then((response) => {
+              this.$axios.post(api, qs.stringify(data),
+              {
+                headers : {
+                  token : this.token,
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                  }
+              }).then((response) => {
                 teamName = response['data']['data']['team_name']
                 // console.log(teamName)
                 this.$alert('<div class="teamSuccess"><h1 class="teamSuccessHead">分配成功 </h1><p class="teamSuccessContent">'+student.name+'小朋友</p><p>被分配至'+teamName+'</p>', '', {
                           dangerouslyUseHTMLString: true
                         });
               }).catch((error)=>{
+                console.log(error)
                 this.$alert('表单填写错误，添加失败')
               })
               break;
