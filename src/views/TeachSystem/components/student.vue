@@ -49,7 +49,7 @@
         </template>
         </el-menu>
       </el-aside>
-      <el-container style="height:33.5rem;">
+      <el-container style="height:34rem;">
         <el-main style="padding: 0; height:34rem; border: solid #000000; border-left: 0;">
           <el-table 
             v-loading="loading"
@@ -367,7 +367,7 @@
               }
               this.menuTeam = this.menuTeam.sort()
               // this.menuTeam.splice(0,0,'全部学员')
-              // this.activeIndexTeam = '全部学员'
+              this.activeIndexTeam = this.menuTeam[0]
               break;
             case 'getStudent':{
               this.infoArray = []

@@ -1,6 +1,6 @@
 <template>
   <div id='schedule'>
-    <el-container class='container' v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="加载当月排课中">
+    <el-container class='container' v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="加载信息中">
       <el-main class ='main'>
         <el-calendar >
           <template

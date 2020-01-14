@@ -33,8 +33,8 @@
             </el-menu>
       </el-aside>
       <el-main>
-        <p-student v-if="showIndex ==0"></p-student>
-        <p-schedule v-if="showIndex ==2"></p-schedule>
+        <p-student v-show="showIndex ==0"></p-student>
+        <p-schedule v-show="showIndex ==2"></p-schedule>
       </el-main>
     </el-container>
   </div>
