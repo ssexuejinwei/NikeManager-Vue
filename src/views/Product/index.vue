@@ -29,7 +29,7 @@
       <el-table-column v-if="type === '2' || type === '3' || type === '4'" label="发布时间" prop="putaway_time" width="160"></el-table-column>
       <el-table-column v-if="type === '0'" label="商品状态">
         <template slot-scope="scope">
-          <el-tag>{{ C_STATE_TO_STR[scope.row.state] || '未知' }}</el-tag>
+          <ProductStateTag :product="scope.row" />
         </template>
       </el-table-column>
       <el-table-column v-else label="操作"></el-table-column>
@@ -53,6 +53,8 @@
 <script>
 import Axios from 'axios'
 
+import ProductStateTag from './components/product-state-tag'
+
 const C_TYPES_TO_STR = {
   '0': '全部商品',
   '1': '出售中商品',
@@ -69,7 +71,7 @@ const C_STATE_TO_STR = {
 }
 
 export default {
-  // components: { PCard, PCardAdd },
+  components: { ProductStateTag },
   data() {
     return {
       total_page: 1,
