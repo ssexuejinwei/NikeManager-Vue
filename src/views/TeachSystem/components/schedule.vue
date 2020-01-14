@@ -1,9 +1,7 @@
 <template>
   <div id='schedule'>
     <el-container class='container' v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="加载当月排课中">
-      <el-header>排课系统</el-header>
       <el-main class ='main'>
-
         <el-calendar >
           <template
             slot="dateCell"
@@ -508,14 +506,16 @@ export default {
           for(let option of this.optionsSchedule){
             option['children'] = children_coach
           }
+          this.scheduleVisible = true
           break;
         case 'checkAttend':
           let scheduleArray = this.scheduleList[this.date]
           if(typeof(scheduleArray) ==='undefined'){
             this.$alert('今日无排课信息', {
                       confirmButtonText: '确定',
+               }).then(()=>{
+                 this.buttonType[type] = 'info'
                })
-            this.buttonType['checkAttend'] = 'info'
             return
           }
           this.checkAttendVisible = true
@@ -569,8 +569,9 @@ export default {
           if(typeof(scheduleArrayEdit) ==='undefined'){
             this.$alert('今日无排课信息,请先排课在进行编辑', {
                       confirmButtonText: '确定',
+               }).then(()=>{
+                 this.buttonType[type] = 'info'
                })
-            this.buttonType[type] = 'info'
             return
           }
           this.editVisible = true
@@ -718,15 +719,12 @@ export default {
     buttonClick(key){
       switch (key){
         case 'schedule':
-          this.scheduleVisible = true
           this.update(key)
           break;
         case 'checkAttend':
-          this.checkAttendVisible = true
           this.update(key)
           break;
         case 'edit':
-          this.editVisible = true
           this.update(key)
           break;
         default:

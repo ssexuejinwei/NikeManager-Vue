@@ -41,6 +41,11 @@ const routes = [
     beforeEnter: ifAuthenticated,
   },
   {
+    path: '/teach',
+    component: () => import('@/views/TeachSystem/index'),
+    beforeEnter: ifAuthenticated,
+  },
+  {
     path: '/Schedule',
     name: 'Schedule',
     component: () => import('@/views/Schedule/index'),
