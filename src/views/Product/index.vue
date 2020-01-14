@@ -8,12 +8,12 @@
         <el-radio-button v-for="(value, key) in C_TYPES_TO_STR" :key="key" :label="key">{{value}}</el-radio-button>
       </el-radio-group>
     </div>
-    <el-table :data="products" @selection-change="handleSelect">
+    <el-table v-loading="loading" :data="products" @selection-change="handleSelect">
       <el-table-column type="selection" width="55" />
-      <el-table-column label="商品名称" width="300">
+      <el-table-column label="商品名称" min-width="300">
         <template slot-scope="scope">
           <div class="product">
-            <img class="cover" :src="IMAGE_PREFIX + scope.row.coverimage">
+            <img class="cover" :src="IMAGE_PREFIX + scope.row.coverimage" decoding="async" importance="low">
             <div class="info">
               <div>ID: {{scope.row.id}}</div>
               <div>所需积分: {{scope.row.current_price}}</div>
@@ -21,7 +21,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="库存/销量">
+      <el-table-column label="库存/销量" width="120">
         <template slot-scope="scope">
           <span>{{ scope.row.store }} / {{ scope.row.sales }}</span>
         </template></el-table-column>
@@ -32,7 +32,17 @@
           <ProductStateTag :product="scope.row" />
         </template>
       </el-table-column>
-      <el-table-column v-else label="操作"></el-table-column>
+      <el-table-column v-else label="操作" width="100">
+        <template>
+          <span class="table-actions">
+            <el-button v-if="type === '4'" size="small">增加库存</el-button>
+            <el-button v-if="type === '1' || type === '2' || type === '4'" size="small">下架商品</el-button>
+            <el-button v-if="type === '3'" size="small">编辑商品</el-button>
+            <el-button v-if="type === '3'" size="small">上架商品</el-button>
+            <el-button size="small">删除商品</el-button>
+          </span>
+        </template>
+      </el-table-column>
     </el-table>
     <div class="table-bottom">
       <div class="action">
@@ -63,13 +73,6 @@ const C_TYPES_TO_STR = {
   '4': '已售罄商品'
 }
 
-const C_STATE_TO_STR = {
-  '0': '出售中',
-  '1': '预售中',
-  '2': '未上架',
-  '3': '已售罄'
-}
-
 export default {
   components: { ProductStateTag },
   data() {
@@ -79,10 +82,10 @@ export default {
       selectedProducts: [],
       type: '0',
       page: 1,
+      loading: false,
 
       IMAGE_PREFIX: process.env.VUE_APP_UPLOAD_PUBLIC_URL,
       C_TYPES_TO_STR,
-      C_STATE_TO_STR,
     }
   },
 
@@ -102,6 +105,7 @@ export default {
 
   methods: {
     fetchProduct() {
+      this.loading = true
       Axios.get('/sellerctr/getGoods', {
         params: {
           cur_page: this.page,
@@ -111,12 +115,12 @@ export default {
         console.debug(response.data)
         this.products = response.data.data.data
         this.total_page = response.data.data.total_pages
-      })
+      }).finally(() => this.loading = false)
     },
 
     handleSelect(val) {
       this.selectedProducts = val
-    }
+    },
   }
 }
 </script>
@@ -148,5 +152,10 @@ export default {
   }
 }
 
-
+.table-actions {
+  .el-button + .el-button {
+    margin-left: 0;
+    margin-top: 4px;
+  }
+}
 </style>
