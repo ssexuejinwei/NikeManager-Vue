@@ -35,22 +35,22 @@ const routes = [
     component: () => import('@/views/Auth/index'),
     beforeEnter: ifNotAuthenticated
   },
-  {
-    path: '/Student',
-    component: () => import('@/views/Student/index'),
-    beforeEnter: ifAuthenticated,
-  },
+  // {
+  //   path: '/Student',
+  //   component: () => import('@/views/Student/index'),
+  //   beforeEnter: ifAuthenticated,
+  // },
   {
     path: '/teach',
     component: () => import('@/views/TeachSystem/index'),
     beforeEnter: ifAuthenticated,
   },
-  {
-    path: '/Schedule',
-    name: 'Schedule',
-    component: () => import('@/views/Schedule/index'),
-    beforeEnter: ifAuthenticated,
-  },
+  // {
+  //   path: '/Schedule',
+  //   name: 'Schedule',
+  //   component: () => import('@/views/Schedule/index'),
+  //   beforeEnter: ifAuthenticated,
+  // },
   {
     path: '/activity',
     component: () => import('@/views/Activity/index'),

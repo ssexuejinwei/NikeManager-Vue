@@ -3,12 +3,12 @@
     <p>
       <router-link to="/">Home</router-link>
     </p>
-    <p>
+   <!-- <p>
       <router-link to="/Student">/Student</router-link>
     </p>
     <p>
       <router-link to="/Schedule">/Schedule</router-link>
-    </p>
+    </p> -->
     <p>
       <router-link to="/activity">/activity</router-link>
     </p>

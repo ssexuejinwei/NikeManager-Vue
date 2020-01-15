@@ -35,7 +35,7 @@
     </el-header> 
       <br/>
     <el-container>
-      <el-aside width="200px" style="height: 34rem; border:solid #000000;">
+      <el-aside width="200px" style="height: 35rem; border:solid #000000;">
         <el-menu active-text-color="#ffffff"
         :default-active="activeIndexTeam"
         class = 'teamMenu'
@@ -49,13 +49,11 @@
         </template>
         </el-menu>
       </el-aside>
-      <el-container style="height:34rem;">
-        <el-main style="padding: 0; height:34rem; border: solid #000000; border-left: 0;">
+      <el-container style="height:35rem;">
+        <el-main style="padding: 0; height:35rem; border: solid #000000; border-left: 0;">
           <el-table 
-            v-loading="loading"
-            element-loading-text="拼命加载中"
             :data="tableData"
-            height="536"
+            height="540"
             class="studentTable"
             :border="true"> 
             <el-table-column prop="name" label="姓名" :class="borderBottom" align='center'> </el-table-column>
@@ -91,11 +89,11 @@
         </el-col>
         <el-col :span="13">
           <el-pagination
-            background
-            :page-size="8"
-            :pager-count="7"
+           v-if = "activeIndexTeam=='全部学员'"
+          @current-change="handleStudentPageChange"
+            :page-size="pageSizeForStudent"
             layout="prev, pager, next"
-            :total="80">
+            :total="pageSizeForStudent * pagesForStudent">
           </el-pagination>
         </el-col>
       </el-row>
@@ -235,7 +233,9 @@
             }, 100)
           }
         return {
-          token :'',
+          curPageForStudent:1,
+          pageSizeForStudent:8,
+          pagesForStudent:10,
           cur_page :1,
           page_size:10,
           current_teamId : 0,
@@ -298,13 +298,14 @@
          }
         },
       created() {
-        if(localStorage.getItem('nike#token')){
-          this.token = localStorage.getItem('nike#token')
-        }
         this.update('getStudent')
       },
       watch: {
         activeIndexTeam(newValue,oldValue) {
+          if(newValue == '全部学员'){
+            this.getAllStudent()
+            return
+          }
           let isHave = false
           for(let info of this.infoArray){
             if( info['ageKey']== this.activeIndexAge && info['type'] == this.activeIndexType && info['teamName'] == this.activeIndexTeam){
@@ -324,9 +325,43 @@
         }
       },
       methods: {
+        handleStudentPageChange(val){
+          this.curPageForStudent = val;
+          this.getAllStudent()
+        },
         handleCurrentChange(val){
           this.cur_page = val;
           this.getTempStudent(this.current_teamId)
+        },
+        getAllStudent(){
+          let api = '/sellerctr/getStudents'
+          this.$axios.get(api,{
+            params:{
+              age_min:parseInt(this.activeIndexAge.split('-')[0]),
+              age_max:parseInt(this.activeIndexAge.split('-')[1].split('岁')[0]),
+              choose_sports : this.activeIndexType=='篮球'?0:1,
+              cur_page : this.curPageForStudent,
+              page_size : this.pageSizeForStudent
+            }
+          }).then((response)=>{
+            let list = response['data']['data']['data']
+            this.pagesForStudent = response['data']['data']['total_page']
+            // console.log(this.pagesForStudent)
+            this.tableData=[]
+            for( let student of list){
+              let obj ={
+                id : student['id'],
+                name : student['name'],
+                sex : student['sex']==0?'男':'女',
+                birth : student['birthday'],
+                height :student['height']+'cm',
+                weight : student['weight'] +'kg',
+                tel : student['tel'],
+                do :'',
+              }
+              this.tableData.push(obj)
+            }
+          })
         },
         getTempStudent(teamId){
           let api = '/sellerctr/getChangeTemaStudent'
@@ -366,8 +401,8 @@
                 }
               }
               this.menuTeam = this.menuTeam.sort()
-              // this.menuTeam.splice(0,0,'全部学员')
-              this.activeIndexTeam = this.menuTeam[0]
+              this.menuTeam.splice(0,0,'全部学员')
+              this.activeIndexTeam = '全部学员'
               break;
             case 'getStudent':{
               this.infoArray = []
@@ -426,10 +461,10 @@
                       this.infoArray.push(obj)
                     })//api-2请求完成
                 }
+                this.menuTeam = this.menuTeam.sort()
+                this.menuTeam.splice(0,0,'全部学员')
+                this.activeIndexTeam = '全部学员'
                })
-               // this.menuTeam = this.menuTeam.sort()
-               // this.menuTeam.splice(0,0,'全部学员')
-               // console.log(this.infoArray)
                break;
             }
             case 'addStudent': {
@@ -450,13 +485,8 @@
                 mateName : this.inputTeammateName
               }
               
-              this.$axios.post(api, qs.stringify(data),
-              {
-                headers : {
-                  token : this.token,
-                  'Content-Type': 'application/x-www-form-urlencoded'
-                  }
-              }).then((response) => {
+              this.$axios.post(api, qs.stringify(data)
+              ).then((response) => {
                 teamName = response['data']['data']['team_name']
                 // console.log(teamName)
                 this.$alert('<div class="teamSuccess"><h1 class="teamSuccessHead">分配成功 </h1><p class="teamSuccessContent">'+student.name+'小朋友</p><p>被分配至'+teamName+'</p>', '', {
@@ -523,6 +553,9 @@
           else if(key.indexOf('岁')!=-1){
             this.activeIndexAge = key
             this.update('readStudent')
+          }
+          else if(key.indexOf('全部')!=-1){
+            this.activeIndexTeam = '全部学员'
           }
           else{
             this.activeIndexType = key

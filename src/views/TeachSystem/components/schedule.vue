@@ -103,7 +103,6 @@ export default {
   data() {
     return {
       fullscreenLoading :true,
-      token : '',
       editVisible : false,
       dialogTableVisible : false,
       scheduleVisible:false,
@@ -152,9 +151,6 @@ export default {
       }
   },
   created:function(){
-      if(localStorage.getItem('nike#token')){
-        this.token = localStorage.getItem('nike#token')
-      }
       for(var coach of this.coachList){
         this.coachClick[coach] = false
       }
@@ -304,13 +300,7 @@ export default {
                    })
              return
            }
-           this.$axios.post(api_1,qs.stringify(this.schedule),
-           {
-             headers : {
-               token : this.token,
-               'Content-Type': 'application/x-www-form-urlencoded',
-               }
-           }
+           this.$axios.post(api_1,qs.stringify(this.schedule)
           ).then( (response)=>{
              let code = response['data']['code']
              if( code == 0){
@@ -374,13 +364,7 @@ export default {
                    })
              return
            }
-           this.$axios.post(api_3,qs.stringify(this.editSchedule),
-           {
-             headers : {
-               token : this.token,
-               'Content-Type': 'application/x-www-form-urlencoded',
-               }
-           }
+           this.$axios.post(api_3,qs.stringify(this.editSchedule)
           ).then( (response)=>{
              let code = response['data']['code']
              if( code == 0){
@@ -658,13 +642,7 @@ export default {
         schedule_id: this.attendSchedule['schedule_id'],
         student_id : parseInt( student_id)
       }
-      this.$axios.post(api,qs.stringify(params),
-       {
-         headers : {
-           token : this.token,
-           'Content-Type': 'application/x-www-form-urlencoded',
-           }
-       }
+      this.$axios.post(api,qs.stringify(params)
       ).then( (response)=>{
          let code = response['data']['code']
          if( code == 0){
@@ -688,13 +666,7 @@ export default {
         schedule_id: this.attendSchedule['schedule_id'],
         student_id : parseInt( student_id)
       }
-      this.$axios.post(api,qs.stringify(params),
-       {
-         headers : {
-           token : this.token,
-           'Content-Type': 'application/x-www-form-urlencoded',
-           }
-       }
+      this.$axios.post(api,qs.stringify(params)
       ).then( (response)=>{
          let code = response['data']['code']
          if( code == 0){
