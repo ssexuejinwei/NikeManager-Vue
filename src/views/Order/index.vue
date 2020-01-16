@@ -87,7 +87,7 @@
         </el-form>
         <div>
           <template v-if="dialogOrder.state === '0'">
-            <el-button type="primary">发货</el-button>
+            <el-button type="primary" @click="addressDialogVisible = true">发货</el-button>
             <el-button type="danger">取消订单</el-button>
           </template>
           <template v-if="dialogOrder.state === '2'">
@@ -95,6 +95,19 @@
             <el-button type="danger">退/换货</el-button>
           </template>
         </div>
+        <!-- 填写物流单 -->
+        <el-dialog
+          :visible.sync="addressDialogVisible"
+          title="填写物流单号"
+          append-to-body
+          :before-close="handleCloseAddressDialog"
+        >
+          <el-input v-model="addressDialogValue"></el-input>
+          <div slot="footer">
+            <el-button type="primary" @click="handleSubmitAddressDialog" :disabled="!addressDialogValue">确定</el-button>
+            <el-button type="danger" @click="handleCloseAddressDialog">取消</el-button>
+          </div>
+        </el-dialog>
       </div>
 
     </el-dialog>
@@ -119,7 +132,9 @@ export default {
 
       // 对话框
       dialogVisible: false,
-      dialogOrder: null
+      dialogOrder: null,
+      addressDialogVisible: false,
+      addressDialogValue: ''
     }
   },
   created() {
@@ -185,7 +200,18 @@ export default {
     handleCloseDialog(done) {
       this.dialogOrder = null
       done()
-    }
+    },
+    handleOpenAddressDialog() {
+      this.addressDialogVisible = true
+    },
+    handleCloseAddressDialog(done) {
+      this.addressDialogValue = ''
+      this.addressDialogVisible = false
+      if (typeof done === 'function') done()
+    },
+    handleSubmitAddressDialog() {
+      this.handleCloseAddressDialog()
+    },
   }
 }
 </script>

@@ -80,22 +80,22 @@ const routes = [
         path: '',
         component: () => import('@/views/Order/index'),
       },
-      {
-        path: 'add',
-        component: () => import('@/views/Order/add-order')
-      },
-      {
-        path: 'service',
-        component: () => import('@/views/Order/service')
-      },
-      {
-        path: 'service/return',
-        component: () => import('@/views/Order/service-return')
-      },
-      {
-        path: 'service/exchange',
-        component: () => import('@/views/Order/service-exchange')
-      },
+      // {
+      //   path: 'add',
+      //   component: () => import('@/views/Order/add-order')
+      // },
+      // {
+      //   path: 'service',
+      //   component: () => import('@/views/Order/service')
+      // },
+      // {
+      //   path: 'service/return',
+      //   component: () => import('@/views/Order/service-return')
+      // },
+      // {
+      //   path: 'service/exchange',
+      //   component: () => import('@/views/Order/service-exchange')
+      // },
     ]
   },
 ]
