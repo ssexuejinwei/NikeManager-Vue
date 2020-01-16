@@ -182,18 +182,22 @@ export default {
       if(key =='checkAttend'){
         this.$axios.get(api_1,{
           params:{
-            start_time :'',
-            end_time : '',
+            start_time :this.date,
+            end_time : this.date,
           }
         }).then((response)=>{
             this.scheduleList = response['data']['data']
         })
       }
       else if(key =='edit'){
+        if(this.date==''){
+          let myDate = new Date();
+          this.date = myDate.getFullYear() +'-'+(myDate.getMonth()+1)+'-'+myDate.getDate()
+        }
         this.$axios.get(api_1,{
           params:{
-            start_time :'',
-            end_time : '',
+            start_time :this.date,
+            end_time : this.date,
           }
         }).then((response)=>{
             this.scheduleList = response['data']['data']
@@ -413,7 +417,6 @@ export default {
           this.attendSchedule['course_name'] = data[3].split('+')[1]
           break
         case 'edit':
-          console.log(data)
           this.editSchedule['id'] = parseInt(data[0].split('+')[1])
           this.editSchedule['start_time'] = this.date +' ' + data[0].split('+')[0].split('-')[0]
           this.editSchedule['end_time'] = this.date +' ' + data[0].split('+')[0].split('-')[1]
@@ -493,128 +496,147 @@ export default {
           this.scheduleVisible = true
           break;
         case 'checkAttend':
-          let scheduleArray = this.scheduleList[this.date]
-          if(typeof(scheduleArray) ==='undefined'){
-            this.$alert('今日无排课信息', {
-                      confirmButtonText: '确定',
-               }).then(()=>{
-                 this.buttonType[type] = 'info'
-               })
-            return
-          }
-          this.checkAttendVisible = true
-          this.optionsCheckAttend = []
-          //教案value的位置用来存排课的id
-          for(let schedule of scheduleArray){
-            let isHave =false
-            let scheduleID = schedule['id']
-            let courseID = schedule['tp_id']
-            let courseName = schedule['tp_name']
-            let start_time = schedule['start_time'].split(' ')[1].split(':').slice(0,2).join(':')
-            let end_time = schedule['end_time'].split(' ')[1].split(':').slice(0,2).join(':')
-            let duration = start_time + '-' + end_time
-            let obj = {
-              value:duration +'+' +scheduleID ,
-              label:duration,
-              children:[]
+          let api_1 = '/sellerctr/getSchedule'
+          this.$axios.get(api_1,{
+            params:{
+              start_time :this.date,
+              end_time : this.date,
             }
-            if(this.optionsCheckAttend.length != 0){
-              for(let option of this.optionsCheckAttend ){
-                if(option['value'].split('+')[0] == duration){
-                  isHave = true
-                  break
+          }).then((response)=>{
+              this.scheduleList = response['data']['data']
+              let scheduleArray = this.scheduleList[this.date]
+              if(typeof(scheduleArray) ==='undefined'){
+                this.$alert('今日无排课信息', {
+                          confirmButtonText: '确定',
+                   }).then(()=>{
+                     this.buttonType[type] = 'info'
+                   })
+                return
+              }
+              this.checkAttendVisible = true
+              this.optionsCheckAttend = []
+              //教案value的位置用来存排课的id
+              for(let schedule of scheduleArray){
+                let isHave =false
+                let scheduleID = schedule['id']
+                let courseID = schedule['tp_id']
+                let courseName = schedule['tp_name']
+                let start_time = schedule['start_time'].split(' ')[1].split(':').slice(0,2).join(':')
+                let end_time = schedule['end_time'].split(' ')[1].split(':').slice(0,2).join(':')
+                let duration = start_time + '-' + end_time
+                let obj = {
+                  value:duration +'+' +scheduleID ,
+                  label:duration,
+                  children:[]
+                }
+                if(this.optionsCheckAttend.length != 0){
+                  for(let option of this.optionsCheckAttend ){
+                    if(option['value'].split('+')[0] == duration){
+                      isHave = true
+                      break
+                    }
+                  }
+                }
+                if(!isHave){
+                  let obj_course = {
+                    value : courseID + '+' +courseName,
+                    label : schedule['tp_name']
+                  }
+                  let obj_team = {
+                    value : schedule['team_id'] + '+' +schedule['team_name'] ,
+                    label : schedule['team_name'],
+                    children : []
+                  }
+                  obj_team['children'].push(obj_course)
+                  let obj_coach = {
+                    value : schedule['coach_id']+ '+' +schedule['coach_name'],
+                    label : schedule['coach_name'],
+                    children :[]
+                  }
+                  obj_coach['children'].push(obj_team)
+                  obj['children'].push(obj_coach)
+                  this.optionsCheckAttend.push(obj)
                 }
               }
-            }
-            if(!isHave){
-              let obj_course = {
-                value : courseID + '+' +courseName,
-                label : schedule['tp_name']
-              }
-              let obj_team = {
-                value : schedule['team_id'] + '+' +schedule['team_name'] ,
-                label : schedule['team_name'],
-                children : []
-              }
-              obj_team['children'].push(obj_course)
-              let obj_coach = {
-                value : schedule['coach_id']+ '+' +schedule['coach_name'],
-                label : schedule['coach_name'],
-                children :[]
-              }
-              obj_coach['children'].push(obj_team)
-              obj['children'].push(obj_coach)
-              this.optionsCheckAttend.push(obj)
-            }
-          }
+          })
           break;
         case 'edit':
-          let scheduleArrayEdit = this.scheduleList[this.date]
-          if(typeof(scheduleArrayEdit) ==='undefined'){
-            this.$alert('今日无排课信息,请先排课在进行编辑', {
-                      confirmButtonText: '确定',
-               }).then(()=>{
-                 this.buttonType[type] = 'info'
-               })
-            return
-          }
-          this.editVisible = true
-          this.optionsEdit = []
-          //教案value的位置用来存排课的id
-          for(let schedule of scheduleArrayEdit){
-            let isHave =false
-            let scheduleID = schedule['id']
-            // let courseID = schedule['tp_id']
-            // let courseName = schedule['tp_name']
-            let start_time = schedule['start_time'].split(' ')[1].split(':').slice(0,2).join(':')
-            let end_time = schedule['end_time'].split(' ')[1].split(':').slice(0,2).join(':')
-            let duration = start_time + '-' + end_time
-            let obj = {
-              value:duration +'+' +scheduleID ,
-              label:duration,
-              children:[]
+          let api_2 = '/sellerctr/getSchedule'
+          this.$axios.get(api_2,{
+            params:{
+              start_time :this.date,
+              end_time : this.date,
             }
-            if(this.optionsEdit.length != 0){
-              for(let option of this.optionsEdit ){
-                if(option['value'].split('+')[0] == duration){
-                  isHave = true
-                  break
+          }).then((response)=>{
+            this.scheduleList = response['data']['data']
+            let scheduleArrayEdit = this.scheduleList[this.date]
+            if(typeof(scheduleArrayEdit) ==='undefined'){
+              this.$alert('今日无排课信息,请先排课在进行编辑', {
+                        confirmButtonText: '确定',
+                 }).then(()=>{
+                   this.buttonType[type] = 'info'
+                 })
+              return
+            }
+            this.editVisible = true
+            this.optionsEdit = []
+            //教案value的位置用来存排课的id
+            for(let schedule of scheduleArrayEdit){
+              let isHave =false
+              let scheduleID = schedule['id']
+              // let courseID = schedule['tp_id']
+              // let courseName = schedule['tp_name']
+              let start_time = schedule['start_time'].split(' ')[1].split(':').slice(0,2).join(':')
+              let end_time = schedule['end_time'].split(' ')[1].split(':').slice(0,2).join(':')
+              let duration = start_time + '-' + end_time
+              let obj = {
+                value:duration +'+' +scheduleID ,
+                label:duration,
+                children:[]
+              }
+              if(this.optionsEdit.length != 0){
+                for(let option of this.optionsEdit ){
+                  if(option['value'].split('+')[0] == duration){
+                    isHave = true
+                    break
+                  }
                 }
               }
-            }
-            if(!isHave){
-              let children_course = []
-              //先遍历course
-              for(let course of this.courseList){
-                let obj ={
-                  value:course['id'],
-                  label:course['name']
+              if(!isHave){
+                let children_course = []
+                //先遍历course
+                for(let course of this.courseList){
+                  let obj ={
+                    value:course['id'],
+                    label:course['name']
+                  }
+                  children_course.push(obj)
                 }
-                children_course.push(obj)
+                
+                let children_team =[]
+                for(let team of this.teamList){
+                  let obj ={
+                    value:team['id'],
+                    label:team['name'],
+                    children : children_course
+                  }
+                  children_team.push(obj)
+                }
+                let children_coach = []
+                for(let coach of this.coachList){
+                  let obj ={
+                    value : coach['id'],
+                    label : coach['name'],
+                    children : children_team
+                  }
+                  children_coach.push(obj)
+                }
+                obj['children'] = children_coach
+                this.optionsEdit.push(obj)
               }
+            }
               
-              let children_team =[]
-              for(let team of this.teamList){
-                let obj ={
-                  value:team['id'],
-                  label:team['name'],
-                  children : children_course
-                }
-                children_team.push(obj)
-              }
-              let children_coach = []
-              for(let coach of this.coachList){
-                let obj ={
-                  value : coach['id'],
-                  label : coach['name'],
-                  children : children_team
-                }
-                children_coach.push(obj)
-              }
-              obj['children'] = children_coach
-              this.optionsEdit.push(obj)
-            }
-          }
+            })
           break;
         default:
           break;
