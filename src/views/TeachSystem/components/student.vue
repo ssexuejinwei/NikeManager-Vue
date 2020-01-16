@@ -493,8 +493,13 @@
                           dangerouslyUseHTMLString: true
                         });
               }).catch((error)=>{
-                console.log(error)
-                this.$alert('表单填写错误，添加失败')
+                let status = error.response.status
+                if(status == 200){
+                  this.$alert('没有查找到家长账号,请小程序先注册')
+                }
+                else{
+                  this.$alert('表单填写错误,添加失败')
+                }
               })
               break;
             }

@@ -325,6 +325,10 @@ export default {
                          confirmButtonText: '确定',
                      })
              }
+           }).catch((e)=>{
+             this.$alert('当前时段已有课程,请重新选择', {
+                       confirmButtonText: '确定',
+                   })
            })
           break;
           /**
