@@ -22,28 +22,22 @@
           <el-table-column prop="express_number" label="物流单号" />
           <el-table-column label="交易状态">
             <template slot-scope="scope">
-              <span v-if="scope.row.state === '3'">
-                交易成功
-              </span>
-              <span v-else-if="scope.row.state === '0'">
-                <el-tag>待发货</el-tag>
-              </span>
-              <span v-else-if="scope.row.state === '2'">
-                <el-tag type="success">确认收货</el-tag>
-              </span>
-              <span v-else>null</span>
-              <!-- <el-tag style="margin-right: 0.5rem" type="info">待完成订单</el-tag>
-              <el-button size="small" :disabled="scope.row.state === 'complete'">完成订单</el-button> -->
+              <el-button type="text" size="small" @click="handleOpenDialog(scope.row)">
+                <span v-if="scope.row.state === '3'">
+                  交易成功
+                </span>
+                <span v-else-if="scope.row.state === '0'">
+                  <el-tag>待发货</el-tag>
+                </span>
+                <span v-else-if="scope.row.state === '2'">
+                  <el-tag type="success">确认收货</el-tag>
+                </span>
+                <span v-else>null</span>
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
         <div class="table-action">
-          <!-- <router-link to="/order/add">
-            <el-button>添加新订单</el-button>
-          </router-link>
-          <router-link to="/order/service">
-            <el-button>售后</el-button>
-          </router-link> -->
           <div>
             <el-pagination
               layout="total, prev, next, jumper"
@@ -56,6 +50,54 @@
       </div>
     </div>
 
+    <el-dialog
+      title="订单详情"
+      :visible.sync="dialogVisible"
+      :before-close="handleCloseDialog"
+    >
+      <div v-if="dialogOrder">
+        <el-form label-width="150px" disabled>
+          <el-form-item label="创建时间">
+            <el-input :value="format(dialogOrder.created)"></el-input>
+          </el-form-item>
+          <el-form-item label="订单号">
+            <el-input :value="dialogOrder.id"></el-input>
+          </el-form-item>
+          <el-form-item label="所消耗积分">
+            <el-input :value="dialogOrder.score"></el-input>
+          </el-form-item>
+          <el-form-item label="商品基础信息">
+            <el-input></el-input>
+          </el-form-item>
+          <el-form-item label="商品数量">
+            <el-input :value="dialogOrder.num"></el-input>
+          </el-form-item>
+          <el-form-item label="用户名称">
+            <el-input></el-input>
+          </el-form-item>
+          <el-form-item label="联系方式">
+            <el-input></el-input>
+          </el-form-item>
+          <el-form-item label="是否享有折扣">
+            <el-input></el-input>
+          </el-form-item>
+          <el-form-item label="是否使用抵用券">
+            <el-input></el-input>
+          </el-form-item>
+        </el-form>
+        <div>
+          <template v-if="dialogOrder.state === '0'">
+            <el-button type="primary">发货</el-button>
+            <el-button type="danger">取消订单</el-button>
+          </template>
+          <template v-if="dialogOrder.state === '2'">
+            <el-button type="primary">确认收货</el-button>
+            <el-button type="danger">退/换货</el-button>
+          </template>
+        </div>
+      </div>
+
+    </el-dialog>
   </div>
 </template>
 
@@ -74,6 +116,10 @@ export default {
       state: '1',
 
       isLoading: false,
+
+      // 对话框
+      dialogVisible: false,
+      dialogOrder: null
     }
   },
   created() {
@@ -92,8 +138,8 @@ export default {
     }
   },
   methods: {
-    format(date) {
-      return format(date, 'yyyy.MM.dd HH:mm:ss')
+    format(date, f) {
+      return format(date, f ?? 'yyyy.MM.dd HH:mm:ss')
     },
 
     async getOrders() {
@@ -130,6 +176,15 @@ export default {
 
     handleSelect(key) {
       this.state = key
+    },
+
+    handleOpenDialog(v) {
+      this.dialogVisible = true
+      this.dialogOrder = v
+    },
+    handleCloseDialog(done) {
+      this.dialogOrder = null
+      done()
     }
   }
 }
