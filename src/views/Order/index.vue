@@ -9,17 +9,25 @@
         <el-menu-item index="5">退/换货订单</el-menu-item>
         <el-menu-item index="6">历史订单</el-menu-item>
       </el-menu>
-      <div class="table">
-        <el-table :data="data" border>
-          <el-table-column prop="id" label="编号" />
+      <div class="table" v-loading="isLoading">
+        <el-table :data="data" border >
+          <el-table-column prop="order_number" label="订单号" />
+          <el-table-column label="商品名称">
+            <template slot-scope="scope">
+              <span>
+                <div>{{scope.row.goods_name}} {{scope.row.goods_id}}</div>
+                <div>颜色 {{scope.row.color}}</div>
+                <div>尺码 {{scope.row.size}}</div>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="score" label="消耗积分" />
+          <el-table-column prop="address_str" label="收货地址" />
           <el-table-column prop="created" label="创建时间">
             <template slot-scope="scope">
               {{ format(scope.row.created) }}
             </template>
           </el-table-column>
-          <el-table-column prop="score" label="消耗积分" />
-          <el-table-column prop="address" label="送货地址" />
-          <el-table-column prop="express_number" label="物流单号" />
           <el-table-column label="交易状态">
             <template slot-scope="scope">
               <el-button type="text" size="small" @click="handleOpenDialog(scope.row)">
@@ -32,7 +40,10 @@
                 <span v-else-if="scope.row.state === '2'">
                   <el-tag type="success">确认收货</el-tag>
                 </span>
-                <span v-else>null</span>
+                <span v-else-if="scope.row.state === '5'">
+                  <el-tag type="warning">退换货</el-tag>
+                </span>
+                <span v-else>unknown</span>
               </el-button>
             </template>
           </el-table-column>
@@ -40,9 +51,9 @@
         <div class="table-action">
           <div>
             <el-pagination
-              layout="total, prev, next, jumper"
+              layout="prev, pager, next"
               hide-on-single-page
-              :total="total"
+              :page-count="pages"
               :current-page.sync="current"
             />
           </div>
@@ -61,29 +72,35 @@
             <el-input :value="format(dialogOrder.created)"></el-input>
           </el-form-item>
           <el-form-item label="订单号">
-            <el-input :value="dialogOrder.id"></el-input>
+            <el-input :value="dialogOrder.order_number"></el-input>
           </el-form-item>
           <el-form-item label="所消耗积分">
             <el-input :value="dialogOrder.score"></el-input>
           </el-form-item>
           <el-form-item label="商品基础信息">
-            <el-input></el-input>
+            <el-input :value="[dialogOrder.goods_name, dialogOrder.goods_id, dialogOrder.color, dialogOrder.size].join(' ')"></el-input>
           </el-form-item>
           <el-form-item label="商品数量">
             <el-input :value="dialogOrder.num"></el-input>
           </el-form-item>
           <el-form-item label="用户名称">
-            <el-input></el-input>
+            <el-input :value="dialogOrder.parents_name"></el-input>
           </el-form-item>
           <el-form-item label="联系方式">
-            <el-input></el-input>
+            <el-input :value="dialogOrder.address && dialogOrder.address.tel"></el-input>
           </el-form-item>
-          <el-form-item label="是否享有折扣">
+          <el-form-item label="物流单号" v-if="dialogOrder.express_number && dialogOrder.express_name">
+            <el-input :value="[dialogOrder.express_name, dialogOrder.express_number].join(' ')"></el-input>
+          </el-form-item>
+          <el-form-item label="原因" v-if="dialogOrder.message">
+            <el-input :value="dialogOrder.message"></el-input>
+          </el-form-item>
+          <!-- <el-form-item label="是否享有折扣">
             <el-input></el-input>
           </el-form-item>
           <el-form-item label="是否使用抵用券">
             <el-input></el-input>
-          </el-form-item>
+          </el-form-item> -->
         </el-form>
         <div>
           <template v-if="dialogOrder.state === '0'">
@@ -125,6 +142,7 @@ export default {
       data: [],
       // 分页
       current: 1,
+      pages: 1,
       // pageSize: 5,
       state: '1',
 
@@ -143,15 +161,14 @@ export default {
 
   watch: {
     state() {
+      this.current = 1
+      this.getOrders()
+    },
+    current() {
       this.getOrders()
     }
   },
 
-  computed: {
-    total() {
-      return this.data.length
-    }
-  },
   methods: {
     format(date, f) {
       return format(date, f ?? 'yyyy.MM.dd HH:mm:ss')
@@ -163,24 +180,24 @@ export default {
         const { data } = await Axios.get('/sellerctr/getOrder', {
           params: {
             cur_page: this.current,
-            // page_size: this.pageSize,
             state: this.state,
           }
         })
 
         console.log(data)
 
-        data.data.forEach(d => {
+        data.data.data.forEach(d => {
           d.address = JSON.parse(d.address)
           if (d.address) {
             d.address.address = JSON.parse(d.address.address)
           }
         })
 
-        this.data = data.data.map(d => ({
+        this.pages = data.data.last_page
+        this.data = data.data.data.map(d => ({
           ...d,
           created: new Date(d.create_time),
-          address: [d.address?.address?.region?.label, d.address?.name, d.address?.tel].join(' '),
+          address_str: [d.address?.address?.region?.label, d.address?.name, d.address?.tel].join(' '),
         }))
       } catch(e) {
         console.error(e)
