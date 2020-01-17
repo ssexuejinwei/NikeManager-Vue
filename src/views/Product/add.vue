@@ -3,25 +3,101 @@
     <header>
       <h1>发布商品</h1>
     </header>
-    <el-form class="form" ref="form" :model="form" label-width="80px">
-      <el-form-item label="商品图片" required>
+    <el-form class="form" ref="form" :model="form" :rules="rules" label-width="120px">
+      <el-form-item label="商品封面" prop="coverimage">
+        <el-upload
+          action="#"
+          accept="image/*"
+          class="cover-uploader"
+          :show-file-list="false"
+          :limit="1"
+          :http-request="handleUpload"
+          :on-success="handleUploadSuccess"
+          :on-change="handleUploadCover"
+        >
+          <img v-if="form.coverimage" :src="UPLOAD_PUBLIC_URL+ form.coverimage" class="cover">
+          <i v-else class="el-icon-plus"></i>
+        </el-upload>
+      </el-form-item>
+      <el-form-item label="商品图片" prop="images">
         <el-upload
           action="#"
           list-type="picture-card"
           accept="image/*"
-          :limit="3"
           :http-request="handleUpload"
           :on-success="handleUploadSuccess"
-          :on-change="handleUploadChange"
+          :on-change="handleUploadImages"
         >
           <i class="el-icon-plus"></i>
         </el-upload>
       </el-form-item>
-      <el-form-item label="商品名称" required>
+      <el-form-item label="商品名称" prop="name">
         <el-input v-model="form.name"></el-input>
       </el-form-item>
+      <el-form-item label="商品分类" prop="type">
+        <el-radio-group v-model="form.type">
+          <el-radio label="0">鞋子</el-radio>
+          <el-radio label="1">服饰</el-radio>
+          <el-radio label="2">周边</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="小分类" prop="category">
+        <el-input v-model="form.category"></el-input>
+      </el-form-item>
+      <el-form-item label="原价" prop="original_price">
+        <el-input v-model="form.original_price"></el-input>
+      </el-form-item>
+      <el-form-item label="现价" prop="current_price">
+        <el-input v-model="form.current_price"></el-input>
+      </el-form-item>
+      <el-form-item label="laber" prop="laber">
+        <el-input v-model="form.laber"></el-input>
+      </el-form-item>
+      <el-form-item label="介绍" prop="desc">
+        <el-input v-model="form.desc" type="textarea"></el-input>
+      </el-form-item>
+      <el-form-item label="sku" prop="skus">
+        <el-table :data="form.skus">
+          <el-table-column label="颜色" prop="color" width="100">
+            <template slot-scope="scope">
+              <el-input size="mini" v-model="scope.row.color"></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column label="尺码" prop="size" width="90">
+            <template slot-scope="scope">
+              <el-input size="mini" v-model="scope.row.size"></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column label="库存" prop="num" width="150">
+            <template slot-scope="scope">
+              <el-input-number size="mini" v-model="scope.row.num" controls-position="right"></el-input-number>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="230">
+            <template slot-scope="scope">
+              <el-button size="mini" v-if="scope.$index === form.skus.length - 1" type="primary" @click="addSku">添加</el-button>
+              <el-button size="mini" v-if="scope.$index !== 0 || form.skus.length > 1" type="danger" @click="delSku(scope.row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-form-item>
+      <el-form-item label="是否预售" prop="reserve">
+        <el-switch v-model="form.reserve" inactive-value="0" active-value="1"></el-switch>
+      </el-form-item>
+      <el-form-item label="是否定时上架" prop="putaway_time">
+        <el-switch v-model="form.putaway"></el-switch>
+        <el-date-picker
+          v-if="form.putaway"
+          style="margin-left: 12px"
+          v-model="form.putaway_time"
+          type="datetime"
+          placeholder="选择日期时间">
+        </el-date-picker>
+      </el-form-item>
       <el-form-item size="large">
-        <el-button type="primary" @click="onSubmit">上传商品</el-button>
+        <el-button type="primary" @click="onSubmit">提交</el-button>
+        <!-- <el-button type="info" @click="onSubmit">预售商品</el-button>
+        <el-button type="success" @click="onSubmit">定时上架</el-button> -->
       </el-form-item>
     </el-form>
   </div>
@@ -29,13 +105,95 @@
 
 <script>
 import Axios from 'axios'
+import qs from 'querystring'
+import { format } from 'date-fns'
 
 export default {
   data() {
     return {
       form: {
-        capacity: 0,
+        name: '',
+        original_price: '',
+        current_price: '',
+        desc: '',
+        state: '0', // 状态 0;  //销售中1;//下架
+        type: '0', // 类型0：鞋子，1：服饰，2：周边
+        coverimage: '',
+        laber: '',
+        category: '',
+        images: [],
+        reserve: '0',
+        skus: [
+          {color: '', size: '', num: 0}
+        ],
+        putaway: false,
+        putaway_time: null
+      },
+      rules: {
+        name: [
+          { required: true, trigger: 'blur', message: '请输入商品名称' },
+        ],
+        original_price: [
+          { required: true, trigger: 'blur', message: '请输入原价' },
+        ],
+        current_price: [
+          { required: true, trigger: 'blur', message: '请输入现价' },
+        ],
+        desc: [
+          { required: true, trigger: 'blur', message: '请输入商品描述' },
+        ],
+        coverimage: [
+          { required: true, trigger: 'change', message: '请上传商品封面' },
+        ],
+        laber: [
+          { required: true, trigger: 'blur' },
+        ],
+        category: [
+          { required: true, trigger: 'blur', message: '请输入商品分类' },
+        ],
+        images: [
+          { type: 'array', required: true, trigger: 'change', message: '请上传商品图片' },
+        ],
+        skus: [
+          { validator: (r, v, cb) => {
+            if (this.validSkus.length === 0) {
+              cb(new Error('请填写 skus 信息'))
+            } else {
+              cb()
+            }
+          }, trigger: 'change' },
+        ],
+        putaway_time: [
+          { validator: (r, v, cb) => {
+            if (this.form.putaway) {
+              if (!this.form.putaway_time) {
+                cb(new Error('请输入发布时间'))
+              }
+            } else {
+              cb()
+            }
+          }, trigger: 'change' }
+        ]
+      },
+      UPLOAD_PUBLIC_URL: process.env.VUE_APP_UPLOAD_PUBLIC_URL
+    }
+  },
+
+  computed: {
+    formData() {
+      const form = {
+        ...this.form,
+        images: JSON.stringify(this.form.images),
+        skus: JSON.stringify(this.validSkus),
+        putaway_time: this.form.putaway ? format(this.form.putaway_time, 'yyyy-MM-dd HH:mm:ss') : format(new Date, 'yyyy-MM-dd HH:mm:ss')
       }
+
+      delete form.putaway
+      return form;
+    },
+
+    validSkus() {
+      return this.form.skus.filter(sku => sku.color && sku.size)
     }
   },
   methods: {
@@ -52,12 +210,46 @@ export default {
     handleUploadSuccess(res, rawFile) {
       if (res?.data?.data?.fileName) {
         rawFile.url = process.env.VUE_APP_UPLOAD_PUBLIC_URL + res?.data?.data?.fileName
+        rawFile.fileName = res?.data?.data?.fileName
       }
     },
-    handleUploadChange(file, fileList) {
-      this.fileList = fileList
+    handleUploadCover(file) {
+      console.log(file)
+      this.form.coverimage = file.fileName
     },
-    onSubmit() {}
+    handleUploadImages(file, fileList) {
+      this.form.images = fileList.map(f => f.fileName)
+    },
+
+    addSku() {
+      this.form.skus.push({
+        color: '',
+        size: '',
+        num: 0
+      })
+    },
+
+    delSku($sku) {
+      this.form.skus = this.form.skus.filter(sku => sku !== $sku)
+    },
+
+    onSubmit() {
+      console.log(this.formData)
+      this.$refs['form'].validate(valid => {
+        console.log(valid)
+        if (!valid) return
+        Axios.post('/sellerctr/addGoods', qs.stringify(this.formData))
+          .then(() => {
+            this.$alert('添加成功', '成功').then(() => {
+              this.$router.go(-1)
+            })
+          })
+          .catch(e => {
+            console.error(e)
+            this.$alert(`错误原因: ${e.message || '未知错误'}` ,'添加商品失败')
+          }) 
+      })
+    }
   }
 }
 </script>
@@ -66,7 +258,35 @@ export default {
 @import './common';
 
 .form {
-  width: 500px;
+  width: 600px;
+}
+
+.cover {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  display: block;
+}
+
+.cover-uploader {
+  &::v-deep .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+      border-color: #409EFF;
+    }
+
+    .el-icon-plus {
+      width: 80px;
+      height: 80px;
+      line-height: 80px;
+      text-align: center;
+    }
+  }
 }
 
 </style>

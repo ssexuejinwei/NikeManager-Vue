@@ -46,7 +46,7 @@
     </el-table>
     <div class="table-bottom">
       <div class="action">
-        <el-button v-if="type === '0'" type="primary">新增商品</el-button>
+        <el-button v-if="type === '0'" type="primary"><router-link to="/product/add">新增商品</router-link></el-button>
         <el-button v-if="type === '1' || type === '2' || type === '4'" type="primary">批量下架</el-button>
         <el-button v-if="type === '3'" type="primary">批量上架</el-button>
         <el-button>批量删除</el-button>
