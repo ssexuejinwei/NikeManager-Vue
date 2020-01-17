@@ -133,7 +133,7 @@
 
 <script>
 import Axios from 'axios'
-// import _ from 'lodash'
+import _ from 'lodash'
 import { format } from 'date-fns'
 
 export default {
@@ -141,10 +141,10 @@ export default {
     return {
       data: [],
       // 分页
-      current: 1,
+      current: this.$route.query.current || 1,
       pages: 1,
       // pageSize: 5,
-      state: '1',
+      state: this.$route.query.state || '1',
 
       isLoading: false,
 
@@ -156,16 +156,29 @@ export default {
     }
   },
   created() {
-    this.getOrders()
+    this.debouncedGetOrder = _.debounce(this.getOrders, 100)
+    this.debouncedGetOrder()
   },
 
   watch: {
-    state() {
+    state(v) {
       this.current = 1
-      this.getOrders()
+      this.$router.replace({
+        query: {
+          ...this.$route.query,
+          state: v,
+        }
+      })
+      this.debouncedGetOrder()
     },
-    current() {
-      this.getOrders()
+    current(v) {
+      this.$router.replace({
+        query: {
+          ...this.$route.query,
+          current: v
+        }
+      })
+      this.debouncedGetOrder()
     }
   },
 

@@ -64,6 +64,7 @@
 <script>
 import Axios from 'axios'
 import qs from 'querystring'
+import _ from 'lodash'
 
 import ProductStateTag from './components/product-state-tag'
 
@@ -92,7 +93,8 @@ export default {
   },
 
   created() {
-    this.fetchProduct()
+    this.debouncedFetchProduct = _.debounce(this.fetchProduct, 100)
+    this.debouncedFetchProduct()
   },
 
   watch: {
@@ -103,7 +105,8 @@ export default {
           type: v
         }
       })
-      this.fetchProduct()
+      this.page = 1
+      this.debouncedFetchProduct()
     },
 
     page(v) {
@@ -113,7 +116,7 @@ export default {
           page: v
         }
       })
-      this.fetchProduct()
+      this.debouncedFetchProduct()
     }
   },
 
@@ -151,7 +154,7 @@ export default {
           console.error(e)
           this.$alert('下架失败', '错误', { type: 'error' })
         })
-        .then(this.fetchProduct)
+        .then(this.debouncedFetchProduct)
       })
     },
 
@@ -170,7 +173,7 @@ export default {
           console.error(e)
           this.$alert('上架失败', '错误', { type: 'error' })
         })
-        .then(this.fetchProduct)
+        .then(this.debouncedFetchProduct)
       })
     }
   }
