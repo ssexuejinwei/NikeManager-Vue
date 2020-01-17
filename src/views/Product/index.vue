@@ -16,6 +16,7 @@
             <img class="cover" :src="IMAGE_PREFIX + scope.row.coverimage" decoding="async" importance="low">
             <div class="info">
               <div>ID: {{scope.row.id}}</div>
+              <div>{{scope.row.category}} {{scope.row.name}}</div>
               <div>所需积分: {{scope.row.current_price}}</div>
             </div>
           </div>
@@ -33,13 +34,13 @@
         </template>
       </el-table-column>
       <el-table-column v-else label="操作" width="100">
-        <template>
+        <template slot-scope="scope">
           <span class="table-actions">
-            <el-button v-if="type === '4'" size="small">增加库存</el-button>
-            <el-button v-if="type === '1' || type === '2' || type === '4'" size="small">下架商品</el-button>
-            <el-button v-if="type === '3'" size="small">编辑商品</el-button>
-            <el-button v-if="type === '3'" size="small">上架商品</el-button>
-            <el-button size="small">删除商品</el-button>
+            <el-button v-if="type === '4'" size="small" disabled>增加库存</el-button>
+            <el-button v-if="type === '1' || type === '2' || type === '4'" size="small" @click="downGood(scope.row)">下架商品</el-button>
+            <el-button v-if="type === '3'" size="small" disabled>编辑商品</el-button>
+            <el-button v-if="type === '3'" size="small" @click="upGood(scope.row)">上架商品</el-button>
+            <el-button size="small" disabled>删除商品</el-button>
           </span>
         </template>
       </el-table-column>
@@ -47,9 +48,9 @@
     <div class="table-bottom">
       <div class="action">
         <el-button v-if="type === '0'" type="primary"><router-link to="/product/add">新增商品</router-link></el-button>
-        <el-button v-if="type === '1' || type === '2' || type === '4'" type="primary">批量下架</el-button>
-        <el-button v-if="type === '3'" type="primary">批量上架</el-button>
-        <el-button>批量删除</el-button>
+        <el-button v-if="type === '1' || type === '2' || type === '4'" type="primary" disabled>批量下架</el-button>
+        <el-button v-if="type === '3'" type="primary" disabled>批量上架</el-button>
+        <el-button disabled>批量删除</el-button>
       </div>
       <el-pagination
         :page-count="total_page"
@@ -62,6 +63,7 @@
 
 <script>
 import Axios from 'axios'
+import qs from 'querystring'
 
 import ProductStateTag from './components/product-state-tag'
 
@@ -80,8 +82,8 @@ export default {
       total_page: 1,
       products: [],
       selectedProducts: [],
-      type: '0',
-      page: 1,
+      type: this.$route.query.type || '0',
+      page: this.$route.query.page || 1,
       loading: false,
 
       IMAGE_PREFIX: process.env.VUE_APP_UPLOAD_PUBLIC_URL,
@@ -94,11 +96,23 @@ export default {
   },
 
   watch: {
-    type() {
+    type(v) {
+      this.$router.replace({
+        query: {
+          ...this.$route.query,
+          type: v
+        }
+      })
       this.fetchProduct()
     },
 
-    page() {
+    page(v) {
+      this.$router.replace({
+        query: {
+          ...this.$route.query,
+          page: v
+        }
+      })
       this.fetchProduct()
     }
   },
@@ -121,6 +135,44 @@ export default {
     handleSelect(val) {
       this.selectedProducts = val
     },
+
+    downGood(good) {
+      this.$confirm('是否确定下架该商品', '提示').then(() => {
+        Axios.post('/sellerctr/updateGoods', qs.stringify({
+          id: good.id,
+          name: good.name,
+          original_price: good.original_price,
+          current_price: good.current_price,
+          desc: good.desc,
+          state: '1',
+          type: good.type,
+        }))
+        .then(() => this.$alert('下架成功', '成功', { type: 'success' }), (e) => {
+          console.error(e)
+          this.$alert('下架失败', '错误', { type: 'error' })
+        })
+        .then(this.fetchProduct)
+      })
+    },
+
+    upGood(good) {
+      this.$confirm('是否确定上架该商品', '提示').then(() => {
+        Axios.post('/sellerctr/updateGoods', qs.stringify({
+          id: good.id,
+          name: good.name,
+          original_price: good.original_price,
+          current_price: good.current_price,
+          desc: good.desc,
+          state: '0',
+          type: good.type,
+        }))
+        .then(() => this.$alert('上架成功', '成功', { type: 'success' }), (e) => {
+          console.error(e)
+          this.$alert('上架失败', '错误', { type: 'error' })
+        })
+        .then(this.fetchProduct)
+      })
+    }
   }
 }
 </script>
