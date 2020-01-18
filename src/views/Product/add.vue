@@ -50,7 +50,7 @@
       <el-form-item label="现价" prop="current_price">
         <el-input v-model="form.current_price"></el-input>
       </el-form-item>
-      <el-form-item label="laber" prop="laber">
+      <el-form-item label="简介" prop="laber">
         <el-input v-model="form.laber"></el-input>
       </el-form-item>
       <el-form-item label="介绍" prop="desc">
@@ -58,11 +58,11 @@
       </el-form-item>
       <el-form-item label="sku" prop="skus">
         <el-table :data="form.skus">
-          <el-table-column label="颜色" prop="color" width="100">
+          <!-- <el-table-column label="颜色" prop="color" width="100">
             <template slot-scope="scope">
               <el-input size="mini" v-model="scope.row.color"></el-input>
             </template>
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column label="尺码" prop="size" width="90">
             <template slot-scope="scope">
               <el-input size="mini" v-model="scope.row.size"></el-input>
@@ -124,7 +124,7 @@ export default {
         images: [],
         reserve: '0',
         skus: [
-          {color: '', size: '', num: 0}
+          {size: '', num: 0}
         ],
         putaway: false,
         putaway_time: null
@@ -193,7 +193,7 @@ export default {
     },
 
     validSkus() {
-      return this.form.skus.filter(sku => sku.color && sku.size)
+      return this.form.skus.filter(sku => /*sku.color &&*/ sku.size)
     }
   },
   methods: {
@@ -223,7 +223,7 @@ export default {
 
     addSku() {
       this.form.skus.push({
-        color: '',
+        // color: '',
         size: '',
         num: 0
       })
