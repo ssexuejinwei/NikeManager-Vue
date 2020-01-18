@@ -40,7 +40,7 @@
             <el-button v-if="type === '1' || type === '2' || type === '4'" size="small" @click="downGood(scope.row)">下架商品</el-button>
             <el-button v-if="type === '3'" size="small" disabled>编辑商品</el-button>
             <el-button v-if="type === '3'" size="small" @click="upGood(scope.row)">上架商品</el-button>
-            <el-button size="small" disabled>删除商品</el-button>
+            <el-button size="small" @click="delGood(scope.row)">删除商品</el-button>
           </span>
         </template>
       </el-table-column>
@@ -50,7 +50,7 @@
         <el-button v-if="type === '0'" type="primary"><router-link to="/product/add">新增商品</router-link></el-button>
         <el-button v-if="type === '1' || type === '2' || type === '4'" type="primary" disabled>批量下架</el-button>
         <el-button v-if="type === '3'" type="primary" disabled>批量上架</el-button>
-        <el-button disabled>批量删除</el-button>
+        <el-button :disabled="!selectedProducts.length" @click="delGoods">批量删除</el-button>
       </div>
       <el-pagination
         :page-count="total_page"
@@ -135,45 +135,82 @@ export default {
       }).finally(() => this.loading = false)
     },
 
+    // 下架商品
+    takeOffProduct(good) {
+      return Axios.post('/sellerctr/updateGoods', qs.stringify({
+        id: good.id,
+        name: good.name,
+        original_price: good.original_price,
+        current_price: good.current_price,
+        desc: good.desc,
+        state: '1',
+        type: good.type,
+      }))
+    },
+
+    // 上架商品
+    takeOnProduct(good) {
+      return Axios.post('/sellerctr/updateGoods', qs.stringify({
+        id: good.id,
+        name: good.name,
+        original_price: good.original_price,
+        current_price: good.current_price,
+        desc: good.desc,
+        state: '0',
+        type: good.type,
+      }))
+    },
+
+    // 删除商品
+    deleteProduct(good) {
+      return Axios.post('/sellerctr/deleteGoods', qs.stringify({ id: good.id }))
+    },
+
     handleSelect(val) {
       this.selectedProducts = val
     },
 
     downGood(good) {
-      this.$confirm('是否确定下架该商品', '提示').then(() => {
-        Axios.post('/sellerctr/updateGoods', qs.stringify({
-          id: good.id,
-          name: good.name,
-          original_price: good.original_price,
-          current_price: good.current_price,
-          desc: good.desc,
-          state: '1',
-          type: good.type,
-        }))
-        .then(() => this.$alert('下架成功', '成功', { type: 'success' }), (e) => {
-          console.error(e)
-          this.$alert('下架失败', '错误', { type: 'error' })
-        })
-        .then(this.debouncedFetchProduct)
+      this.$confirm('是否确定下架该商品', '提示', { type: 'warning' }).then(() => {
+        this.takeOffProduct(good)
+          .then(() => this.$alert('下架成功', '成功', { type: 'success' }), (e) => {
+            console.error(e)
+            this.$alert('下架失败', '错误', { type: 'error' })
+          })
+          .then(this.debouncedFetchProduct)
       })
     },
 
     upGood(good) {
-      this.$confirm('是否确定上架该商品', '提示').then(() => {
-        Axios.post('/sellerctr/updateGoods', qs.stringify({
-          id: good.id,
-          name: good.name,
-          original_price: good.original_price,
-          current_price: good.current_price,
-          desc: good.desc,
-          state: '0',
-          type: good.type,
-        }))
-        .then(() => this.$alert('上架成功', '成功', { type: 'success' }), (e) => {
-          console.error(e)
-          this.$alert('上架失败', '错误', { type: 'error' })
-        })
-        .then(this.debouncedFetchProduct)
+      this.$confirm('是否确定上架该商品', '提示', { type: 'warning' }).then(() => {
+        this.takeOnProduct(good)
+          .then(() => this.$alert('上架成功', '成功', { type: 'success' }), (e) => {
+            console.error(e)
+            this.$alert('上架失败', '错误', { type: 'error' })
+          })
+          .then(this.debouncedFetchProduct)
+      })
+    },
+
+    delGood(good) {
+      this.$confirm('是否删除该商品', '提示', { type: 'warning' }).then(() => {
+        this.deleteProduct(good)
+          .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
+            console.error(e)
+            this.$alert('删除失败', '错误', { type: 'error' })
+          })
+          .then(this.debouncedFetchProduct)
+      })
+    },
+
+    delGoods() {
+      this.$confirm('是否删除选择的商品', '提示', { type: 'warning' }).then(() => {
+        Promise.all(this.selectedProducts.map(this.deleteProduct))
+          .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
+            console.error(e)
+            this.$alert('删除失败', '错误', { type: 'error' })
+          })
+          .then(this.debouncedFetchProduct)
       })
     }
   }
