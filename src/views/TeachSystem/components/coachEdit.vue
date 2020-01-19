@@ -178,8 +178,8 @@
               </el-dialog>
           </template>
         </el-calendar>
-        <el-row style="border:1px solid #000000;">
-          <el-col :offset='1' :span='3'>
+        <el-row>
+          <el-col :offset='1' :span='2'>
             1月未有缺勤
           </el-col>
         </el-row>

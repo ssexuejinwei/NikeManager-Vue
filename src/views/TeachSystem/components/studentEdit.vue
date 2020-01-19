@@ -104,7 +104,7 @@
             <el-menu-item index="学员评测">学员评测</el-menu-item>
           </el-menu>
       </el-col>
-      <el-col :span="6" :offset='9'>
+      <el-col :span="8" :offset='7'>
         <el-radio-group v-model="RadioIndex" style="margin-bottom: 20px;" v-if="(menuIndex=='全部课程') || (menuIndex == '上课记录')">
           <el-radio-button label="1">周</el-radio-button>
           <el-radio-button label="2">月</el-radio-button>

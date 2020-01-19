@@ -212,7 +212,7 @@
 
 <script>
   import qs from 'qs'
-  import PEdit from './studentEdit'
+  // import PEdit from './studentEdit'
   export default {
     name:"StudentEntry",
     components: {
@@ -721,7 +721,7 @@
   .addButton{
     font-size: medium;
     text-align: center;
-    border-radius: 0px;
+    // border-radius: 0px;
     color: #FFFFFF;
     background-color: #FE8083;
     width:7.1875rem;

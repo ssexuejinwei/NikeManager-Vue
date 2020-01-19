@@ -16,18 +16,23 @@
     </header>
     
     <el-container>
-      
+      <el-main>
+        <User v-if='!isAdded'/>
+        <UserAdd v-if='isAdded'/>
+      </el-main>
     </el-container>
   </div>
 </template>
 
 <script>
-import Schedule from './components/schedule';
-import Student from './components/student';
+import User from './components/user';
+import UserEdit from './components/userEdit';
 export default {
-  components: { Schedule, Student },
+  components: { User, UserEdit },
   data() {
     return {
+      isAdded:false,
+      search:''
     }
   },
   created() {
