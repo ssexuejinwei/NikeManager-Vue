@@ -45,10 +45,10 @@
         <el-input v-model="form.category"></el-input>
       </el-form-item>
       <el-form-item label="原价" prop="original_price">
-        <el-input v-model="form.original_price"></el-input>
+        <el-input-number v-model="form.original_price" :min="0" :precision="2"></el-input-number>
       </el-form-item>
       <el-form-item label="现价" prop="current_price">
-        <el-input v-model="form.current_price"></el-input>
+        <el-input-number v-model="form.current_price" :min="0" :precision="2"></el-input-number>
       </el-form-item>
       <el-form-item label="简介" prop="laber">
         <el-input v-model="form.laber"></el-input>
@@ -70,7 +70,7 @@
           </el-table-column>
           <el-table-column label="库存" prop="num" width="150">
             <template slot-scope="scope">
-              <el-input-number size="mini" v-model="scope.row.num" controls-position="right"></el-input-number>
+              <el-input-number :min="0" :precision="0" size="mini" v-model="scope.row.num" controls-position="right"></el-input-number>
             </template>
           </el-table-column>
           <el-table-column label="操作" width="230">
@@ -113,8 +113,8 @@ export default {
     return {
       form: {
         name: '',
-        original_price: '',
-        current_price: '',
+        original_price: '0.00',
+        current_price: '0.00',
         desc: '',
         state: '0', // 状态 0;  //销售中1;//下架
         type: '0', // 类型0：鞋子，1：服饰，2：周边
