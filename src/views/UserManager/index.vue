@@ -1,7 +1,7 @@
 <template>
   <div>
     <header class='teachHeader'>
-      <h1>教务系统</h1>
+      <h1>用户管理</h1>
       <div>
         <el-input
           size="mini"
@@ -16,27 +16,7 @@
     </header>
     
     <el-container>
-      <el-aside style="width: 14rem;">
-        <br/><br/><br/><br/>
-          <el-menu
-          class= 'chooseMenu'
-          :default-active="activeChoose"
-          @select="handleSelect"
-          active-text-color="#ffffff"
-          align="center"
-          style="height:10.5rem;">
-          <template v-for="(teach,index) in teachChoose">
-            <el-menu-item :index="index.toString()" :key="teach">
-                {{teach}}
-            </el-menu-item>
-          </template>
-            </el-menu>
-      </el-aside>
-      <el-main>
-        <Student v-show="showIndex ==0"></Student>
-        <Coach v-show="showIndex ==1"></Coach>
-        <Schedule v-show="showIndex ==2"></Schedule>
-      </el-main>
+      
     </el-container>
   </div>
 </template>
@@ -44,25 +24,16 @@
 <script>
 import Schedule from './components/schedule';
 import Student from './components/student';
-import Coach from './components/coach';
 export default {
-  components: { Schedule, Student,Coach },
+  components: { Schedule, Student },
   data() {
     return {
-      showIndex : 0,
-      activeChoose :'0',
-      teachChoose:['学员档案','教练管理','排课信息'],
-      search: '',
-      tabPosition: 'left'
     }
   },
   created() {
   },
   methods: {
-    handleSelect(index) {
-      this.showIndex = index
     }
-  },
 }
 </script>
 
