@@ -69,7 +69,7 @@
                 size="medium"	
                 type='danger'
                 @click="handleEdit(scope.$index,scope.row)">
-                更多
+                详情
                 </el-button>
               </template>
             </el-table-column>
@@ -132,6 +132,14 @@
       <el-form-item label="联系方式" prop="tel" :label-width="formLabelWidth">
         <el-input v-model="studentForm.tel" autocomplete="off"></el-input>
       </el-form-item>
+      <el-form-item label="支付方式" :label-width="formLabelWidth">
+          <el-radio-group v-model="studentForm.sex" >
+            <el-radio label="微信"></el-radio>
+            <el-radio label="支付宝"></el-radio>
+            <el-radio label="信用卡"></el-radio>
+            <el-radio label="现金"></el-radio>
+          </el-radio-group>
+       </el-form-item>
     </el-form>
   
     <el-dialog
@@ -205,7 +213,7 @@
   </div>
     
     <div>
-      <PEdit :student_id='editID' v-if='isEdit' @back='handlePEdit'/>
+      <PEdit :student='student' v-if='isEdit' @back='handlePEdit'/>
     </div>
   </div>
 </template>
@@ -242,7 +250,7 @@
           }
         return {
           isEdit :false, //是否点击了操作按钮
-          editID:0, // 编辑的学生id
+          student:0, // 编辑的学生
           curPageForStudent:1,
           pageSizeForStudent:8,
           pagesForStudent:10,
@@ -364,13 +372,19 @@
             for( let student of list){
               let obj ={
                 id : student['id'],
+                teamID : student['team_id'],
                 name : student['name'],
                 sex : student['sex']==0?'男':'女',
                 birth : student['birthday'],
                 height :student['height']+'cm',
                 weight : student['weight'] +'kg',
                 tel : student['tel'],
-                do :'',
+                physicalExperience:student['physical_experience']==null?'无':student['physical_experience'],
+                ballExperience:student['ball_experience']==null?'无':student['ball_experience'],
+                points:student['score'],
+                friendName:student['friend_name']==null?'无':student['friend_name'],
+                wechat:student['open_id'],
+                do :''
               }
               this.tableData.push(obj)
             }
@@ -553,7 +567,7 @@
         },
         
         handleEdit(index, row){
-          this.editID = parseInt( this.tableData[index]['id'])
+          this.student = this.tableData[index]
           this.isEdit = true
         },
         

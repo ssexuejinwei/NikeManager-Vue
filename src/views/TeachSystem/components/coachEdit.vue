@@ -14,7 +14,7 @@
         :on-success="handleUploadSuccess"
         :on-change="handleUploadChange"
       >
-        <i class="el-icon-plus"></i>
+      上传照片
       </el-upload>
       <el-col :offset='8' :span='12'>
         <p>认证：<span style='background-color:#69bc38;color: #FFFFFF;'>主教练</span></p>
@@ -178,8 +178,8 @@
               </el-dialog>
           </template>
         </el-calendar>
-        <el-row style="border:1px solid #000000;">
-          <el-col :offset='1' :span='3'>
+        <el-row>
+          <el-col :offset='1' :span='2'>
             1月未有缺勤
           </el-col>
         </el-row>
@@ -232,6 +232,7 @@
 </template>
 
 <script>
+  import Axios from 'axios'
   export default{
     props:{
       coach_id:Number
