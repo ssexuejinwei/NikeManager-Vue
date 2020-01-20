@@ -48,7 +48,7 @@
                 @current-change="handleCurrentChange"
                 :page-size="page_size"
                 layout="prev, pager, next, jumper"
-                :total="pages*page_size">
+                :total="total">
               </el-pagination>
           </el-col>
         </el-row>
@@ -75,7 +75,7 @@
         isEdit : false,
         cur_page :1,
         page_size : 10,
-        pages :1,
+        total :1,
         activeIndexFilter:'时间',
         Menufilter: ['时间','性别','年龄'],
         UserTableData:[]
@@ -86,14 +86,14 @@
     },
     methods: {
       handleRow(row){
-        console.log(row['id'])
+        // console.log(row['id'])
         for(let user of this.UserTableData){
           if(user['id'] == row['id']){
             this.user = user
             break
           }
         }
-        console.log(this.user)
+        // console.log(this.user)
         this.isEdit =true
       },
       backHome(val){
@@ -107,7 +107,7 @@
           }
         }).then((response)=>{
           let list = response['data']['data']['data']
-          this.pages =response['data']['data']['total']
+          this.total =response['data']['data']['total']
           this.UserTableData =[]
           for(let user of list){
             let obj ={

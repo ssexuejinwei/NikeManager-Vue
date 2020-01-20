@@ -89,7 +89,7 @@
         </div>
         <el-row v-if='form.address.length == 0'>
           <el-col :span='12'>
-             <el-input v-model="form.address" placeholder="还未添加收货地址"></el-input>
+             <el-input v-model="form.address[0]" placeholder="还未添加收货地址"></el-input>
           </el-col>
           <el-col :span='4' style="margin-left: 0.8625rem;">
             <el-button @click='addAddress'><i class='el-icon-plus'></i></el-button>
@@ -139,6 +139,7 @@
 </template>
 
 <script>
+import Axios from 'axios'
   export default{
     props:{
       user:Object
