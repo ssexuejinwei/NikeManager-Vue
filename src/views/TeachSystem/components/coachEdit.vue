@@ -14,7 +14,7 @@
         :on-success="handleUploadSuccess"
         :on-change="handleUploadChange"
       >
-        <i class="el-icon-plus"></i>
+      上传照片
       </el-upload>
       <el-col :offset='8' :span='12'>
         <p>认证：<span style='background-color:#69bc38;color: #FFFFFF;'>主教练</span></p>

@@ -19,7 +19,7 @@
          :on-success="handleUploadSuccess"
          :on-change="handleUploadChange"
        >
-         <i >上传照片</i>
+         上传照片
        </el-upload>
        </el-col>
       </el-form-item>

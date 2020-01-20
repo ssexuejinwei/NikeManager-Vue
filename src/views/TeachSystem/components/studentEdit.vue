@@ -14,7 +14,7 @@
         :on-success="handleUploadSuccess"
         :on-change="handleUploadChange"
       >
-        <i class="el-icon-plus"></i>
+        上传照片
       </el-upload>
     </el-aside>
     <el-main>
@@ -200,7 +200,7 @@
     },
     data() {
       return {
-        menuIndex:'我的评测',
+        menuIndex:'全部课程',
         RadioIndex:1,
         RadioType:'',
         pageSizeForMark:6,
