@@ -25,7 +25,7 @@
           <el-table-column prop="address_str" label="收货地址" />
           <el-table-column prop="created" label="创建时间">
             <template slot-scope="scope">
-              {{ format(scope.row.created) }}
+              {{ scope.row.create_time }}
             </template>
           </el-table-column>
           <el-table-column label="交易状态">
@@ -69,7 +69,7 @@
       <div v-if="dialogOrder">
         <el-form label-width="150px" disabled>
           <el-form-item label="创建时间">
-            <el-input :value="format(dialogOrder.created)"></el-input>
+            <el-input :value="dialogOrder.create_time"></el-input>
           </el-form-item>
           <el-form-item label="订单号">
             <el-input :value="dialogOrder.order_number"></el-input>
@@ -122,7 +122,6 @@
 <script>
 import Axios from 'axios'
 import _ from 'lodash'
-import { format } from 'date-fns'
 
 export default {
   data() {
@@ -169,10 +168,6 @@ export default {
   },
 
   methods: {
-    format(date, f) {
-      return format(date, f ?? 'yyyy-MM-dd HH:mm:ss')
-    },
-
     async getOrders() {
       this.isLoading = true
       try {
@@ -195,7 +190,6 @@ export default {
         this.pages = data.data.last_page
         this.data = data.data.data.map(d => ({
           ...d,
-          created: new Date(d.create_time),
           address_str: [d.address?.address?.region?.label, d.address?.name, d.address?.tel].join(' '),
         }))
       } catch(e) {

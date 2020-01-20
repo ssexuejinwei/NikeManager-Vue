@@ -270,10 +270,7 @@ export default {
     object-fit: cover;
 
     margin-right: 16px;
-  }
-
-  .info {
-    width: 150px;
+    flex: 0 0 100px;
   }
 }
 

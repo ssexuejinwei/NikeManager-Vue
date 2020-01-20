@@ -135,9 +135,23 @@ export default {
         ],
         original_price: [
           { required: true, trigger: 'blur', message: '请输入原价' },
+          { validator: (r, v, cb) => {
+            if (v < this.form.current_price) {
+              cb(new Error('原价不能小于现价'))
+            } else {
+              cb()
+            }
+          }, trigger: 'change' }
         ],
         current_price: [
           { required: true, trigger: 'blur', message: '请输入现价' },
+          { validator: (r, v, cb) => {
+            if (v > this.form.original_price) {
+              cb(new Error('现价不能大于原价'))
+            } else {
+              cb()
+            }
+          }, trigger: 'change' }
         ],
         desc: [
           { required: true, trigger: 'blur', message: '请输入商品描述' },
@@ -185,7 +199,7 @@ export default {
         ...this.form,
         images: JSON.stringify(this.form.images),
         skus: JSON.stringify(this.validSkus),
-        putaway_time: this.form.putaway ? format(this.form.putaway_time, 'yyyy-MM-dd HH:mm:ss') : format(new Date, 'yyyy-MM-dd HH:mm:ss')
+        putaway_time: this.form.putaway ? format(this.form.putaway_time, 'yyyy-MM-dd HH:mm:ss') : format(new Date(), 'yyyy-MM-dd HH:mm:ss')
       }
 
       delete form.putaway
