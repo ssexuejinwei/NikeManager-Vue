@@ -6,6 +6,16 @@ import './plugins/element.js'
 import http from './http/http'
 import axios from 'axios' 
 import './http/axios'
+import * as Sentry from '@sentry/browser';
+import * as Integrations from '@sentry/integrations';
+
+if (process.env.NODE_ENV === "development") {
+  Sentry.init({
+    dsn: 'https://6dad3df829d84022ac4b9f791969fc52@sentry.io/1889540',
+    integrations: [new Integrations.Vue({Vue, attachProps: true})],
+  });
+}
+
 Vue.prototype.$axios = axios; 
 axios.defaults.baseURL = '/api'
 // axios 拦截器
