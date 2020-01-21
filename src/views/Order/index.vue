@@ -212,10 +212,7 @@ export default {
         state: order.state,
         express_number: order.express_number,
         ...data
-      })).catch(e => {
-        console.error(e)
-        this.$message.error('操作失败')
-      })
+      }))
     },
 
     handleSelect(key) {
@@ -243,6 +240,9 @@ export default {
           state: '2'
         }).then(() => {
           this.$message.success('操作成功')
+        }).catch(e => {
+          console.error(e)
+          this.$message.error('操作失败')
         }).then(this.getOrders)
       })
     },
@@ -255,7 +255,11 @@ export default {
           express_number: this.dialogOrder.express_number
         })).then(() => {
           this.$message.success('取消成功')
-        }).then(this.getOrders)
+        }).catch(e => {
+          console.error(e)
+          this.$message.error('操作失败')
+        })
+        .then(this.getOrders)
       })
     }
   }
