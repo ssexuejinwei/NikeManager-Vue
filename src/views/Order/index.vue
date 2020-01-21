@@ -16,7 +16,6 @@
             <template slot-scope="scope">
               <span>
                 <div>{{scope.row.goods_name}} {{scope.row.goods_id}}</div>
-                <div>颜色 {{scope.row.color}}</div>
                 <div>尺码 {{scope.row.size}}</div>
               </span>
             </template>
@@ -31,17 +30,23 @@
           <el-table-column label="交易状态">
             <template slot-scope="scope">
               <el-button type="text" size="small" @click="handleOpenDialog(scope.row)">
-                <span v-if="scope.row.state === '3'">
-                  交易成功
-                </span>
-                <span v-else-if="scope.row.state === '0'">
+                <span v-if="scope.row.state === '0'">
                   <el-tag>待发货</el-tag>
                 </span>
+                <span v-else-if="scope.row.state === '1'">
+                  <el-tag>已取消</el-tag>
+                </span>
                 <span v-else-if="scope.row.state === '2'">
-                  <el-tag type="success">确认收货</el-tag>
+                  <el-tag type="success">已发货</el-tag>
+                </span>
+                <span v-else-if="scope.row.state === '3'">
+                  已完成
+                </span>
+                <span v-else-if="scope.row.state === '4'">
+                  已退货
                 </span>
                 <span v-else-if="scope.row.state === '5'">
-                  <el-tag type="warning">退换货</el-tag>
+                  <el-tag type="warning">退货中</el-tag>
                 </span>
                 <span v-else>unknown</span>
               </el-button>
@@ -105,7 +110,7 @@
         <div style="text-align: center">
           <template v-if="dialogOrder.state === '0'">
             <el-button type="primary" @click="updateExpressNumber">发货</el-button>
-            <el-button type="danger">取消订单</el-button>
+            <el-button type="danger" @click="cancelOrder">取消订单</el-button>
           </template>
           <template v-if="dialogOrder.state === '2'">
             <el-button type="primary">确认收货</el-button>
@@ -120,8 +125,10 @@
 </template>
 
 <script>
+// 0:已支付，订单处理中，1：订单已取消，2：已发货，3：已完成，4：已退货 5：退货中
 import Axios from 'axios'
 import _ from 'lodash'
+import qs from 'querystring'
 
 export default {
   data() {
@@ -199,6 +206,18 @@ export default {
       }
     },
 
+    updateOrder(order, data) {
+      return Axios.post('/sellerctr/updateOrder', qs.stringify({
+        id: order.id,
+        state: order.state,
+        express_number: order.express_number,
+        ...data
+      })).catch(e => {
+        console.error(e)
+        this.$message.error('操作失败')
+      })
+    },
+
     handleSelect(key) {
       this.state = key
     },
@@ -212,14 +231,31 @@ export default {
       done()
     },
 
+    // 发货
     updateExpressNumber() {
       if (!this.dialogOrder) return
-      this.$prompt('填写物流单号', '提示', {
-        inputPattern: /\d+/,
+      this.$prompt('填写物流单号(格式: 快递公司 快递单号)', '提示', {
+        inputPattern: /\S+ \d+/,
         inputErrorMessage: '请填写正确的物流单号'
       }).then(({ value }) => {
-        //@todo
-        console.log(value)
+        this.updateOrder(this.dialogOrder, {
+          express_number: value,
+          state: '2'
+        }).then(() => {
+          this.$message.success('操作成功')
+        }).then(this.getOrders)
+      })
+    },
+
+    cancelOrder() {
+      this.$confirm('是否取消订单', '提示').then(() => {
+        Axios.post('/sellerctr/updateOrder', qs.stringify({
+          id: this.dialogOrder.id,
+          state: '1',
+          express_number: this.dialogOrder.express_number
+        })).then(() => {
+          this.$message.success('取消成功')
+        }).then(this.getOrders)
       })
     }
   }
