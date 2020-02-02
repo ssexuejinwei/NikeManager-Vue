@@ -16,7 +16,7 @@
     </header>
     
     <el-container>
-      <el-aside style="width: 14rem;">
+      <el-aside >
         <br/><br/><br/><br/>
           <el-menu
           class= 'chooseMenu'
@@ -24,33 +24,41 @@
           @select="handleSelect"
           active-text-color="#ffffff"
           align="center"
-          style="height:10.5rem;">
-          <template v-for="(teach,index) in teachChoose">
-            <el-menu-item :index="index.toString()" :key="teach">
-                {{teach}}
+          router
+          >
+            <el-menu-item index="/teach/student" :key="teachChoose[0]">
+                {{teachChoose[0]}}
             </el-menu-item>
-          </template>
+            <el-menu-item index="/teach/coach" :key="teachChoose[1]">
+                {{teachChoose[1]}}
+            </el-menu-item>
+            <el-menu-item index="/teach/schedule" :key="teachChoose[2]">
+                {{teachChoose[2]}}
+            </el-menu-item>
             </el-menu>
       </el-aside>
-      <el-main>
+ <!--     <el-main>
         <Student v-show="showIndex ==0"></Student>
         <Coach v-show="showIndex ==1"></Coach>
         <Schedule v-show="showIndex ==2"></Schedule>
+      </el-main> -->
+      <el-main>
+      <router-view></router-view> 
       </el-main>
     </el-container>
   </div>
 </template>
 
 <script>
-import Schedule from './components/schedule';
-import Student from './components/student';
-import Coach from './components/coach';
+import Schedule from './schedule';
+import Student from './student';
+import Coach from './coach';
 export default {
   components: { Schedule, Student,Coach },
   data() {
     return {
       showIndex : 0,
-      activeChoose :'0',
+      activeChoose :'/teach/student',
       teachChoose:['学员档案','教练管理','排课信息'],
       search: '',
       tabPosition: 'left'

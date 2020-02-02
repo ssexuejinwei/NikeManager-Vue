@@ -19,7 +19,7 @@
       <router-link to="/order">/order</router-link>
     </p>
     <p>
-      <router-link to="/teach">/teach</router-link>
+      <router-link to="/teach/student">/teach</router-link>
     </p>
     <p>
       <router-link to="/user">/user</router-link>

@@ -44,6 +44,23 @@ const routes = [
     path: '/teach',
     component: () => import('@/views/TeachSystem/index'),
     beforeEnter: ifAuthenticated,
+    children:[
+      //学员管理
+      {
+        path:'student',
+        component: () => import('@/views/TeachSystem/student'),
+      },
+      //教练管理
+      {
+        path: 'coach',
+        component: () => import('@/views/TeachSystem/coach'),
+      },
+      //排课管理
+      {
+        path: 'schedule',
+        component: () => import('@/views/TeachSystem/schedule')
+      }
+    ]
   },
   {
     path: '/user',

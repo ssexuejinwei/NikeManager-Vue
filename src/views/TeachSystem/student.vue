@@ -1,5 +1,6 @@
 <template>
   <div>
+    
   <div id = "student"  v-if="!isEdit">
   <el-container>
    <el-header>
@@ -220,7 +221,7 @@
 
 <script>
   import qs from 'qs'
-  import PEdit from './studentEdit'
+  import PEdit from './components/studentEdit'
   export default {
     name:"StudentEntry",
     components: {
@@ -316,6 +317,7 @@
          }
         },
       created() {
+        console.log('hello')
         this.update('getStudent')
       },
       watch: {

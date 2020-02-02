@@ -1,6 +1,6 @@
 <template>
   <div>
-  <div class ='coachList' v-show='isEdit==false'>
+  <div class ='coachList' v-if='isEdit==false'>
     <el-container>
       <el-header >
         <el-col :span="4" :offset="20" style='text-align: right;'>
@@ -55,16 +55,15 @@
     </el-footer>
     </el-container>
   </div>
-  
-  <div class ='coachEdit'>
-    <PEdit :coach_id ='editID' @back='handleBack' v-show='isEdit==true'/>
+ <div class ='coachEdit'>
+    <PEdit :coach_id ='editID' @back='handleBack' v-if='isEdit==true'/>
   </div>
   </div>
 </template>
 
 <script>
   import qs from 'qs'
-  import PEdit from './coachEdit'
+  import PEdit from './components/coachEdit'
   
   export default{
     components: {
