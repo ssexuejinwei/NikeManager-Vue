@@ -244,7 +244,7 @@ export default {
           console.error(e)
           this.$message.error('操作失败')
         }).then(this.getOrders)
-      })
+      }).catch(() => {})
     },
 
     cancelOrder() {
@@ -260,7 +260,7 @@ export default {
           this.$message.error('操作失败')
         })
         .then(this.getOrders)
-      })
+      }).catch(() => {})
     }
   }
 }
