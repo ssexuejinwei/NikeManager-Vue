@@ -25,6 +25,8 @@
         <el-table
           :data="UserTableData"
           class="UserTableData"
+          highlight-current-row
+          @current-change="handleCurrentChangeTable"
           @row-click="handleRow"
           :border="true"> 
           <el-table-column prop="name" label="姓名" :class="borderBottom" align='center'> </el-table-column>
@@ -40,8 +42,8 @@
       <el-footer>
         <el-row>
           <el-col :span='6'>
-            <el-button type='danger'>添加新用户</el-button>
-            <el-button type='info'>删除用户</el-button>
+            <el-button type='danger' @click='addUser'>添加新用户</el-button>
+            <el-button type='info' @click='deleteUser'>删除用户</el-button>
           </el-col>
           <el-col style="text-align: right;">
             <el-pagination
@@ -70,6 +72,8 @@
     },
     data() {
       return {
+        chooseID:0,
+        isChoose:false,
         borderBottom :'borderBottom',
         user :{},
         isEdit : false,
@@ -85,7 +89,8 @@
      this.getUser()
     },
     methods: {
-      handleRow(row){
+      
+      addUser(row){
         // console.log(row['id'])
         for(let user of this.UserTableData){
           if(user['id'] == row['id']){
@@ -132,7 +137,46 @@
       },
       handleSelect() {
         
-      }
+      },
+      handleCurrentChangeTable(val){
+        this.chooseID=val['id']
+        this.isChoose = true
+      },
+      deleteUser(){
+        if(this.isChoose){
+          this.$confirm('确认删除该用户?', '', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '返回',
+                    type: 'warning'
+                  }).then(() => {
+                    // let api ='/sellerctr/deleteCoach'
+                    // var data = {
+                    //  id : this.chooseID,
+                    // }
+                    // this.$axios.post(api, qs.stringify(data)
+                    // ).then((response) => {
+                    //   this.$alert('删除成功', {
+                    //             confirmButtonText: '确定',
+                    //           }).then(()=>{
+                    //             this.update()
+                    //           });
+                    // }).catch((error)=>{
+                    //   this.$alert('删除失败')
+                    // })
+                  }).catch(() => {
+                    this.$message({
+                      type: 'info',
+                      message: '已取消删除'
+                    });          
+                  });
+          
+        }
+        else{
+          this.$alert('请先选择用户', {
+                    confirmButtonText: '确定',
+                  });
+        }
+      },
     },
   }
   

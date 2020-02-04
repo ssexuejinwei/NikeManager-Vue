@@ -59,7 +59,7 @@
         <el-button type='danger' @click = "outerVisible = true">添加新教练</el-button>
         </el-col>
           <el-col :span="5" >
-        <el-button type='info' @click = "deleteStudent" >删除教练</el-button>
+        <el-button type='info' @click = "deleteCoach" >删除教练</el-button>
         </el-col>
       </el-row>
     </el-footer>
@@ -201,7 +201,7 @@
         this.chooseID=val['id']
         this.isChoose = true
       },
-      deleteStudent(){
+      deleteCoach(){
         if(this.isChoose){
           this.$confirm('确认删除该教练?', '', {
                     confirmButtonText: '确定',

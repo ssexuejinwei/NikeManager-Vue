@@ -454,7 +454,7 @@
       },
       handleUploadChange(file, fileList) {
         this.fileList = fileList
-        this.squareImageUrl = this.fileList[0].url
+        this.squareImageUrl = this.fileList[this.fileList.length-1].url
       }
     },
   }
