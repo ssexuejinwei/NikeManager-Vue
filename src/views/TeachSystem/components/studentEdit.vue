@@ -4,18 +4,21 @@
     </el-page-header>
   <el-container>
     <el-aside>
-      <el-upload
-        class='upload'
-        action="#"
-        list-type="picture-card"
-        accept="image/*"
-        :limit="3"
-        :http-request="handleUpload"
-        :on-success="handleUploadSuccess"
-        :on-change="handleUploadChange"
-      >
-        上传照片
-      </el-upload>
+      <br/><br/>
+      <el-col :offset='6' :span='8'>
+        <el-upload
+          class="avatar-uploader"
+          action="#"
+          accept="image/*"
+          :limit="3"
+          :http-request="handleUpload"
+          :on-success="handleUploadSuccess"
+          :on-change="handleUploadChange"
+          :show-file-list="false">
+          <img v-if="squareImageUrl==''?false:true" :src="squareImageUrl" class="avatar">
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+        </el-upload>
+      </el-col>
     </el-aside>
     <el-main>
   <el-form class="form" ref="form" :model="form" label-width="80px">
@@ -49,19 +52,19 @@
       </el-col>
       <el-col :span="8">
         <el-form-item label="微信ID">
-          <el-input v-model="form.wechat"></el-input>
+          <el-input v-model="form.wechat" disabled></el-input>
         </el-form-item>
       </el-col>
     </el-row>
     <el-row>
       <el-col :span="8">
         <el-form-item label="联系电话" >
-          <el-input v-model="form.tel"></el-input>
+          <el-input v-model="form.tel" disabled></el-input>
         </el-form-item>
       </el-col>
       <el-col :span="8">
         <el-form-item label="积分" >
-          <el-input v-model="form.points"></el-input>
+          <el-input v-model="form.points" disabled></el-input>
         </el-form-item>
       </el-col>
     </el-row>
@@ -80,7 +83,7 @@
     <el-row>
       <el-col :span="8">
         <el-form-item label="期待队友" >
-          <el-input v-model="form.mate"></el-input>
+          <el-input v-model="form.mate" disabled></el-input>
         </el-form-item>
       </el-col>
       <el-col :span="8" :offset="7">
@@ -186,11 +189,12 @@
     </el-main>
   </el-container>
   </div>
-</template>
+</template> 
 
 <script>
   import Axios from 'axios'
   import PMark from './mark'
+  import qs from 'qs'
   export default{
     components: {
       PMark
@@ -200,6 +204,7 @@
     },
     data() {
       return {
+        squareImageUrl:'',
         menuIndex:'全部课程',
         RadioIndex:1,
         RadioType:'',
@@ -282,6 +287,8 @@
       this.form.birth = this.student.birth
       this.form.wechat = this.student.wechat
       this.form.weight = this.student.weight
+      this.squareImageUrl = this.student.avatar ==null?'':this.student.avatar
+      console.log('img',this.squareImageUrl)
       this.getCourse()
       this.getAttend()
       this.getMark()
@@ -335,7 +342,7 @@
           for(let attend of list){
             let obj = {
               course:attend['tp_name']+'('+attend['team_name']+')',
-              time:attend['create_time'],
+              time:attend['start_time'] +'-'+ attend['end_time'].split(' ')[1],
               status:attend['sign_in']=='1'?'缺席':'签到'
             }
             this.tableAttend.push(obj)
@@ -363,7 +370,7 @@
             let obj = {
               id:course['id'],
               name:course['tp_name'],
-              team_name:course['team_id'],
+              team_name:this.student['teamName'],
               startTime:course['start_time'],
               endTime:course['end_time'],
             }
@@ -406,7 +413,29 @@
         console.log(this.menuIndex)
       },
       save(){
-        console.log(this.form)
+        let api = '/sellerctr/updateStudent'
+        var data = {
+          id: this.student.id,
+          name : this.form.name,
+          sex : this.form.sex == "男"?0:1,
+          birthday : this.form.birth,
+          height : parseInt(this.form.height),
+          weight : parseInt(this.form.weight),
+          physical_training : this.form.physicalExperience,
+          ball_training : this.form.ballExperience,
+          avatar:this.fileList.length==0?'':this.fileList[0].url,
+        }
+        console.log(this.fileList)
+        this.$axios.post(api, qs.stringify(data)
+        ).then((response) => {
+          // console.log(teamName)
+          this.$alert('保存成功').then(()=>{
+            this.$emit('update',true)
+          })
+        }).catch((error)=>{
+          console.log(error)
+          this.$alert('保存失败')
+        })
       },
       handleUpload(param) {
         const file = param.file
@@ -425,6 +454,7 @@
       },
       handleUploadChange(file, fileList) {
         this.fileList = fileList
+        this.squareImageUrl = this.fileList[0].url
       }
     },
   }
@@ -433,10 +463,32 @@
 <style lang="scss">
   .editInfo{
     .el-container{
-      .upload{
-        text-align: center;
-        margin-top: 50px;
+      .el-aside{
+        .avatar-uploader .el-upload {
+            border: 1px dashed #d9d9d9;
+            border-radius: 6px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+          }
+          .avatar-uploader .el-upload:hover {
+            border-color: #409EFF;
+          }
+          .avatar-uploader-icon {
+            font-size: 28px;
+            color: #8c939d;
+            width: 178px;
+            height: 178px;
+            line-height: 178px;
+            text-align: center;
+          }
+          .avatar {
+            width: 178px;
+            height: 178px;
+            display: block;
+          }
       }
+     
     }
   }
 </style>
