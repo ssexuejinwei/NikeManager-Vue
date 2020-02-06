@@ -214,7 +214,7 @@
   </div>
     
     <div>
-      <PEdit :student='student' v-if='isEdit' @back='handlePEdit'/>
+      <PEdit :student='student' v-if='isEdit' @back='handlePEdit' @update='handleEditSave'/>
     </div>
   </div>
 </template>
@@ -345,6 +345,11 @@
         }
       },
       methods: {
+        handleEditSave(data){
+          if(data){
+            this.getAllStudent()
+          }
+        },
         handlePEdit(data){
           this.isEdit = data
         },
@@ -386,7 +391,9 @@
                 points:student['score'],
                 friendName:student['friend_name']==null?'无':student['friend_name'],
                 wechat:student['open_id'],
-                do :''
+                do :'',
+                avatar:student['avatar'],
+                teamName:student['team_name']
               }
               this.tableData.push(obj)
             }
@@ -473,6 +480,7 @@
                           weight : student['weight'] +'kg',
                           tel : student['tel'],
                           do :'',
+                          avatar:student['avatar'],
                           }
                         tableData.push(stuObj)
                       }

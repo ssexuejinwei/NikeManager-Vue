@@ -3,26 +3,34 @@
     <el-page-header @back="goBack" content="返回商户列表">
     </el-page-header>
   <el-container style='width: 100%;'>
-    <el-col :span='3'></el-col>
+    <el-aside>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <el-col :span='8' >
+              <el-upload
+                class="avatar-uploader"
+                action="#"
+                accept="image/*"
+                :limit="3"
+                :http-request="handleUpload"
+                :on-success="handleUploadSuccess"
+                :on-change="handleUploadChange"
+                :show-file-list="false">
+                <img v-if="squareImageUrl==''?false:true" :src="squareImageUrl" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              </el-upload>
+              <p style='text-align: right;'>头像</p>
+            </el-col>
+    </el-aside>
     <el-col :span='18'>
       <el-main>
+       
     <el-form label-position="left" label-width="80px" class="form" ref="form" :model="form"  >
-      <el-form-item  label="" >
-        <el-col :offset='10'>
-       <el-upload
-         class='upload'
-         action="#"
-         list-type="picture-card"
-         accept="image/*"
-         :limit="3"
-         :http-request="handleUpload"
-         :on-success="handleUploadSuccess"
-         :on-change="handleUploadChange"
-       >
-         上传照片
-       </el-upload>
-       </el-col>
-      </el-form-item>
+   
       <el-form-item  label="昵称" >
         <el-col :span='8'>
           <el-input  v-model="form.nickName"></el-input>
@@ -33,31 +41,36 @@
           <el-input v-model="form.name"></el-input>
         </el-col>
       </el-form-item>
+      <el-row>
+      <el-col :span='9'>
       <el-form-item label="微信ID">
-        <el-col :span='8'>
           <el-input v-model="form.wechat"></el-input>
-        </el-col>
       </el-form-item>
+      </el-col>
+      </el-row>
+      <el-row>
+      <el-col :span='9'>
       <el-form-item label="会员时间" >
-        <el-col :span='8'>
           <el-input v-model="form.date"></el-input>
-        </el-col>
       </el-form-item>
+      </el-col>
+      </el-row>
+      <el-row>
+      <el-col :span='9'>
       <el-form-item label="个人积分" >
-        <el-col :span='8'>
           <el-input v-model="form.points"></el-input>
-        </el-col>
       </el-form-item>
+      </el-col>
+      </el-row>
+      <el-col :span='24'>
       <el-form-item label="会员等级">
-        <el-col :span='8'>
           <el-radio-group v-model="form.level">
             <el-radio-button label="Lv 1"></el-radio-button>
             <el-radio-button label="Lv 2"></el-radio-button>
             <el-radio-button label="Lv 3"></el-radio-button>
           </el-radio-group>
-        </el-col>
-        
       </el-form-item>
+      </el-col>
       <el-form-item label="电话" >
         <el-col :span='8'>
          <el-input v-model="form.tel"></el-input>
@@ -146,6 +159,7 @@ import Axios from 'axios'
     },
     data() {
       return {
+        squareImageUrl:'',
         addAddressVisible : false,
         form:{
           setDefault:false,
@@ -293,6 +307,7 @@ import Axios from 'axios'
       },
       handleUploadChange(file, fileList) {
         this.fileList = fileList
+        this.squareImageUrl = this.fileList[this.fileList.length-1].url
       }
     },
   }
@@ -301,14 +316,31 @@ import Axios from 'axios'
 <style lang="scss">
   .userEditInfo{
     .el-container{
-      .el-form{
-        .upload{
-          text-align: center;
-          width:0.625rem;
-          height:0.625rem
-        }
+      .el-main{
+        .avatar-uploader .el-upload {
+            border: 1px dashed #d9d9d9;
+            border-radius: 6px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+          }
+          .avatar-uploader .el-upload:hover {
+            border-color: #409EFF;
+          }
+          .avatar-uploader-icon {
+            font-size: 28px;
+            color: #8c939d;
+            width: 178px;
+            height: 178px;
+            line-height: 178px;
+            text-align: center;
+          }
+          .avatar {
+            width: 178px;
+            height: 178px;
+            display: block;
+          }
       }
-     
     }
   }
 </style>

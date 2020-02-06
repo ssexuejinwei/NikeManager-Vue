@@ -4,19 +4,22 @@
     </el-page-header>
   <el-container>
     <el-aside>
-      <el-upload
-        class='upload'
-        action="#"
-        list-type="picture-card"
-        accept="image/*"
-        :limit="3"
-        :http-request="handleUpload"
-        :on-success="handleUploadSuccess"
-        :on-change="handleUploadChange"
-      >
-      上传照片
-      </el-upload>
-      <el-col :offset='8' :span='12'>
+      <el-col :offset='6' :span='8'>
+       <br/><br/>
+       <el-upload
+         class="avatar-uploader"
+         action="#"
+         accept="image/*"
+         :limit="3"
+         :http-request="handleUpload"
+         :on-success="handleUploadSuccess"
+         :on-change="handleUploadChange"
+         :show-file-list="false">
+         <img v-if="squareImageUrl==''?false:true" :src="squareImageUrl" class="avatar">
+         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+       </el-upload>
+     </el-col>
+      <el-col :offset='8' :span='8'>
         <p>认证：<span style='background-color:#69bc38;color: #FFFFFF;'>主教练</span></p>
       </el-col>
     </el-aside>
@@ -105,17 +108,6 @@
               label="起止时间"
               >
             </el-table-column>
-            <el-table-column
-              label="操作">
-              <template slot-scope="scope">
-                <el-button
-                size="medium"	
-                type='success'
-                @click="handleCancel(scope.$index,scope.row)">
-                取消
-                </el-button>
-              </template>
-            </el-table-column>
         </el-table>
         
         <el-button type='danger' style="margin-top: 2rem;" @click='addCourse'>添加课程</el-button>
@@ -123,7 +115,9 @@
         <el-pagination
         style="text-align: right;"
           layout="prev, pager, next"
-          :total="50">
+          @current-change="handleCoursePageChange"
+          :page-size="3"
+          :total="courseTotal">
         </el-pagination>
       </div>
       <div v-show="menuIndex=='考勤'" class='attendTable' >
@@ -235,12 +229,15 @@
   import Axios from 'axios'
   export default{
     props:{
-      coach_id:Number
+      coach:Object
     },
     data() {
       return {
+        squareImageUrl:'',
         outerVisible:false,
         dialogTableVisible:false,
+        curPageForCourse:1,
+        courseTotal:3,
         date:'',
         menuIndex:'全部课程',
         RadioIndex:1,
@@ -268,18 +265,18 @@
       }
     },
     created() {
+      this.form.name = this.coach.name
+      this.form.tel = this.coach.tel==null?'暂无':this.coach.tel
+      this.form.age = this.coach.age
+      this.form.workAge = this.coach.experience
+      this.form.wechat = this.coach.wechat==null?'暂无':this.coach.wechat
+      this.form.intro = this.coach.info
+      this.update()
       for(let i=0;i<4;i++){
-        let obj={
-          course:'3-4岁初级篮球(team-01)',
-          time:'17-18(周三)',
-          duration:'2019.03.21-2019.5.03',
-          edit:''
-        }
         let jobj={
           course:'16:00-17:00 4-5岁初级篮球班',
           sign_in:0,
         }
-        this.tableCourse.push(obj)
         this.tableAttend.push(jobj)
       }
       // this.$axios.get(){
@@ -287,6 +284,33 @@
       // }
     },
     methods: {
+      update(){
+        let api_1 = '/sellerctr/getCoachSchedule'
+        this.$axios.get(api_1,{
+          params:{
+            id:this.coach.id,
+            cur_page:this.curPageForCourse
+          }
+        }).then((response)=>{
+          this.courseTotal=response['data']['data']['total']
+          let courseList = response['data']['data']['data']
+          this.tableCourse =[]
+          for(let course of courseList){
+            let obj={
+              id:course.id,
+              course:course.tp_name,
+              time:course.start_time.split(' ')[1]+'-'+course.end_time.split(' ')[1],
+              duration:course.date,
+              edit:''
+            }
+            this.tableCourse.push(obj)
+          }
+        })
+      },
+      handleCoursePageChange(val){
+        this.curPageForCourse = val
+        this.update()
+      },
       handleSelected(){
         this.dialogTableVisible = true
       },
@@ -341,6 +365,7 @@
       },
       handleUploadChange(file, fileList) {
         this.fileList = fileList
+        this.squareImageUrl = this.fileList[this.fileList.length-1].url
       }
     },
   }
