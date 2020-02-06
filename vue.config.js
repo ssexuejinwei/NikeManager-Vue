@@ -15,5 +15,10 @@ module.exports = {
       errors: true
     }
   },
+  configureWebpack:{
+    externals: {
+       'echarts': 'echarts',
+    }
+  },
   lintOnSave: false,
 }
