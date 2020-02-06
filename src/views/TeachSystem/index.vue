@@ -50,11 +50,7 @@
 </template>
 
 <script>
-import Schedule from './schedule';
-import Student from './student';
-import Coach from './coach';
 export default {
-  components: { Schedule, Student,Coach },
   data() {
     return {
       showIndex : 0,

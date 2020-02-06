@@ -163,7 +163,7 @@ export default {
       this.getData('edit')
     },
   watch: {
-    state(newValue, oldValue) {
+    state(newValue) {
       if(newValue == 'lookup'){
         return
       }
@@ -297,7 +297,7 @@ export default {
     submitDialog(key){
       switch (key){
         case 'schedule':
-          let api_1 = '/sellerctr/schedule'
+          var api_1 = '/sellerctr/schedule'
            if(this.schedule['tp_id'] === ''){
              this.$alert('请选择排课信息', {
                        confirmButtonText: '确定',
@@ -325,7 +325,7 @@ export default {
                          confirmButtonText: '确定',
                      })
              }
-           }).catch((e)=>{
+           }).catch(()=>{
              this.$alert('当前时段已有课程,请重新选择', {
                        confirmButtonText: '确定',
                    })
@@ -365,7 +365,7 @@ export default {
             })
           break;
         case 'edit':
-          let api_3 = '/sellerctr/schedule'
+          var api_3 = '/sellerctr/schedule'
           if(this.editSchedule['tp_id'] === ''){
              this.$alert('请选择排课信息', {
                        confirmButtonText: '确定',
@@ -437,11 +437,9 @@ export default {
       switch (key){
         case 'schedule':
           return '排课：  当前时间为'+data
-          break;
         case 'checkAttend':
-          let s = this.attendSchedule['duration'] + '  '+ this.attendSchedule['course_name'] + '  ' +this.attendSchedule['coach_name']
+          var s = this.attendSchedule['duration'] + '  '+ this.attendSchedule['course_name'] + '  ' +this.attendSchedule['coach_name']
           return '考勤:' +s
-          break;
         default:
           break;
       }
@@ -466,7 +464,7 @@ export default {
             label:'18:00-19:00',
             children:[]
           }]
-          let children_course = []
+          var children_course = []
           //先遍历course
           for(let course of this.courseList){
             let obj ={
@@ -476,7 +474,7 @@ export default {
             children_course.push(obj)
           }
           
-          let children_team =[]
+          var children_team =[]
           for(let team of this.teamList){
             let obj ={
               value:team['id'],
@@ -485,7 +483,7 @@ export default {
             }
             children_team.push(obj)
           }
-          let children_coach = []
+          var children_coach = []
           for(let coach of this.coachList){
             let obj ={
               value : coach['id'],
@@ -500,7 +498,7 @@ export default {
           this.scheduleVisible = true
           break;
         case 'checkAttend':
-          let api_1 = '/sellerctr/getSchedule'
+          var api_1 = '/sellerctr/getSchedule'
           this.$axios.get(api_1,{
             params:{
               start_time :this.date,
@@ -565,7 +563,7 @@ export default {
           })
           break;
         case 'edit':
-          let api_2 = '/sellerctr/getSchedule'
+          var api_2 = '/sellerctr/getSchedule'
           this.$axios.get(api_2,{
             params:{
               start_time :this.date,
@@ -659,7 +657,7 @@ export default {
     handleOpen(index){
       console.log("open"+ index )
     },
-    handleAttend(index, row ){
+    handleAttend(index ){
       let api = '/sellerctr/attendance'
       let student_id = this.tableData[index]['student_id']
       let sign_in = 0
@@ -677,13 +675,13 @@ export default {
                      confirmButtonText: '确定',
                  })
          }
-       }).catch((e) =>{
+       }).catch(() =>{
          this.$alert('签到失败', {
                    confirmButtonText: '确定',
                })
        })
     },
-    handleAbsent(index, row){
+    handleAbsent(index){
       let api = '/sellerctr/attendance'
       let student_id = this.tableData[index]['student_id']
       let sign_in = 1
@@ -701,7 +699,7 @@ export default {
                      confirmButtonText: '确定',
                  })
          }
-       }).catch((e) =>{
+       }).catch(() =>{
          this.$alert('签到失败', {
                    confirmButtonText: '确定',
                })

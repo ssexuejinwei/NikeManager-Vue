@@ -103,7 +103,7 @@
             </el-table-column>
           </el-table>
           <el-col :span='6' :offset='9' style="margin-top: 1.25rem;">
-            <el-button type='success'style="text-align: center;" @click='classSubmit'>提交</el-button>
+            <el-button type='success' style="text-align: center;" @click='classSubmit'>提交</el-button>
           </el-col>
         </div>
       </div>
@@ -367,6 +367,7 @@
               });
       },
       objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+        console.log(row,column)
         if (columnIndex === 0) {
           if (rowIndex % 2 === 0) {
             return {
@@ -381,11 +382,11 @@
           }
         }
       },
-      handleMark(index,row){
+      handleMark(){
         this.isClicked = true
         this.mode='submit'
       },
-      handleCheckMark(index,row){
+      handleCheckMark(){
         this.isClicked = true
         this.mode='check'
       },

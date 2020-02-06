@@ -321,7 +321,7 @@
         this.update('getStudent')
       },
       watch: {
-        activeIndexTeam(newValue,oldValue) {
+        activeIndexTeam(newValue) {
           if(newValue == '全部学员'){
             this.getAllStudent()
             return
@@ -545,7 +545,7 @@
           }
           
         },
-        handleAddTemp(index, row){
+        handleAddTemp(index){
           let api = '/sellerctr/changeTeam'
           let team_id= this.current_teamId
           let data = {
@@ -576,7 +576,7 @@
           })
         },
         
-        handleEdit(index, row){
+        handleEdit(index){
           this.student = this.tableData[index]
           this.isEdit = true
         },

@@ -18,7 +18,7 @@
     <el-container>
       <el-main>
         <User v-if='!isAdded'/>
-        <UserAdd v-if='isAdded'/>
+        <!-- <UserAdd v-if='isAdded'/> -->
       </el-main>
     </el-container>
   </div>
@@ -26,9 +26,8 @@
 
 <script>
 import User from './components/user';
-import UserEdit from './components/userEdit';
 export default {
-  components: { User, UserEdit },
+  components: { User },
   data() {
     return {
       isAdded:false,

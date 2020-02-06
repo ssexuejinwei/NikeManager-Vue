@@ -64,7 +64,6 @@
 </template>
 
 <script>
-  import qs from 'qs'
   import UserEdit from './userEdit'
   export default{
     components: {

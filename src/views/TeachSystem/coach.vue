@@ -186,14 +186,14 @@
          tel : coach.tel,
         }
         this.$axios.post(api, qs.stringify(data)
-        ).then((response) => {
+        ).then(() => {
           this.$alert('添加成功', {
                     confirmButtonText: '确定',
                   }).then(()=>{
                     this.outerVisible = false
                     this.update()
                   });
-        }).catch((error)=>{
+        }).catch(()=>{
           this.$alert('表单填写错误,添加失败')
         })
       },
@@ -213,13 +213,13 @@
                      id : this.chooseID,
                     }
                     this.$axios.post(api, qs.stringify(data)
-                    ).then((response) => {
+                    ).then(() => {
                       this.$alert('删除成功', {
                                 confirmButtonText: '确定',
                               }).then(()=>{
                                 this.update()
                               });
-                    }).catch((error)=>{
+                    }).catch(()=>{
                       this.$alert('删除失败')
                     })
                   }).catch(() => {
