@@ -120,6 +120,34 @@ const routes = [
       // },
     ]
   },
+  {
+    path: '/score',
+    component: () => import('@/views/Score/index'),
+    beforeEnter: ifAuthenticated,
+    children: [
+      { path: '', redirect: 'overview' },
+      {
+        path: 'overview',
+        component: () => import('@/views/Score/overview')
+      },
+      {
+        path: 'recharge-record',
+        component: () => import('@/views/Score/recharge')
+      },
+      {
+        path: 'topup-record',
+        component: () => import('@/views/Score/topup')
+      },
+      {
+        path: 'return-record',
+        component: () => import('@/views/Score/return')
+      },
+    ]
+  },
+  {
+    path: '*',
+    component: () => import('@/views/404')
+  }
 ]
 
 const router = new VueRouter({

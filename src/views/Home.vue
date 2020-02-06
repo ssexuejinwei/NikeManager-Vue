@@ -1,28 +1,25 @@
 <template>
   <div class="home">
     <p>
-      <router-link to="/">Home</router-link>
-    </p>
-   <!-- <p>
-      <router-link to="/Student">/Student</router-link>
+      <router-link to="/">主页</router-link>
     </p>
     <p>
-      <router-link to="/Schedule">/Schedule</router-link>
-    </p> -->
-    <p>
-      <router-link to="/activity">/activity</router-link>
+      <router-link to="/activity">活动管理</router-link>
     </p>
     <p>
-      <router-link to="/product">/product</router-link>
+      <router-link to="/product">商品管理</router-link>
     </p>
     <p>
-      <router-link to="/order">/order</router-link>
+      <router-link to="/order">订单管理</router-link>
     </p>
     <p>
       <router-link to="/teach/student">/teach</router-link>
     </p>
     <p>
-      <router-link to="/user">/user</router-link>
+      <router-link to="/user">用户管理</router-link>
+    </p>
+    <p>
+      <router-link to="/score">积分管理</router-link>
     </p>
   </div>
 </template>
