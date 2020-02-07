@@ -20,7 +20,7 @@
         <br/><br/><br/><br/>
           <el-menu
           class= 'chooseMenu'
-          :default-active="activeChoose"
+          :default-active="this.$route.path"
           @select="handleSelect"
           active-text-color="#ffffff"
           align="center"
@@ -32,8 +32,11 @@
             <el-menu-item index="/teach/coach" :key="teachChoose[1]">
                 {{teachChoose[1]}}
             </el-menu-item>
-            <el-menu-item index="/teach/schedule" :key="teachChoose[2]">
+            <el-menu-item index="/teach/course" :key="teachChoose[2]">
                 {{teachChoose[2]}}
+            </el-menu-item>
+            <el-menu-item index="/teach/schedule" :key="teachChoose[3]">
+                {{teachChoose[3]}}
             </el-menu-item>
             </el-menu>
       </el-aside>
@@ -50,16 +53,12 @@
 </template>
 
 <script>
-import Schedule from './schedule';
-import Student from './student';
-import Coach from './coach';
 export default {
-  components: { Schedule, Student,Coach },
   data() {
     return {
       showIndex : 0,
       activeChoose :'/teach/student',
-      teachChoose:['学员档案','教练管理','排课信息'],
+      teachChoose:['学员档案','教练管理','课程管理','排课信息'],
       search: '',
       tabPosition: 'left'
     }

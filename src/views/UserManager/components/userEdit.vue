@@ -87,7 +87,7 @@
         </el-col>
       </el-form-item>
       <el-form-item label="收货地址">
-        <div  v-for="(data, index) in form.address">
+        <div  v-for="(data, index) in form.address"  :key='index'>
           <el-row style="margin-top: 0.625rem;">
           <el-col :span='12'>
              <el-input v-model="data['content']"></el-input>
@@ -175,7 +175,6 @@ import Axios from 'axios'
           age:'3',
           level:'3个月',
           birth:'2019-9-8',
-          points:'21414',
           address:[],
         },
         addressForm:{
@@ -266,6 +265,7 @@ import Axios from 'axios'
         this.$emit('back',false)
       },
       objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+        console.log(row,column)
         if (columnIndex === 0) {
           if (rowIndex % 2 === 0) {
             return {
@@ -281,7 +281,7 @@ import Axios from 'axios'
         }
       },
       handleCancel(index,row){
-        console.log(index)
+        console.log(index,row)
       },
       handleMenuSelect(index){
         this.menuIndex = index

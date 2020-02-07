@@ -13,7 +13,7 @@
       <router-link to="/order">订单管理</router-link>
     </p>
     <p>
-      <router-link to="/teach/student">/teach</router-link>
+      <router-link to="/teach/student">教务系统</router-link>
     </p>
     <p>
       <router-link to="/user">用户管理</router-link>

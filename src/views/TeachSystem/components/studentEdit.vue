@@ -115,7 +115,7 @@
         </el-radio-group>
         </el-col>
         <el-col :span="10" :offset='5'>
-        <el-radio-group v-model="RadioIndex" v-if="menuIndex=='我的评测'"style="margin-bottom: 20px;">
+        <el-radio-group v-model="RadioIndex" v-if="menuIndex=='我的评测'" style="margin-bottom: 20px;">
           <el-radio-button label="1">课后反馈</el-radio-button>
           <el-radio-button label="2">阶段性评测</el-radio-button>
           <el-radio-button label="3">年度体测</el-radio-button>
@@ -217,13 +217,6 @@
         pageSizeForCourse:4,
         courseTotal:1,
         curPageForCourse:1,
-        form: {
-          capacity: 0,
-          score: 0,
-          date1: null,
-          date2: null,
-          information: ''
-        },
         form:{
           name:'韩',
           height:134,
@@ -390,23 +383,10 @@
       goBack(){
         this.$emit('back',false)
       },
-      objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-        // if (columnIndex === 0) {
-        //   if (rowIndex % 2 === 0) {
-        //     return {
-        //       rowspan: 2,
-        //       colspan: 1
-        //     };
-        //   } else {
-        //     return {
-        //       rowspan: 0,
-        //       colspan: 0
-        //     };
-        //   }
-        // }
+      objectSpanMethod() {
       },
       handleCancel(index,row){
-        console.log(index)
+        console.log(index,row)
       },
       handleMenuSelect(index){
         this.menuIndex = index
@@ -427,7 +407,7 @@
         }
         console.log(this.fileList)
         this.$axios.post(api, qs.stringify(data)
-        ).then((response) => {
+        ).then(() => {
           // console.log(teamName)
           this.$alert('保存成功').then(()=>{
             this.$emit('update',true)

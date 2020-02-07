@@ -55,12 +55,23 @@ const routes = [
         path: 'coach',
         component: () => import('@/views/TeachSystem/coach'),
       },
+      //课程管理
+      {
+        path: 'course',
+        component: () => import('@/views/TeachSystem/course'),
+      },
       //排课管理
       {
         path: 'schedule',
         component: () => import('@/views/TeachSystem/schedule')
       }
     ]
+  },
+  //添加课程
+  {
+    path: '/teach/course/add',
+    component: () => import('@/views/TeachSystem/components/courseAdd'),
+    beforeEnter: ifAuthenticated,
   },
   {
     path: '/user',

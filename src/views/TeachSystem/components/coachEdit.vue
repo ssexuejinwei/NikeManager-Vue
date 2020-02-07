@@ -339,7 +339,7 @@
       goBack(){
         this.$emit('back',false)
       },
-      handleCancel(index,row){
+      handleCancel(index){
         console.log(index)
       },
       handleMenuSelect(index){
