@@ -27,7 +27,6 @@
           class="UserTableData"
           highlight-current-row
           @current-change="handleCurrentChangeTable"
-          @row-click="handleRow"
           :border="true"> 
           <el-table-column prop="name" label="姓名" :class="borderBottom" align='center'> </el-table-column>
           <el-table-column prop="sex" label="性别" :class="borderBottom" align='center'> </el-table-column>
@@ -37,12 +36,22 @@
           <el-table-column prop="points" label="积分" :class="borderBottom" align='center'> </el-table-column>
           <el-table-column prop="date" label="加入时间" :class="borderBottom" align='center'> 
           </el-table-column>
+          <el-table-column  label="操作" :class="borderBottom" align='center'>
+            <template slot-scope="scope">
+              <el-button
+              size="medium"	
+              type='danger'
+              @click="handleEdit(scope.$index,scope.row)">
+              详情
+              </el-button>
+            </template>
+          </el-table-column>
         </el-table>
       </el-main>
       <el-footer>
         <el-row>
           <el-col :span='6'>
-            <el-button type='danger' @click='addUser'>添加新用户</el-button>
+            <!-- <el-button type='danger' @click='isAdd = true'>添加新用户</el-button> -->
             <el-button type='info' @click='deleteUser'>删除用户</el-button>
           </el-col>
           <el-col style="text-align: right;">
@@ -57,14 +66,15 @@
       </el-footer>
     </el-container>
   </div>
-  <div class='userAdd' v-if='isEdit'>
-    <UserEdit :user='user' @back ='backHome'/>
+  <div class='userEdit' v-if='isEdit'>
+    <UserEdit :user='user' @update='handleEditFinish' @back ='backHome'/>
   </div>
   </div>
 </template>
 
 <script>
   import UserEdit from './userEdit'
+  import qs from 'qs'
   export default{
     components: {
       UserEdit
@@ -88,18 +98,23 @@
      this.getUser()
     },
     methods: {
-      
-      addUser(row){
-        // console.log(row['id'])
+      handleEditFinish(val){
+        if(val){
+          console.log('updateuser')
+          this.getUser()
+        }
+      },
+      handleEdit(index,row){
+        console.log(index,row)
         for(let user of this.UserTableData){
           if(user['id'] == row['id']){
             this.user = user
             break
           }
         }
-        // console.log(this.user)
+        console.log(this.user)
         this.isEdit =true
-      },
+        },
       backHome(val){
         this.isEdit = val
       },
@@ -124,7 +139,8 @@
               tel : user['tel'],
               points : user['score'],
               age : user['age'],
-              level : 'Lv ' +user['level']
+              level : 'Lv ' +(user['level']+1),
+              avatar:user['avatar'] ==null?'':user['avatar']
             }
             this.UserTableData.push(obj)
           }
@@ -142,41 +158,40 @@
         this.isChoose = true
       },
       deleteUser(){
-        if(this.isChoose){
-          this.$confirm('确认删除该用户?', '', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '返回',
-                    type: 'warning'
-                  }).then(() => {
-                    // let api ='/sellerctr/deleteCoach'
-                    // var data = {
-                    //  id : this.chooseID,
-                    // }
-                    // this.$axios.post(api, qs.stringify(data)
-                    // ).then((response) => {
-                    //   this.$alert('删除成功', {
-                    //             confirmButtonText: '确定',
-                    //           }).then(()=>{
-                    //             this.update()
-                    //           });
-                    // }).catch((error)=>{
-                    //   this.$alert('删除失败')
-                    // })
-                  }).catch(() => {
-                    this.$message({
-                      type: 'info',
-                      message: '已取消删除'
-                    });          
-                  });
-          
-        }
-        else{
-          this.$alert('请先选择用户', {
-                    confirmButtonText: '确定',
-                  });
-        }
+       if(this.isChoose){
+        this.$confirm('确认删除该用户?', '', {
+                   cancelButtonText: '返回',
+                   confirmButtonText: '确定',
+                   type: 'warning'
+                 }).then(() => {
+                   let api ='/sellerctr/deleteParents'
+                   var data = {
+                    id : this.chooseID,
+                   }
+                   this.$axios.post(api, qs.stringify(data)
+                   ).then(() => {
+                     this.$alert('删除成功', {
+                               confirmButtonText: '确定',
+                             }).then(()=>{
+                               this.getUser()
+                             });
+                   }).catch(()=>{
+                     this.$alert('删除失败')
+                   })
+                 }).catch(() => {
+                   this.$message({
+                     type: 'info',
+                     message: '已取消删除'
+                   });          
+                 });
+       }
+       else{
+         this.$alert('请先选择用户', {
+                   confirmButtonText: '确定',
+                 });
+       }
       },
-    },
+    }
   }
   
 </script>

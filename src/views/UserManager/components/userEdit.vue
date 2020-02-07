@@ -43,28 +43,28 @@
       </el-form-item>
       <el-row>
       <el-col :span='9'>
-      <el-form-item label="微信ID">
-          <el-input v-model="form.wechat"></el-input>
+      <el-form-item label="微信ID" >
+          <el-input v-model="form.wechat" disabled></el-input>
       </el-form-item>
       </el-col>
       </el-row>
       <el-row>
       <el-col :span='9'>
-      <el-form-item label="会员时间" >
-          <el-input v-model="form.date"></el-input>
+      <el-form-item label="会员时间">
+          <el-input v-model="form.date" disabled></el-input>
       </el-form-item>
       </el-col>
       </el-row>
       <el-row>
       <el-col :span='9'>
       <el-form-item label="个人积分" >
-          <el-input v-model="form.points"></el-input>
+          <el-input v-model="form.points" disabled></el-input>
       </el-form-item>
       </el-col>
       </el-row>
       <el-col :span='24'>
       <el-form-item label="会员等级">
-          <el-radio-group v-model="form.level">
+          <el-radio-group v-model="form.level" disabled>
             <el-radio-button label="Lv 1"></el-radio-button>
             <el-radio-button label="Lv 2"></el-radio-button>
             <el-radio-button label="Lv 3"></el-radio-button>
@@ -81,7 +81,7 @@
           <el-input v-model="form.sex"></el-input>
         </el-col>
       </el-form-item>
-      <el-form-item label="年龄" >
+      <el-form-item label="年龄">
         <el-col :span='12'>
           <el-input v-model="form.age"></el-input>
         </el-col>
@@ -137,7 +137,8 @@
       </el-col>
       </el-row>
       <el-form-item label="地址" >
-          <el-input type="textarea" v-model="addressForm.address"></el-input>
+        <v-distpicker @selected="onSelected"></v-distpicker>
+        <el-input type="textarea" placeholder="详细地址" v-model="addressForm.detail" style="margin-top: 1.25rem;"></el-input>
       </el-form-item>
       <el-form-item  style='text-align: right;'>
           <el-checkbox  v-model="addressForm.setDefault">设为默认地址</el-checkbox>
@@ -153,12 +154,18 @@
 
 <script>
 import Axios from 'axios'
+import qs from 'qs'
+import VDistpicker from 'v-distpicker'
   export default{
     props:{
       user:Object
     },
+    components: {
+      VDistpicker
+    },
     data() {
       return {
+        region:{},
         squareImageUrl:'',
         addAddressVisible : false,
         form:{
@@ -178,11 +185,11 @@ import Axios from 'axios'
           address:[],
         },
         addressForm:{
-          name:'sss',
-          tel:'12455',
-          code:'1244',
-          address:'afafaf',
-          setDefault:false,
+          name:'',
+          tel:'',
+          code:'',
+          detail:'',
+          setDefault:true,
         },
         addressList:[],
         tableCourse:[],
@@ -192,8 +199,6 @@ import Axios from 'axios'
       }
     },
     created() {
-      console.log(' iam here')
-      console.log(this.user)
       this.form['id']=this.user['id']
       this.form['nickName']=this.user['nickName']
       this.form['wechat']=this.user['wechat']
@@ -204,20 +209,76 @@ import Axios from 'axios'
       this.form['points']=this.user['points']
       this.form['age']=this.user['age']
       this.form['level']=this.user['level']
+      this.squareImageUrl = this.user['avatar']
         // this.$axios.get(){
-      console.log(this.form)  
       this.getAddress()
       // }
     },
     methods: {
+      onSelected(data) {
+        this.region = data
+        console.log(this.region.province.value+'-' +this.region.city.value +'-'+ this.region.area.value)
+      },
+      save(){
+        let api='/sellerctr/updateParents'
+        let params={
+          id:this.user.id,
+          nick_name:this.form.nickName,
+          avatar:this.squareImageUrl,
+          name:this.form.name,
+          sex:this.form.sex=='男'?0:1,
+          tel:this.form.tel,
+          age:this.form.age,
+        }
+        this.$axios.post(api,qs.stringify(params)
+        ).then(() => {
+          this.$alert('保存成功', {
+                    confirmButtonText: '确定',
+                  }).then(()=>{
+                    console.log('update')
+                    this.$emit('update',true)
+                  })
+        }).catch(()=>{
+          this.$alert('表单填写错误,保存失败')
+        })
+      },
+      //提交地址
       submit(){
-        this.addAddressVisible = false
+        let api ='/parentsctr/addAddress'
+        let address={
+          region:{
+            "label":this.region.province.value+'-' +this.region.city.value +'-'+ this.region.area.value, 
+            "value":[ 1,1,1],
+            "cityCode":this.addressForm.code,
+          },
+         detailed:this.addressForm.detail
+        }
+        let params={
+          parents_id:this.user.id,
+          name:this.addressForm.name,
+          head:this.addressForm.name[0],
+          address:JSON.stringify(address),
+          tel:this.addressForm.tel,
+          isDefault : this.addressForm.setDefault
+        }
+        this.$axios.post(api,qs.stringify(params)
+        ).then(() => {
+          this.$alert('提交成功', {
+                    confirmButtonText: '确定',
+                  }).then(()=>{
+                    this.getAddress()
+                    this.addAddressVisible = false
+                    // this.$emit('update',true)
+                  })
+        }).catch(()=>{
+          this.$alert('表单填写错误,保存失败')
+        })
       },
       addAddress(){
         this.addAddressVisible = true
       },
       setDefault(value,index){
-        console.log(value,index)
+        // console.log(value,index)
         for(let data of this.form.address){
           data['isDefault']  = false
         }
@@ -225,26 +286,32 @@ import Axios from 'axios'
       },
       getAddress(){
         let api='/parentsctr/getAddress'
-        console.log(this.form['id'])
+        this.form.address=[]
+        this.addressList=[]
+        // console.log(this.form['id'])
         this.$axios.get(api,{
           params:{
             parents_id:this.form['id']
           }
         }).then((response)=>{
           let addressList = response['data']['data']
-          console.log(addressList)
+          // console.log(addressList)
           for(let address of addressList){
+            let addressInfo = JSON.parse(address['address'])
+            console.log(addressInfo)
             let obj={
               id:address['id'],
               tel:address['tel'],
               name : address['name'],
               address: address['address'],
-              isDefault:parseInt(address['isDefault']) ==1?true:false,
-              content : address['name'] +'  '+address['tel']+'   '+address['address'],
+              isDefault:Boolean(address['isDefault']),
+              content : '收件人:'+address['name'] +'  '+'联系电话:'+address['tel']+'   '+
+                        '收货地址:'+ addressInfo.region.label+'-'+addressInfo.detailed,
             }
+            console.log((Boolean(obj.isDefault)))
             this.addressList.push(obj)
           }
-          console.log('address',this.addressList)
+          // console.log('address',this.addressList)
           //sort
           let i =0
           for(let address of this.addressList ){
@@ -257,7 +324,10 @@ import Axios from 'axios'
             }
             i++;
           }
-          console.log('address',this.addressList)
+          for(let j=1;j<this.addressList.length;j++ ){
+            this.addressList[j]['isDefault']=false
+          }
+          // console.log('address',this.addressList)
           this.form['address']=this.addressList
         })
       },
@@ -285,10 +355,7 @@ import Axios from 'axios'
       },
       handleMenuSelect(index){
         this.menuIndex = index
-        console.log(this.menuIndex)
-      },
-      save(){
-        console.log(this.form)
+        // console.log(this.menuIndex)
       },
       handleUpload(param) {
         const file = param.file
@@ -316,7 +383,7 @@ import Axios from 'axios'
 <style lang="scss">
   .userEditInfo{
     .el-container{
-      .el-main{
+      .el-aside{
         .avatar-uploader .el-upload {
             border: 1px dashed #d9d9d9;
             border-radius: 6px;
