@@ -1,14 +1,14 @@
 <template>
   <div v-loading="isLoading">
     <el-table :data="data">
-      <el-table-column prop="name" label="用户名" width="150" />
+      <el-table-column prop="parents_name" label="用户名" width="150" />
       <el-table-column prop="create_time" label="创建时间" width="180" />
       <el-table-column prop="reason" label="原因" width="200" />
       <el-table-column prop="return_score" label="返还积分" width="80" />
     </el-table>
-    <!-- <footer>
+    <footer>
       <el-pagination :current-page.sync="cur_page" :total="total" layout="prev, pager, next"></el-pagination>
-    </footer> -->
+    </footer>
   </div>
 </template>
 
@@ -42,8 +42,8 @@ export default {
         const { data } = await Axios.get('/sellerctr/getScoreReturn', {
           params: { cur_page: this.cur_page }
         })
-        this.data = data.data
-        // this.total = data.data.total
+        this.data = data.data.data
+        this.total = data.data.total
       } catch (error) {
         console.error(error)
         this.$message.error('获取数据失败')
