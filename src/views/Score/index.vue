@@ -7,10 +7,10 @@
       <el-menu class="menu" router :default-active="$route.path">
         <el-menu-item index="/score/overview">积分总览</el-menu-item>
         <el-menu-item index="/score/recharge-record">充值记录</el-menu-item>
-        <el-menu-item index="/score/topup-record">消费记录</el-menu-item>
+        <el-menu-item index="/score/bill-record">消费记录</el-menu-item>
         <el-menu-item index="/score/return-record">返还记录</el-menu-item>
       </el-menu>
-      <router-view />
+      <router-view style="flex: 1" />
     </div>
 
   </div>

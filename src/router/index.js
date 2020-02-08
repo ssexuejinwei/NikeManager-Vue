@@ -146,8 +146,8 @@ const routes = [
         component: () => import('@/views/Score/recharge')
       },
       {
-        path: 'topup-record',
-        component: () => import('@/views/Score/topup')
+        path: 'bill-record',
+        component: () => import('@/views/Score/bill')
       },
       {
         path: 'return-record',
