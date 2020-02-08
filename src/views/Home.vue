@@ -1,6 +1,6 @@
 <template>
-  <div class="home">
-    <p>
+  <div>
+    <!-- <p>
       <router-link to="/">主页</router-link>
     </p>
     <p>
@@ -20,11 +20,14 @@
     </p>
     <p>
       <router-link to="/score">积分管理</router-link>
-    </p>
+    </p> -->
+
   </div>
 </template>
 
 <script>
+
+
 
 export default {
   name: 'home',
