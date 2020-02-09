@@ -1,6 +1,26 @@
 <template>
   <div>
   <div class ='User' v-if='!isEdit'>
+    <header class='teachHeader'>
+      <h1>用户管理</h1>
+      <div>
+        <el-input placeholder="请输入内容" v-model="search.value" style="width: 500px">
+          <el-select v-model="search.key" slot="prepend" placeholder="请选择" style="width: 100px">
+            <el-option label="用户名" value="name"></el-option>
+            <el-option label="性别" value="sex"></el-option>
+            <el-option label="年龄" value="age"></el-option>
+            <el-option label="电话" value="tel"></el-option>
+            <el-option label="等级" value="level"></el-option>
+            <el-option label="积分" value="score"></el-option>
+            <el-option label="加入时间" value="create_time"></el-option>
+          </el-select>
+          <el-button slot="append" icon="el-icon-search" @click="handleSearch"></el-button>
+        </el-input>
+        <el-button style="margin-left: 16px" v-show="search.value" type="text" @click="handleClearSearch">
+          清空搜索结果
+        </el-button>
+      </div>
+    </header>
     <el-container>
       <el-header>
         <el-col>
@@ -10,13 +30,13 @@
            @select="handleSelect"
            class='filterMenu'
            >
-            <el-menu-item :index="Menufilter[0]" :key="Menufilter[0]">
+            <el-menu-item index="0" :key="0">
                {{Menufilter[0]}}
             </el-menu-item>
             <el-submenu index="更多">
                <template slot="title">更多</template>
-               <el-menu-item :index="Menufilter[1]">{{Menufilter[1]}}</el-menu-item>
-               <el-menu-item :index="Menufilter[2]">{{Menufilter[2]}}</el-menu-item>
+               <el-menu-item index="1" :key='1'>{{Menufilter[1]}}</el-menu-item>
+               <el-menu-item index="2" :key='2'>{{Menufilter[2]}}</el-menu-item>
             </el-submenu>
          </el-menu>
          </el-col>
@@ -81,6 +101,10 @@
     },
     data() {
       return {
+        search: {
+          key: 'name',
+          value: ''
+        },
         chooseID:0,
         isChoose:false,
         borderBottom :'borderBottom',
@@ -89,19 +113,65 @@
         cur_page :1,
         page_size : 10,
         total :1,
-        activeIndexFilter:'时间',
-        Menufilter: ['时间','性别','年龄'],
+        activeIndexFilter:'0',
+        currentIndex:'',
+        Menufilter: ['时间','年龄','性别'],
         UserTableData:[]
       }
     },
+    watch: {
+    },
     created() {
-     this.getUser()
+     this.getUser(0)
     },
     methods: {
+      handleClearSearch() {
+        this.search.value = ''
+        // @todo
+      },
+      handleSearch() {
+        if (this.search.value) {
+          //处理一下性别的
+          if(this.search.key=='sex'){
+            this.search.value = this.search.value=='男'?0:1
+          }
+          let api='/sellerctr/searchParents'
+          this.$axios.get(api,{
+            params:{
+              cur_page:1,
+              key:this.search.key,
+              value:this.search.value
+            }
+          }).then((response)=>{
+            let list = response['data']['data']['data']
+            this.total =response['data']['data']['total']
+            this.UserTableData =[]
+            for(let user of list){
+              let obj ={
+                id :parseInt(user['id']),
+                nickName:user['nick_name'],
+                wechat : user['open_id'],
+                name : user['name'],
+                date : user['create_time'].split(' ')[0],
+                sex : user['sex']==0?'男':'女',
+                tel : user['tel'],
+                points : user['score'],
+                age : user['age'],
+                level : 'Lv ' +(user['level']+1),
+                avatar:user['avatar'] ==null?'':user['avatar']
+              }
+              this.UserTableData.push(obj)
+              this.activeIndexFilter=''
+            }
+          }).catch(()=>{
+            this.$alert('error')
+          })
+        }
+        // @todo
+      },
       handleEditFinish(val){
         if(val){
-          console.log('updateuser')
-          this.getUser()
+          this.getUser(this.currentIndex)
         }
       },
       handleEdit(index,row){
@@ -112,17 +182,17 @@
             break
           }
         }
-        console.log(this.user)
         this.isEdit =true
         },
       backHome(val){
         this.isEdit = val
       },
-      getUser(){
+      getUser(type){
         let api ='sellerctr/getParents'
         this.$axios.get(api,{
           params:{
-            cur_page:this.cur_page
+            cur_page:this.cur_page,
+            type:type
           }
         }).then((response)=>{
           let list = response['data']['data']['data']
@@ -148,10 +218,11 @@
       },
       handleCurrentChange(val){
         this.cur_page = val
-        this.getUser()
+        this.getUser(this.currentIndex)
       },
-      handleSelect() {
-        
+      handleSelect(key) {
+        this.currentIndex = key
+        this.getUser(key)
       },
       handleCurrentChangeTable(val){
         this.chooseID=val['id']
@@ -173,7 +244,7 @@
                      this.$alert('删除成功', {
                                confirmButtonText: '确定',
                              }).then(()=>{
-                               this.getUser()
+                               this.getUser(this.currentIndex)
                              });
                    }).catch(()=>{
                      this.$alert('删除失败')
@@ -197,7 +268,28 @@
 </script>
 
 <style lang="scss">
+  $Green: #69bc38;
+  $Gray: #cdcdcb;
+  $Red : #92535e;
+  $pink : #FE8083;
  .User{
+   .teachHeader  {
+     padding: 0.5rem 1rem;
+     margin-bottom: 2rem;
+     background: $pink;
+     display: flex;
+     justify-content: space-between;
+   
+     a {
+       color: inherit;
+       text-decoration: none;
+     }
+   
+     h1 {
+       font-size: 1rem;
+       margin: 0;
+     }
+   }
    .el-container{
      .el-header{
        .filterMenu .el-menu-item.is-active {
