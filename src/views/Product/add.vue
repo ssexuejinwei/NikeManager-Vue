@@ -81,8 +81,15 @@
           </el-table-column>
         </el-table>
       </el-form-item>
-      <el-form-item label="是否预售" prop="reserve">
+      <el-form-item label="是否预售" prop="reserve_time">
         <el-switch v-model="form.reserve" inactive-value="0" active-value="1"></el-switch>
+        <el-date-picker
+          v-if="form.reserve === '1'"
+          style="margin-left: 12px"
+          v-model="form.reserve_time"
+          type="datetime"
+          placeholder="选择日期时间">
+        </el-date-picker>
       </el-form-item>
       <el-form-item label="是否定时上架" prop="putaway_time">
         <el-switch v-model="form.putaway"></el-switch>
@@ -123,11 +130,12 @@ export default {
         category: '',
         images: [],
         reserve: '0',
+        reserve_time: new Date(),
         skus: [
           {size: '', num: 0}
         ],
         putaway: false,
-        putaway_time: null
+        putaway_time: new Date()
       },
       rules: {
         name: [
@@ -177,16 +185,24 @@ export default {
             }
           }, trigger: 'change' },
         ],
+        reserve_time: [
+          { validator: (r, v, cb) => {
+            if (this.form.reserve === '1') {
+              if (!this.form.reserve_time) {
+                return cb(new Error('请输入预定时间'))
+              }
+            }
+            cb()
+          } }
+        ],
         putaway_time: [
           { validator: (r, v, cb) => {
             if (this.form.putaway) {
               if (!this.form.putaway_time) {
-                cb(new Error('请输入发布时间'))
+                return cb(new Error('请输入发布时间'))
               }
-              cb()
-            } else {
-              cb()
             }
+            cb()
           }, trigger: 'change' }
         ]
       },
@@ -200,7 +216,8 @@ export default {
         ...this.form,
         images: JSON.stringify(this.form.images),
         skus: JSON.stringify(this.validSkus),
-        putaway_time: this.form.putaway ? format(this.form.putaway_time, 'yyyy-MM-dd HH:mm:ss') : format(new Date(), 'yyyy-MM-dd HH:mm:ss')
+        putaway_time: this.form.putaway ? format(this.form.putaway_time, 'yyyy-MM-dd HH:mm:ss') : format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+        reserve_time: this.form.reserve === '1' ? format(this.form.reserve_time, 'yyyy-MM-dd HH:mm:ss') : ''
       }
 
       delete form.putaway
