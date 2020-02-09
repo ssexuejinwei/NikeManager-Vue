@@ -217,7 +217,7 @@ export default {
         images: JSON.stringify(this.form.images),
         skus: JSON.stringify(this.validSkus),
         putaway_time: this.form.putaway ? format(this.form.putaway_time, 'yyyy-MM-dd HH:mm:ss') : format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
-        reserve_time: this.form.reserve === '1' ? format(this.form.reserve_time, 'yyyy-MM-dd HH:mm:ss') : ''
+        reserve_time: this.form.reserve === '1' ? format(this.form.reserve_time, 'yyyy-MM-dd HH:mm:ss') : format(new Date(), 'yyyy-MM-dd HH:mm:ss')
       }
 
       delete form.putaway
