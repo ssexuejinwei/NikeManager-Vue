@@ -97,7 +97,7 @@ export default {
       page: this.$route.query.page || 1,
       loading: false,
 
-      IMAGE_PREFIX: process.env.VUE_APP_UPLOAD_PUBLIC_URL,
+      IMAGE_PREFIX: '', //process.env.VUE_APP_UPLOAD_PUBLIC_URL,
       C_TYPES_TO_STR,
     }
   },

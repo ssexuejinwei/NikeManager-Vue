@@ -183,6 +183,7 @@ export default {
               if (!this.form.putaway_time) {
                 cb(new Error('请输入发布时间'))
               }
+              cb()
             } else {
               cb()
             }
