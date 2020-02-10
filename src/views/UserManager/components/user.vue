@@ -10,7 +10,6 @@
             <el-option label="性别" value="sex"></el-option>
             <el-option label="年龄" value="age"></el-option>
             <el-option label="电话" value="tel"></el-option>
-            <el-option label="等级" value="level"></el-option>
             <el-option label="积分" value="score"></el-option>
             <el-option label="加入时间" value="create_time"></el-option>
           </el-select>
