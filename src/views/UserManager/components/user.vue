@@ -27,7 +27,6 @@
            mode="horizontal"
            :default-active="activeIndexFilter"
            @select="handleSelect"
-           class='filterMenu'
            >
             <el-menu-item index="0" :key="0">
                {{Menufilter[0]}}
@@ -59,7 +58,6 @@
             <template slot-scope="scope">
               <el-button
               size="medium"	
-              type='danger'
               @click="handleEdit(scope.$index,scope.row)">
               详情
               </el-button>
@@ -275,7 +273,6 @@
    .teachHeader  {
      padding: 0.5rem 1rem;
      margin-bottom: 2rem;
-     background: $pink;
      display: flex;
      justify-content: space-between;
    

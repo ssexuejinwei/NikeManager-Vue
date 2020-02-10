@@ -15,15 +15,11 @@
       </div>
     </header>
     
-    <el-container>
-      <el-aside >
-        <br/><br/><br/><br/>
+        <!-- <br/><br/><br/><br/> -->
           <el-menu
-          class= 'chooseMenu'
+          mode="horizontal"
           :default-active="this.$route.path"
           @select="handleSelect"
-          active-text-color="#ffffff"
-          align="center"
           router
           >
             <el-menu-item index="/teach/student" :key="teachChoose[0]">
@@ -39,16 +35,13 @@
                 {{teachChoose[3]}}
             </el-menu-item>
             </el-menu>
-      </el-aside>
+            <br/>
  <!--     <el-main>
         <Student v-show="showIndex ==0"></Student>
         <Coach v-show="showIndex ==1"></Coach>
         <Schedule v-show="showIndex ==2"></Schedule>
       </el-main> -->
-      <el-main>
       <router-view></router-view> 
-      </el-main>
-    </el-container>
   </div>
 </template>
 
@@ -81,7 +74,6 @@ $pink : #FE8083;
 .teachHeader  {
   padding: 0.5rem 1rem;
   margin-bottom: 2rem;
-  background: $pink;
   display: flex;
   justify-content: space-between;
 
