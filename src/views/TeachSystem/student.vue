@@ -7,7 +7,6 @@
      <el-col :span='18' style="margin-bottom: 3rem;">
       <el-menu
         mode = "horizontal"
-        active-text-color="#ffffff"
         :default-active="activeIndexAge"
         @select="handleSelect"
         class='ageMenu'
@@ -23,7 +22,6 @@
       <el-menu
        mode = "horizontal"
        :default-active="activeIndexType"
-       active-text-color="#ffffff"
        @select="handleSelect"
        class='typeMenu'
        >
@@ -37,8 +35,8 @@
     </el-header> 
       <br/>
     <el-container>
-      <el-aside width="200px" style="height: 35rem; border:solid #000000;">
-        <el-menu active-text-color="#ffffff"
+      <el-aside width="200px" >
+        <el-menu 
         :default-active="activeIndexTeam"
         class = 'teamMenu'
         @select="handleSelect"
@@ -51,12 +49,10 @@
         </template>
         </el-menu>
       </el-aside>
-      <el-container style="height:35rem;">
-        <el-main style="padding: 0; height:35rem; border: solid #000000; border-left: 0;">
+      <el-container>
+        <el-main >
           <el-table 
             :data="tableData"
-            height="540"
-            class="studentTable"
             :border="true"> 
             <el-table-column prop="name" label="姓名" :class="borderBottom" align='center'> </el-table-column>
             <el-table-column prop="sex" label="性别" :class="borderBottom" align='center'> </el-table-column>
@@ -68,7 +64,6 @@
               <template slot-scope="scope">
                 <el-button
                 size="medium"	
-                type='danger'
                 @click="handleEdit(scope.$index,scope.row)">
                 详情
                 </el-button>
@@ -84,10 +79,10 @@
     <el-footer>
       <el-row style="margin-top: 0.25rem; margin-left: 2rem;">
         <el-col :span="4" :offset="3" >
-        <el-button class ="addButton" @click = "outerVisible = true">添加新学员</el-button>
+        <el-button  @click = "outerVisible = true">添加新学员</el-button>
         </el-col>
           <el-col :span="4"  >
-        <el-button class ="addTemporaryButton" @click = "addTemporaryStudent" >添加临时学员</el-button>
+        <el-button @click = "addTemporaryStudent" >添加临时学员</el-button>
         </el-col>
         <el-col :span="13">
           <el-pagination
@@ -133,12 +128,12 @@
       <el-form-item label="联系方式" prop="tel" :label-width="formLabelWidth">
         <el-input v-model="studentForm.tel" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="支付方式" :label-width="formLabelWidth">
-          <el-radio-group v-model="studentForm.sex" >
-            <el-radio label="微信"></el-radio>
-            <el-radio label="支付宝"></el-radio>
-            <el-radio label="信用卡"></el-radio>
-            <el-radio label="现金"></el-radio>
+      <el-form-item label="支付方式"  prop="pay" :label-width="formLabelWidth">
+          <el-radio-group v-model="studentForm.pay" >
+            <el-radio label="微信" value='0'></el-radio>
+            <el-radio label="支付宝" value='1'></el-radio>
+            <el-radio label="信用卡" value='2'></el-radio>
+            <el-radio label="现金" value='3'></el-radio>
           </el-radio-group>
        </el-form-item>
     </el-form>
@@ -253,7 +248,7 @@
           isEdit :false, //是否点击了操作按钮
           student:0, // 编辑的学生
           curPageForStudent:1,
-          pageSizeForStudent:8,
+          pageSizeForStudent:7,
           pagesForStudent:10,
           cur_page :1,
           page_size:10,
@@ -276,7 +271,8 @@
             birth: '',
             height:'',
             weight: '',
-            tel : '18314785647'
+            tel : '18314785647',
+            pay:''
           },
           formLabelWidth: '140px',
           menuAge:['3-4岁','4-5岁','5-6岁'],
@@ -284,7 +280,7 @@
           menuTeam:['team-01','team-02','team-03'],
           tableData:[],
           tempTableData:[],
-          borderBottom : 'borderBottom',
+          borderBottom : '',
           leftMenu : 'leftMenu',
           rules : {
             name:[
@@ -303,6 +299,10 @@
             ],
             weight: [
               { required: true, message: '请填写体重', trigger: 'blur' }
+              // { type: 'number', message: '体重必须为数字值'}
+            ],
+            pay: [
+              { required: true, message: '请选择支付方式', trigger: 'blur' }
               // { type: 'number', message: '体重必须为数字值'}
             ],
             tel: [
@@ -526,7 +526,7 @@
               ).then((response) => {
                 teamName = response['data']['data']['team_name']
                 // console.log(teamName)
-                this.$alert('<div class="teamSuccess"><h1 class="teamSuccessHead">分配成功 </h1><p class="teamSuccessContent">'+student.name+'小朋友</p><p>被分配至'+teamName+'</p>', '', {
+                this.$alert('<div><h1 class="teamSuccessHead">分配成功 </h1><p class="teamSuccessContent">'+student.name+'小朋友</p><p>被分配至'+teamName+'</p>', '', {
                           dangerouslyUseHTMLString: true
                         });
               }).catch((error)=>{
@@ -615,7 +615,7 @@
         },
         teamClass(index){
           if(index == this.menuTeam[this.menuTeam.length -1]){
-            return 'borderBottom'
+            return ''
           }
           else{
             return ''
@@ -682,26 +682,26 @@
   //  border: solid 100px ;
   //   /* border: solid 100px !important; */
   // }
-  .leftMenu .el-menu-item.is-active {
-    background-color: #FE8083 !important;
-    border-bottom:solid 0.125rem !important;
-    font-size: x-large !important;
-    border: 1px solid !important;
-  }
-  .ageMenu .el-menu-item.is-active {
-    background-color: #FE8083 !important;
-    font-size: medium !important;
-  }
-  .typeMenu .el-menu-item.is-active {
-    background-color: #FE8083 !important;
-    font-size: medium !important;
-  }
-  .teamMenu .el-menu-item.is-active {
-    background-color: #FE8083 !important;
-    border-bottom:solid 0.125rem !important;
-    font-size: x-large !important;
-    border: 1px solid !important;
-  }
+  // .leftMenu .el-menu-item.is-active {
+  //   background-color: #FE8083 !important;
+  //   border-bottom:solid 0.125rem !important;
+  //   font-size: x-large !important;
+  //   border: 1px solid !important;
+  // }
+  // .ageMenu .el-menu-item.is-active {
+  //   background-color: #FE8083 !important;
+  //   font-size: medium !important;
+  // }
+  // .typeMenu .el-menu-item.is-active {
+  //   background-color: #FE8083 !important;
+  //   font-size: medium !important;
+  // }
+  // .teamMenu .el-menu-item.is-active {
+  //   background-color: #FE8083 !important;
+  //   border-bottom:solid 0.125rem !important;
+  //   font-size: x-large !important;
+  //   border: 1px solid !important;
+  // }
   // .el-table_2_column_2  {
   //   border-bottom:solid;
   // }

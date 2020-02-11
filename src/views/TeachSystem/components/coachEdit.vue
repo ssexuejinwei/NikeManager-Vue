@@ -110,7 +110,7 @@
             </el-table-column>
         </el-table>
         
-        <el-button type='danger' style="margin-top: 2rem;" @click='addCourse'>添加课程</el-button>
+        <el-button style="margin-top: 2rem;" @click='addCourse'>添加课程</el-button>
         <span class="demonstration" ></span>
         <el-pagination
         style="text-align: right;"

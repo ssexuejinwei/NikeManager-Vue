@@ -3,11 +3,10 @@
   <div class ='coachList' v-if='isEdit==false'>
     <el-container>
       <el-header >
-        <el-col :span="4" :offset="20" style='text-align: right;'>
+        <el-col :span="4" :offset="20" style='text-align: left;'>
         <el-menu
          mode = "horizontal"
          :default-active="activeIndexType"
-         active-text-color="#ffffff"
          class='typeMenu'
          >
          <template v-for="typeData in menuType">
@@ -19,7 +18,7 @@
            </el-col>
       </el-header> 
         <br/>
-      <el-main style="padding: 0; height:35rem; border: solid #000000;">
+      <el-main >
         <el-table 
           :data="coachTable"
           highlight-current-row
@@ -44,7 +43,6 @@
             <template slot-scope="scope">
               <el-button
               size="medium"	
-              type='danger'
               @click="handleEdit(scope.$index,scope.row)">
               更多
               </el-button>
@@ -56,7 +54,7 @@
       <el-footer>
       <el-row style="margin-top:1.5rem; ">
         <el-col :span="3"  >
-        <el-button type='danger' @click = "outerVisible = true">添加新教练</el-button>
+        <el-button type='primary' @click = "outerVisible = true">添加新教练</el-button>
         </el-col>
           <el-col :span="5" >
         <el-button type='info' @click = "deleteCoach" >删除教练</el-button>

@@ -18,7 +18,7 @@
            </el-col>
       </el-header> -->
         <br/>
-      <el-main style="padding: 0; height:35rem; border: solid #000000;">
+      <el-main >
         <el-table 
           :data="courseTable"
           highlight-current-row
@@ -32,7 +32,6 @@
             <template slot-scope="scope">
               <el-button
               size="medium"	
-              type='danger'
               @click="handleModify(scope.$index,scope.row)">
               修改
               </el-button>
@@ -46,11 +45,11 @@
         
         <el-col :span="3"  >
           <router-link to="/teach/course/add">
-            <el-button type='danger'>添加课程</el-button>
+            <el-button >添加课程</el-button>
           </router-link>
         </el-col>
           <el-col :span="5" >
-        <el-button type='info' @click = "deleteCoach" >删除课程</el-button>
+        <el-button  @click = "deleteCoach" >删除课程</el-button>
         </el-col>
       </el-row>
     </el-footer>

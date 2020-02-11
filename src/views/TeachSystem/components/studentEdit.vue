@@ -88,7 +88,7 @@
       </el-col>
       <el-col :span="8" :offset="7">
         <el-form-item size="large">
-          <el-button type="danger" @click="save">保存</el-button>
+          <el-button  @click="save">保存</el-button>
         </el-form-item>
       </el-col>
     </el-row>
