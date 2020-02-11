@@ -1,19 +1,23 @@
 <template>
   <el-container style="height: 100vh">
     <el-aside class="aside" :width="sideWidth">
-      <div class="logo">NIKE管理系统</div>
+      <div class="logo" :class="{ 'is-active': !collapse }">NIKE管理系统</div>
       <el-menu
         class="menu"
-        background-color="#303e58"
+        background-color="#171a2c"
         text-color="#fff"
+        active-text-color="#fff"
         router
         :default-active="defaultActive"
+        :collapse="collapse"
+        :collapse-transition="false"
       >
         <el-menu-item
           v-for="menu in menus"
           :key="menu.path" :index="menu.path"
         >
-          {{menu.name}}
+          <i v-if="menu.icon" :class="menu.icon"></i>
+          <span slot="title">{{menu.name}}</span>
         </el-menu-item>
       </el-menu>
     </el-aside>
@@ -22,7 +26,7 @@
         <div class="collapse-button" :class="{ active: collapse }" @click="toggleCollapse">
           <i class="el-icon-s-fold"></i>
         </div>
-        <div v-show="collapse">
+        <div class="logo-2" :class="{ 'is-active': collapse }">
           NIKE管理系统
         </div>
       </el-header>
@@ -40,19 +44,19 @@ import _ from 'lodash'
 
 const menus = [
   // { name: '首页', path: '/' },
-  { name: '活动管理', path: '/activity' },
-  { name: '商品管理', path: '/product' },
-  { name: '订单管理', path: '/order' },
-  { name: '教务系统', path: '/teach/student' },
-  { name: '用户管理', path: '/user' },
-  { name: '积分管理', path: '/score' },
+  { name: '活动管理', path: '/activity', icon: 'el-icon-present' },
+  { name: '商品管理', path: '/product', icon: 'el-icon-goods' },
+  { name: '订单管理', path: '/order', icon: 'el-icon-tickets' },
+  { name: '教务系统', path: '/teach/student', icon: 'el-icon-date' },
+  { name: '用户管理', path: '/user', icon: 'el-icon-user' },
+  { name: '积分管理', path: '/score', icon: 'el-icon-coin' },
 ]
 
 export default {
   data() {
     return {
       menus,
-      collapse: false
+      collapse: false,
     }
   },
 
@@ -68,7 +72,7 @@ export default {
     },
 
     sideWidth() {
-      return this.collapse ? '0' : '200px'
+      return this.collapse ? '64px' : '180px'
     }
   },
 
@@ -90,10 +94,22 @@ export default {
   line-height: 60px;
   text-align: center;
 
-  background: #222c40;
-  color: #fff;
+  background: #0f1218;
+  color: rgba(255,255,255, 0);
+  transition: 200ms color;
 
   font-weight: bold;
+  &.is-active {
+    color: rgba(255,255,255, 1);
+  }
+}
+
+.logo-2 {
+  color: rgba(255,255,255, 0);
+  transition: 200ms color;
+  &.is-active {
+    color: rgba(255,255,255, 1);
+  }
 }
 
 .menu {
@@ -104,7 +120,7 @@ export default {
 .header {
   height: 60px;
   line-height: 60px;
-  background: #303e58;
+  background: #1d2033;
   color: #fff;
   padding-left: 0;
 
@@ -115,22 +131,39 @@ export default {
   width: 60px;
   height: 60px;
   text-align: center;
-  transition: background 100ms, transform ease 250ms;
+  transition: background 100ms;
   cursor: pointer;
 
   margin-right: 8px;
-  // background: #303e58;
+
   &:hover {
     background: rgba(255,255,255,0.1)
   }
 
-  &.active {
-    // background: rgba(255,255,255,0.05)
+  &.active i {
     transform: rotate(180deg)
   }
 }
 
 .main {
   margin-top: 16px;
+}
+
+.el-menu-item {
+  position: relative;
+  &.is-active {
+    background-color: #232639 !important;
+    color: #fff !important;
+    &::before {
+      content: ' ';
+      position: absolute;
+      width: 3px;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background: #52bcf0;
+      // height: 100%;
+    }
+  }
 }
 </style>
