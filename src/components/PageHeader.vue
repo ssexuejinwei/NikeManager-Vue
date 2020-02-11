@@ -22,12 +22,12 @@ export default {
 <style lang="scss" scoped>
 header {
   // margin-bottom: 16px;
-  margin: 0 -16px 16px;
+  margin: 0 -20px 16px;
 }
 
 .title {
   border-bottom: 1px #eee solid;
-  padding: 12px 16px;
+  padding: 12px 20px;
   color: #444;
 }
 </style>
