@@ -1,30 +1,15 @@
 <template>
   <div>
   <div class ='User' v-if='!isEdit'>
-    <header class='teachHeader'>
-      <h1>用户管理</h1>
-      <div>
-        <el-input placeholder="请输入内容" v-model="search.value" style="width: 500px">
-          <el-select v-model="search.key" slot="prepend" placeholder="请选择" style="width: 100px">
-            <el-option label="用户名" value="name"></el-option>
-            <el-option label="性别" value="sex"></el-option>
-            <el-option label="年龄" value="age"></el-option>
-            <el-option label="电话" value="tel"></el-option>
-            <el-option label="积分" value="score"></el-option>
-            <el-option label="加入时间" value="create_time"></el-option>
-          </el-select>
-          <el-button slot="append" icon="el-icon-search" @click="handleSearch"></el-button>
-        </el-input>
-        <el-button style="margin-left: 16px" v-show="search.value" type="text" @click="handleClearSearch">
-          清空搜索结果
-        </el-button>
-      </div>
-    </header>
+    <page-header title="所有用户">
+      </page-header>
+      
     <el-container>
       <el-header>
-        <el-col>
+        <el-col :span='2'>
          <el-menu
            mode="horizontal"
+           text-color='#000000'
            :default-active="activeIndexFilter"
            @select="handleSelect"
            >
@@ -38,6 +23,22 @@
             </el-submenu>
          </el-menu>
          </el-col>
+         <el-col :span='4' :offset='15'>
+           <el-input placeholder="请输入内容" v-model="search.value" style="width: 500px">
+             <el-select v-model="search.key" slot="prepend" placeholder="请选择" style="width: 100px">
+               <el-option label="用户名" value="name"></el-option>
+               <el-option label="性别" value="sex"></el-option>
+               <el-option label="年龄" value="age"></el-option>
+               <el-option label="电话" value="tel"></el-option>
+               <el-option label="积分" value="score"></el-option>
+               <el-option label="加入时间" value="create_time"></el-option>
+             </el-select>
+             <el-button slot="append"  @click="handleSearch">搜索</el-button>
+           </el-input>
+           <el-button style="margin-left: 16px" v-show="search.value" type="text" @click="handleClearSearch">
+             清空搜索结果
+           </el-button>
+         </el-col>
       </el-header>
       <el-main >
         <el-table
@@ -46,15 +47,15 @@
           highlight-current-row
           @current-change="handleCurrentChangeTable"
           :border="true"> 
-          <el-table-column prop="name" label="姓名" :class="borderBottom" align='center'> </el-table-column>
-          <el-table-column prop="sex" label="性别" :class="borderBottom" align='center'> </el-table-column>
-          <el-table-column prop="age" label="年龄" :class="borderBottom" align='center'> </el-table-column>
-          <el-table-column prop="tel" label="电话" :class="borderBottom" align='center'> </el-table-column>
-          <el-table-column prop="level" label="等级" :class="borderBottom" align='center'> </el-table-column>
-          <el-table-column prop="points" label="积分" :class="borderBottom" align='center'> </el-table-column>
-          <el-table-column prop="date" label="加入时间" :class="borderBottom" align='center'> 
+          <el-table-column prop="name" label="姓名"  align='center'> </el-table-column>
+          <el-table-column prop="sex" label="性别"  align='center'> </el-table-column>
+          <el-table-column prop="age" label="年龄"  align='center'> </el-table-column>
+          <el-table-column prop="tel" label="电话"  align='center'> </el-table-column>
+          <el-table-column prop="level" label="等级"  align='center'> </el-table-column>
+          <el-table-column prop="points" label="积分"  align='center'> </el-table-column>
+          <el-table-column prop="date" label="加入时间"  align='center'> 
           </el-table-column>
-          <el-table-column  label="操作" :class="borderBottom" align='center'>
+          <el-table-column  label="操作"  align='center'>
             <template slot-scope="scope">
               <el-button
               size="medium"	
@@ -69,7 +70,7 @@
         <el-row>
           <el-col :span='6'>
             <!-- <el-button type='danger' @click='isAdd = true'>添加新用户</el-button> -->
-            <el-button type='info' @click='deleteUser'>删除用户</el-button>
+            <el-button class='delete-button' @click='deleteUser'>删除用户</el-button>
           </el-col>
           <el-col style="text-align: right;">
             <el-pagination
@@ -102,9 +103,9 @@
           key: 'name',
           value: ''
         },
+        title:'更多',
         chooseID:0,
         isChoose:false,
-        borderBottom :'borderBottom',
         user :{},
         isEdit : false,
         cur_page :1,
@@ -219,6 +220,7 @@
       },
       handleSelect(key) {
         this.currentIndex = key
+        this.title=this.Menufilter[key]
         this.getUser(key)
       },
       handleCurrentChangeTable(val){
@@ -270,33 +272,46 @@
   $Red : #92535e;
   $pink : #FE8083;
  .User{
-   .teachHeader  {
-     padding: 0.5rem 1rem;
-     margin-bottom: 2rem;
-     display: flex;
-     justify-content: space-between;
-   
-     a {
-       color: inherit;
-       text-decoration: none;
-     }
-   
-     h1 {
-       font-size: 1rem;
-       margin: 0;
-     }
-   }
    .el-container{
      .el-header{
-       .filterMenu .el-menu-item.is-active {
-         background-color: #FE8083 !important;
-         font-size: medium !important;
+       .el-menu{
+          .el-menu-item.is-active{
+             background-color: #52bcf0;
+             border-color:#52bcf0  ;
+           }
+           .el-submenu{
+             .el-submenu .is-active{
+               background-color: #52bcf0;
+               border-color:#52bcf0  ;
+             }
+             .el-menu-item.is-active{
+                background-color: #52bcf0;
+                border-color:#52bcf0  ;
+              }
+           }
+          
+       }
+       .el-input{
+         border-color:#52bcf0 ;
+       }
+       .el-button{
+         color:#FFFFFF ;
+         background-color: #52bcf0;
        }
      }
      .el-main{
-       .borderBottom{
-         border-bottom:solid ;
-          /* box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04) */
+       .el-table{
+         .el-button{
+           color:#52bcf0 ;
+           border-color: #52bcf0;
+         }
+       }
+     }
+     .el-footer{
+       .el-button{
+         color: #fa7959;
+         background-color: #FFFFFF;
+         border-color:#fa7959 ;
        }
      }
    }

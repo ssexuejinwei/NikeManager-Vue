@@ -1,36 +1,18 @@
 <template>
   <div>
     
-  <div id = "student"  v-if="!isEdit">
+  <div class = "student"  v-if="!isEdit">
   <el-container>
    <el-header>
-     <el-col :span='18' style="margin-bottom: 3rem;">
-      <el-menu
-        mode = "horizontal"
-        :default-active="activeIndexAge"
-        @select="handleSelect"
-        class='ageMenu'
-        >
-        <template v-for="ageData in menuAge">
-          <el-menu-item :index="ageData" :key="ageData">
-              {{ageData}}
-          </el-menu-item>
-        </template>
-      </el-menu>
+     <el-col :span='4' style="margin-bottom: 3rem;">
+        <el-radio-group fill='#52bcf0' text-color='#fffff' v-model="activeIndexAge" @change='handleSelect'>
+             <el-radio-button  v-for="(data,index) in menuAge" :label="data" :value='index' :key='index' ></el-radio-button>
+        </el-radio-group>
       </el-col>
       <el-col :span="6">
-      <el-menu
-       mode = "horizontal"
-       :default-active="activeIndexType"
-       @select="handleSelect"
-       class='typeMenu'
-       >
-       <template v-for="typeData in menuType">
-         <el-menu-item :index="typeData" :key="typeData">
-             {{typeData}}
-         </el-menu-item>
-       </template>
-         </el-menu>
+        <el-radio-group fill='#52bcf0' text-color='#fffff' v-model="activeIndexType" @change='handleSelect'>
+             <el-radio-button  v-for="(data,index) in menuType" :label="data" :value='index' :key='index' ></el-radio-button>
+        </el-radio-group>
          </el-col>
     </el-header> 
       <br/>
@@ -40,6 +22,8 @@
         :default-active="activeIndexTeam"
         class = 'teamMenu'
         @select="handleSelect"
+        text-color="#000000"
+        active-text-color="#52bcf0"
         align="center"
         style="height: 33.5625rem;">
         <template v-for="teamData in menuTeam">
@@ -54,13 +38,13 @@
           <el-table 
             :data="tableData"
             :border="true"> 
-            <el-table-column prop="name" label="姓名" :class="borderBottom" align='center'> </el-table-column>
-            <el-table-column prop="sex" label="性别" :class="borderBottom" align='center'> </el-table-column>
-            <el-table-column prop="birth" label="生日" :class="borderBottom" align='center'> </el-table-column>
-            <el-table-column prop="height" label="身高" :class="borderBottom" align='center'> </el-table-column>
-            <el-table-column prop="weight" label="体重" :class="borderBottom" align='center'> </el-table-column>
-            <el-table-column prop="tel" label="联系方式" :class="borderBottom" align='center'> </el-table-column>
-            <el-table-column prop="do" label="操作" :class="borderBottom" align='center'> 
+            <el-table-column prop="name" label="姓名"  align='center'> </el-table-column>
+            <el-table-column prop="sex" label="性别"  align='center'> </el-table-column>
+            <el-table-column prop="birth" label="生日"  align='center'> </el-table-column>
+            <el-table-column prop="height" label="身高"  align='center'> </el-table-column>
+            <el-table-column prop="weight" label="体重"  align='center'> </el-table-column>
+            <el-table-column prop="tel" label="联系方式"  align='center'> </el-table-column>
+            <el-table-column prop="do" label="操作"  align='center'> 
               <template slot-scope="scope">
                 <el-button
                 size="medium"	
@@ -78,13 +62,13 @@
     </el-container>
     <el-footer>
       <el-row style="margin-top: 0.25rem; margin-left: 2rem;">
-        <el-col :span="4" :offset="3" >
+        <el-col :span="2" :offset="3" >
         <el-button  @click = "outerVisible = true">添加新学员</el-button>
         </el-col>
-          <el-col :span="4"  >
-        <el-button @click = "addTemporaryStudent" >添加临时学员</el-button>
+          <el-col :span="2"  >
+        <el-button @click = "addTemporaryStudent"  class='tempButton'>添加临时学员</el-button>
         </el-col>
-        <el-col :span="13">
+        <el-col :span="13" :offset='4'>
           <el-pagination
            v-if = "activeIndexTeam=='全部学员'"
           @current-change="handleStudentPageChange"
@@ -276,11 +260,11 @@
           },
           formLabelWidth: '140px',
           menuAge:['3-4岁','4-5岁','5-6岁'],
+          ageClass:['','',''],
           menuType:['篮球','足球'],
           menuTeam:['team-01','team-02','team-03'],
           tableData:[],
           tempTableData:[],
-          borderBottom : '',
           leftMenu : 'leftMenu',
           rules : {
             name:[
@@ -609,9 +593,7 @@
             this.activeIndexType = key
             this.update('readStudent')
           }
-         
-          
-         
+          console.log('i am here')
         },
         teamClass(index){
           if(index == this.menuTeam[this.menuTeam.length -1]){
@@ -626,138 +608,33 @@
     }
 </script>
 <style lang="scss">
-  .avatar-uploader .el-upload {
-      border: 1px dashed #d9d9d9;
-      border-radius: 6px;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
+  $Blue:'#52bcf0';
+  .student{
+    .el-container{
+      .el-header{
+      }
+      .el-footer{
+        .el-button{
+          color: #FFFFFF;
+          background-color: #fa7959;
+        }
+        .tempButton{
+          color: #fa7959;
+          background-color: #FFFFFF;
+          border-color:#fa7959 ;
+        }
+      }
+      .el-container{
+        .el-container{
+          .el-main{
+            .el-button{
+              color:#52bcf0 ;
+              border-color: #52bcf0;
+            }
+          }
+        }
+      }
     }
-    .avatar-uploader .el-upload:hover {
-      border-color: #409EFF;
-    }
-    .avatar-uploader-icon {
-      font-size: 28px;
-      color: #8c939d;
-      width: 178px;
-      height: 178px;
-      line-height: 178px;
-      text-align: center;
-    }
-    .avatar {
-      width: 178px;
-      height: 178px;
-      display: block;
-    }
-  #student{
-    h1{
-      text-align: center;
-    }
-    .addTempStudentCol{
-      border: none !important;
-    }
-  }
-  .el-icon-close:before{
-    display: none;
-  }
-  .el-form-item .label{
-    border: solid;
-  }
-/*  .teamSuccess{
-    background-color:#FE8083;
-    color:white;
-    text-align: center;
-  } */
-  .teamSuccessContent{
-    font-size: larger;
-  }
-  .teamSuccessHead{
-    font-size: large;
-  }
-  //  .studentTable td{
-  //   border-bottom: solid black ;
-  //   /* border-bottom: solid black !important; */
-  // }
-  //  .studentTable .border{
-  //  border: solid 100px ;
-  //   /* border: solid 100px !important; */
-  // }
-  // .leftMenu .el-menu-item.is-active {
-  //   background-color: #FE8083 !important;
-  //   border-bottom:solid 0.125rem !important;
-  //   font-size: x-large !important;
-  //   border: 1px solid !important;
-  // }
-  // .ageMenu .el-menu-item.is-active {
-  //   background-color: #FE8083 !important;
-  //   font-size: medium !important;
-  // }
-  // .typeMenu .el-menu-item.is-active {
-  //   background-color: #FE8083 !important;
-  //   font-size: medium !important;
-  // }
-  // .teamMenu .el-menu-item.is-active {
-  //   background-color: #FE8083 !important;
-  //   border-bottom:solid 0.125rem !important;
-  //   font-size: x-large !important;
-  //   border: 1px solid !important;
-  // }
-  // .el-table_2_column_2  {
-  //   border-bottom:solid;
-  // }
-  // .el-table__header-wrapper, th{
-  //  /* background-color:  #FE8083; */
-  //     color: Black;
-  //     font-size: large;
-  // }
-  .leftMenu{
-    width:12.5rem;
-    border:solid;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
   }
 
-  .borderBottom{
-    border-bottom:solid ;
-     /* box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04) */
-  }
- .buttonRow, .formRow{
-    margin-top: 3.5rem;
-    margin-bottom:1px;
-  }
-  .el-table .el-table-column{
-    margin-top: 0rem;
-  }
-#Student{
-    font-size: 6.25rem;
-  }
- .el-header {
-    /* background-color: #B3C0D1; */
-    color: #333;
-    line-height: 60px;
-  }
-
-  .el-aside {
-    /* color: #333; */
-  }
-  .el-icon-arrow-down:before{
-    display: none;
-  }
-  .addButton{
-    font-size: medium;
-    text-align: center;
-    border-radius: 0px;
-    color: #FFFFFF;
-    background-color: #FE8083;
-    width:7.1875rem;
-    height: 2.625rem;
-  }
-  .addTemporaryButton{
-    text-align: center;
-    font-size: medium;
-    border-radius: 0px;
-    color: #FFFFFF;
-    background-color: #989999;
-    width:8.0875rem;
-    height: 2.625rem;
-  }
 </style>

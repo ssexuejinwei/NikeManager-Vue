@@ -1,36 +1,30 @@
 <template>
   <div class='userEditInfo'>
-    <el-page-header @back="goBack" content="返回商户列表">
+    <br>
+    <el-page-header @back="goBack">
     </el-page-header>
+    <br>
+    <page-header title='用户信息'></page-header>
   <el-container style='width: 100%;'>
-    <el-aside>
-      <br/>
-      <br/>
-      <br/>
-      <br/>
-      <br/>
-      <br/>
-      <el-col :span='8' >
-              <el-upload
-                class="avatar-uploader"
-                action="#"
-                accept="image/*"
-                :limit="3"
-                :http-request="handleUpload"
-                :on-success="handleUploadSuccess"
-                :on-change="handleUploadChange"
-                :show-file-list="false">
-                <img v-if="squareImageUrl==''?false:true" :src="squareImageUrl" class="avatar">
-                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-              </el-upload>
-              <p style='text-align: right;'>头像</p>
-            </el-col>
-    </el-aside>
     <el-col :span='18'>
       <el-main>
        
     <el-form label-position="left" label-width="80px" class="form" ref="form" :model="form"  >
-   
+      <el-form-item label='用户头像'>
+        <el-upload
+          class="avatar-uploader"
+          action="#"
+          accept="image/*"
+          :limit="3"
+          :http-request="handleUpload"
+          :on-success="handleUploadSuccess"
+          :on-change="handleUploadChange"
+          :show-file-list="false">
+          <img v-if="squareImageUrl==''?false:true" :src="squareImageUrl" class="avatar">
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+        </el-upload>
+        <!-- <p >头像</p> -->
+      </el-form-item>
       <el-form-item  label="昵称" >
         <el-col :span='8'>
           <el-input  v-model="form.nickName"></el-input>
@@ -110,7 +104,7 @@
         </el-row>
       </el-form-item>
       <el-form-item size="large">
-        <el-button type="danger" @click="save">保存</el-button>
+        <el-button  @click="save" class="save">保存</el-button>
       </el-form-item>
     </el-form>
     </el-main>
@@ -383,29 +377,35 @@ import VDistpicker from 'v-distpicker'
 <style lang="scss">
   .userEditInfo{
     .el-container{
-      .el-aside{
-        .avatar-uploader .el-upload {
-            border: 1px dashed #d9d9d9;
-            border-radius: 6px;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
+      .el-main{
+        .el-form{
+          .save{
+            color: #FFFFFF;
+            background-color: #fa7959;
           }
-          .avatar-uploader .el-upload:hover {
-            border-color: #409EFF;
-          }
-          .avatar-uploader-icon {
-            font-size: 28px;
-            color: #8c939d;
-            width: 178px;
-            height: 178px;
-            line-height: 178px;
-            text-align: center;
-          }
-          .avatar {
-            width: 178px;
-            height: 178px;
-            display: block;
+          .avatar-uploader .el-upload {
+              border: 1px dashed #d9d9d9;
+              border-radius: 6px;
+              cursor: pointer;
+              position: relative;
+              overflow: hidden;
+            }
+            .avatar-uploader .el-upload:hover {
+              border-color: #409EFF;
+            }
+            .avatar-uploader-icon {
+              font-size: 28px;
+              color: #8c939d;
+              width: 178px;
+              height: 178px;
+              line-height: 178px;
+              text-align: center;
+            }
+            .avatar {
+              width: 178px;
+              height: 178px;
+              display: block;
+            }
           }
       }
     }

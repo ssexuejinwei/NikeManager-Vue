@@ -3,22 +3,14 @@
   <div class ='coachList' v-if='isEdit==false'>
     <el-container>
       <el-header >
-        <el-col :span="4" :offset="20" style='text-align: left;'>
-        <el-menu
-         mode = "horizontal"
-         :default-active="activeIndexType"
-         class='typeMenu'
-         >
-         <template v-for="typeData in menuType">
-           <el-menu-item :index="typeData" :key="typeData">
-               {{typeData}}
-           </el-menu-item>
-         </template>
-           </el-menu>
+       <el-col :span="4">
+          <el-radio-group fill='#52bcf0' text-color='#fffff' v-model="activeIndexType" @change='handleSelect'>
+               <el-radio-button  v-for="(data,index) in menuType" :label="data" :value='index' :key='index' ></el-radio-button>
+          </el-radio-group>
            </el-col>
-      </el-header> 
+      </el-header>
         <br/>
-      <el-main >
+      <el-main>
         <el-table 
           :data="coachTable"
           highlight-current-row
@@ -33,18 +25,23 @@
                 <el-radio v-model="check" :label="scope.$index" size="medium "></el-radio>
               </template>
             </el-table-column> -->
-          <el-table-column prop="level" label="级别" class="borderBottom" align='center'> </el-table-column>
-          <el-table-column prop="name" label="姓名" class="borderBottom" align='center'> </el-table-column>
-          <el-table-column prop="sex" label="性别" class="borderBottom" align='center'> </el-table-column>
-          <el-table-column prop="age" label="年龄" class="borderBottom" align='center'> </el-table-column>
-          <el-table-column prop="experience" label="经验" class="borderBottom" align='center'> </el-table-column>
-          <el-table-column prop="info" label="教学" class="borderBottom" align='center'> </el-table-column>
-          <el-table-column prop="edit" label="操作" class="borderBottom" align='center'> 
+               <el-table-column
+                  type="selection"
+                  >
+                  </el-table-column>
+          <el-table-column prop="level" label="级别"  align='center'> </el-table-column>
+          <el-table-column prop="name" label="姓名"  align='center'> </el-table-column>
+          <el-table-column prop="sex" label="性别"  align='center'> </el-table-column>
+          <el-table-column prop="age" label="年龄"  align='center'> </el-table-column>
+          <el-table-column prop="experience" label="经验"  align='center'> </el-table-column>
+          <el-table-column prop="info" label="教学"  align='center'> </el-table-column>
+          <el-table-column prop="edit" label="操作"  align='center'> 
             <template slot-scope="scope">
               <el-button
               size="medium"	
+              class='info'
               @click="handleEdit(scope.$index,scope.row)">
-              更多
+              详情
               </el-button>
             </template>
           </el-table-column>
@@ -54,10 +51,10 @@
       <el-footer>
       <el-row style="margin-top:1.5rem; ">
         <el-col :span="3"  >
-        <el-button type='primary' @click = "outerVisible = true">添加新教练</el-button>
+        <el-button  @click = "outerVisible = true">添加新教练</el-button>
         </el-col>
           <el-col :span="5" >
-        <el-button type='info' @click = "deleteCoach" >删除教练</el-button>
+        <el-button @click = "deleteCoach" class='delete-button' >删除教练</el-button>
         </el-col>
       </el-row>
     </el-footer>
@@ -246,15 +243,28 @@
 </script>
 
 <style lang="scss">
-  .borderBottom{
-    border-bottom:solid ;
-     /* box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04) */
-  }
   .coachList{
     .el-container{
       .el-main{
         .el-radio__label{
           display: none;
+        }
+        .el-table{
+          .el-button{
+              color:#52bcf0 ;
+              border-color: #52bcf0;
+            }
+          }
+        }
+      .el-footer{
+        .el-button{
+          color: #FFFFFF;
+          background-color: #fa7959;
+        }
+        .delete-button{
+          color: #fa7959;
+          background-color: #FFFFFF;
+          border-color:#fa7959 ;
         }
       }
     }

@@ -24,7 +24,11 @@
           highlight-current-row
           @current-change="handleCurrentChange"
           height="540"
-          :border="true"> 
+          :border="true">
+           <el-table-column
+              type="selection"
+              >
+              </el-table-column>
           <el-table-column prop="time" label="上课时间" class="borderBottom" align='center'> </el-table-column>
           <el-table-column prop="name" label="课程" class="borderBottom" align='center'> </el-table-column>
           <el-table-column prop="duration" label="起止时间" class="borderBottom" align='center'> </el-table-column>
@@ -33,7 +37,7 @@
               <el-button
               size="medium"	
               @click="handleModify(scope.$index,scope.row)">
-              修改
+              详情
               </el-button>
             </template>
           </el-table-column>
@@ -49,7 +53,7 @@
           </router-link>
         </el-col>
           <el-col :span="5" >
-        <el-button  @click = "deleteCoach" >删除课程</el-button>
+        <el-button  @click = "deleteCoach" class='delete-button' >删除课程</el-button>
         </el-col>
       </el-row>
     </el-footer>
@@ -189,15 +193,28 @@
 </script>
 
 <style lang="scss">
-  .borderBottom{
-    border-bottom:solid ;
-     /* box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04) */
-  }
   .courseList{
     .el-container{
       .el-main{
         .el-radio__label{
           display: none;
+        }
+        .el-table{
+          .el-button{
+                color:#52bcf0 ;
+                border-color: #52bcf0;
+            }
+          }
+        }
+      .el-footer{
+        .el-button{
+          color: #FFFFFF;
+          background-color: #fa7959;
+        }
+        .delete-button{
+          color: #fa7959;
+          background-color: #FFFFFF;
+          border-color:#fa7959 ;
         }
       }
     }

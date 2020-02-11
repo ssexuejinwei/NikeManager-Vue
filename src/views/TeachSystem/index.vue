@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <header class='teachHeader'>
+  <div id='teach'>
+   <!-- <header class='teachHeader'>
       <h1>教务系统</h1>
       <div>
         <el-input
@@ -13,11 +13,14 @@
         <el-button slot="append" type="text">搜索</el-button>
         </el-input>
       </div>
-    </header>
+    </header> -->
     
         <!-- <br/><br/><br/><br/> -->
+         <page-header title="教务管理">
           <el-menu
           mode="horizontal"
+          active-text-color='#52bcf0'
+          text-color='#000000'
           :default-active="this.$route.path"
           @select="handleSelect"
           router
@@ -35,6 +38,7 @@
                 {{teachChoose[3]}}
             </el-menu-item>
             </el-menu>
+            </page-header>
             <br/>
  <!--     <el-main>
         <Student v-show="showIndex ==0"></Student>
@@ -71,22 +75,23 @@ $Green: #69bc38;
 $Gray: #cdcdcb;
 $Red : #92535e;
 $pink : #FE8083;
-.teachHeader  {
-  padding: 0.5rem 1rem;
-  margin-bottom: 2rem;
-  display: flex;
-  justify-content: space-between;
+// .teachHeader  {
+//   padding: 0.5rem 1rem;
+//   margin-bottom: 2rem;
+//   display: flex;
+//   justify-content: space-between;
 
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
+//   a {
+//     color: inherit;
+//     text-decoration: none;
+//   }
 
-  h1 {
-    font-size: 1rem;
-    margin: 0;
-  }
-}
+//   h1 {
+//     font-size: 1rem;
+//     margin: 0;
+//   }
+// }
+.teach{
   .chooseMenu{
     margin-left: 1.25rem;
     width:12.5rem;
@@ -96,5 +101,6 @@ $pink : #FE8083;
     background-color: $Green ;
     font-size: x-large !important;
     border: 1px solid !important;
+  }
   }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class='courseAdd'>
-    <header class='teachHeader'>
+    <header style='background-color: #FFFFFF;'>
       <h1>添加课程</h1>
     </header>
     <el-container>
