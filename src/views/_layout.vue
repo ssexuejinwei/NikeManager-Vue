@@ -145,8 +145,8 @@ export default {
   }
 }
 
-.main {
-  margin-top: 16px;
+.el-main {
+  padding: 0 16px 16px;
 }
 
 .el-menu-item {
