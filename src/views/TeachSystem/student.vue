@@ -4,7 +4,7 @@
   <div class = "student"  v-if="!isEdit">
   <el-container>
    <el-header>
-     <el-col :span='4' style="margin-bottom: 3rem;">
+     <el-col :span='8' style="margin-bottom: 3rem;">
         <el-radio-group fill='#52bcf0' text-color='#fffff' v-model="activeIndexAge" @change='handleSelect'>
              <el-radio-button  v-for="(data,index) in menuAge" :label="data" :value='index' :key='index' ></el-radio-button>
         </el-radio-group>
@@ -65,10 +65,10 @@
         <el-col :span="2" :offset="3" >
         <el-button  @click = "outerVisible = true">添加新学员</el-button>
         </el-col>
-          <el-col :span="2"  >
+          <el-col :span="2" :offset='2' >
         <el-button @click = "addTemporaryStudent"  class='tempButton'>添加临时学员</el-button>
         </el-col>
-        <el-col :span="13" :offset='4'>
+        <el-col :span="10" :offset='4'>
           <el-pagination
            v-if = "activeIndexTeam=='全部学员'"
           @current-change="handleStudentPageChange"

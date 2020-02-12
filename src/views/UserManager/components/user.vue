@@ -6,7 +6,7 @@
       
     <el-container>
       <el-header>
-        <el-col :span='2'>
+        <el-col :span='4'>
          <el-menu
            mode="horizontal"
            text-color='#000000'
@@ -23,7 +23,7 @@
             </el-submenu>
          </el-menu>
          </el-col>
-         <el-col :span='4' :offset='15'>
+         <el-col :span='4' :offset='9' style='margin-top: 0.625rem;'>
            <el-input placeholder="请输入内容" v-model="search.value" style="width: 500px">
              <el-select v-model="search.key" slot="prepend" placeholder="请选择" style="width: 100px">
                <el-option label="用户名" value="name"></el-option>

@@ -16,7 +16,6 @@
     </header> -->
     
         <!-- <br/><br/><br/><br/> -->
-         <page-header title="教务管理">
           <el-menu
           mode="horizontal"
           active-text-color='#52bcf0'
@@ -38,7 +37,6 @@
                 {{teachChoose[3]}}
             </el-menu-item>
             </el-menu>
-            </page-header>
             <br/>
  <!--     <el-main>
         <Student v-show="showIndex ==0"></Student>
