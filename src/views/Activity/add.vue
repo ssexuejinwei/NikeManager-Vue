@@ -1,8 +1,7 @@
 <template>
   <div>
-    <header>
-      <h1>添加活动</h1>
-    </header>
+    <page-header title="添加活动">
+    </page-header>
     <el-form class="form" ref="form" :model="form" label-width="80px">
       <el-form-item label="活动图片" required>
         <el-upload
@@ -96,8 +95,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import './common';
-
 .form {
   width: 500px;
 }

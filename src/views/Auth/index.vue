@@ -3,7 +3,7 @@
     <div class="auth-form-wrapper">
       <h2>
         <i class="el-icon-d-arrow-right"></i>
-        系统登录
+        Nike管理系统
       </h2>
       <el-form ref="form" :model="form" :rules="rules" @submit.native="submit">
         <el-form-item prop="username">

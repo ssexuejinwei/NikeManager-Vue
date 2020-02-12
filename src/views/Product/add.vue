@@ -1,8 +1,7 @@
 <template>
   <div>
-    <header>
-      <h1>发布商品</h1>
-    </header>
+    <page-header title="发布商品">
+    </page-header>
     <el-form class="form" ref="form" :model="form" :rules="rules" label-width="120px">
       <el-form-item label="商品封面" prop="coverimage">
         <el-upload
@@ -287,8 +286,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import './common';
-
 .form {
   width: 600px;
 }

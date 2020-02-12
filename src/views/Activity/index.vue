@@ -1,8 +1,7 @@
 <template>
   <div class="activity">
-    <header>
-      <h1>全店活动</h1>
-    </header>
+    <page-header title="全店活动">
+    </page-header>
     <div class="content">
       <el-menu>
         <el-menu-item index="0">
@@ -66,8 +65,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import './common';
-
 .content {
   display: flex;
 }

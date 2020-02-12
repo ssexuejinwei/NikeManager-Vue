@@ -1,8 +1,6 @@
 <template>
   <div>
-    <header>
-      <h1>商品管理</h1>
-    </header>
+    <page-header title="商品管理"></page-header>
     <div>
       <el-radio-group v-model="type">
         <el-radio-button v-for="(value, key) in C_TYPES_TO_STR" :key="key" :label="key">{{value}}</el-radio-button>
@@ -253,8 +251,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import './common';
-
 .table-bottom {
   margin-top: 24px;
   display: flex;
