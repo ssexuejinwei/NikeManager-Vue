@@ -4,7 +4,8 @@
       <el-input placeholder="请输入内容" v-model="search.value" style="width: 500px">
         <el-select v-model="search.key" slot="prepend" placeholder="请选择" style="width: 100px">
           <el-option label="用户名" value="name"></el-option>
-          <el-option label="等级" value="level"></el-option>
+          
+          <!-- <el-option label="等级" value="level"></el-option> -->
         </el-select>
         <el-button slot="append" icon="el-icon-search" @click="handleSearch"></el-button>
       </el-input>
@@ -99,9 +100,12 @@ export default {
     async getUser() {
       this.isLoading = true
       try {
-        const { data } = await Axios.get('/sellerctr/getParents', {
-          params: { cur_page: this.cur_page }
-        })
+        const { data } = await Axios.get(
+          this.search.value ? '/sellerctr/searchParents' : '/sellerctr/getParents',
+          {
+            params: { cur_page: this.cur_page, key: this.search.key, value: this.search.value }
+          }
+        )
         this.users = data.data.data;
         this.total = data.data.total
       } catch (error) {
@@ -114,14 +118,13 @@ export default {
 
     handleClearSearch() {
       this.search.value = ''
-      // @todo
+      this.cur_page = 1
+      this.getUser()
     },
 
-    handleSearch() {
-      if (this.search.value) {
-        this.$alert('todo')
-      }
-      // @todo
+    async handleSearch() {
+      this.cur_page = 1
+      this.getUser()
     },
 
     openScoreDialog(user) {
