@@ -4,18 +4,14 @@
   <div class = "student"  v-if="!isEdit">
   <el-container>
    <el-header>
-     <el-col :span='8' style="margin-bottom: 3rem;">
-        <el-radio-group fill='#52bcf0' text-color='#fffff' v-model="activeIndexAge" @change='handleSelect'>
-             <el-radio-button  v-for="(data,index) in menuAge" :label="data" :value='index' :key='index' ></el-radio-button>
-        </el-radio-group>
-      </el-col>
-      <el-col :span="6">
-        <el-radio-group fill='#52bcf0' text-color='#fffff' v-model="activeIndexType" @change='handleSelect'>
-             <el-radio-button  v-for="(data,index) in menuType" :label="data" :value='index' :key='index' ></el-radio-button>
-        </el-radio-group>
-         </el-col>
-    </el-header> 
-      <br/>
+      <el-radio-group v-model="activeIndexAge" @change='handleSelect'>
+        <el-radio-button  v-for="(data,index) in menuAge" :label="data" :value='index' :key='index' ></el-radio-button>
+      </el-radio-group>
+      <span style="margin-left: 2em" />
+      <el-radio-group v-model="activeIndexType" @change='handleSelect'>
+        <el-radio-button  v-for="(data,index) in menuType" :label="data" :value='index' :key='index' ></el-radio-button>
+      </el-radio-group>
+    </el-header>
     <el-container>
       <el-aside width="200px" >
         <el-menu 
