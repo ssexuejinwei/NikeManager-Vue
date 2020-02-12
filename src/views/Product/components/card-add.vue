@@ -1,7 +1,7 @@
 <template>
   <div class="add">
     <div class="container">
-      <i class="el-icon-plus"></i>
+      <i class="el-icon-plus" />
     </div>
   </div>
 </template>

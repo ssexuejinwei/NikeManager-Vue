@@ -1,9 +1,17 @@
 <template>
   <div>
-    <page-header title="发布商品">
-    </page-header>
-    <el-form class="form" ref="form" :model="form" :rules="rules" label-width="120px">
-      <el-form-item label="商品封面" prop="coverimage">
+    <page-header title="发布商品" />
+    <el-form
+      ref="form"
+      class="form"
+      :model="form"
+      :rules="rules"
+      label-width="120px"
+    >
+      <el-form-item
+        label="商品封面"
+        prop="coverimage"
+      >
         <el-upload
           action="#"
           accept="image/*"
@@ -14,11 +22,21 @@
           :on-success="handleUploadSuccess"
           :on-change="handleUploadCover"
         >
-          <img v-if="form.coverimage" :src="UPLOAD_PUBLIC_URL+ form.coverimage" class="cover">
-          <i v-else class="el-icon-plus"></i>
+          <img
+            v-if="form.coverimage"
+            :src="UPLOAD_PUBLIC_URL+ form.coverimage"
+            class="cover"
+          >
+          <i
+            v-else
+            class="el-icon-plus"
+          />
         </el-upload>
       </el-form-item>
-      <el-form-item label="商品图片" prop="images">
+      <el-form-item
+        label="商品图片"
+        prop="images"
+      >
         <el-upload
           action="#"
           list-type="picture-card"
@@ -27,81 +45,171 @@
           :on-success="handleUploadSuccess"
           :on-change="handleUploadImages"
         >
-          <i class="el-icon-plus"></i>
+          <i class="el-icon-plus" />
         </el-upload>
       </el-form-item>
-      <el-form-item label="商品名称" prop="name">
-        <el-input v-model="form.name"></el-input>
+      <el-form-item
+        label="商品名称"
+        prop="name"
+      >
+        <el-input v-model="form.name" />
       </el-form-item>
-      <el-form-item label="商品分类" prop="type">
+      <el-form-item
+        label="商品分类"
+        prop="type"
+      >
         <el-radio-group v-model="form.type">
-          <el-radio label="0">鞋子</el-radio>
-          <el-radio label="1">服饰</el-radio>
-          <el-radio label="2">周边</el-radio>
+          <el-radio label="0">
+            鞋子
+          </el-radio>
+          <el-radio label="1">
+            服饰
+          </el-radio>
+          <el-radio label="2">
+            周边
+          </el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="小分类" prop="category">
-        <el-input v-model="form.category"></el-input>
+      <el-form-item
+        label="小分类"
+        prop="category"
+      >
+        <el-input v-model="form.category" />
       </el-form-item>
-      <el-form-item label="原价" prop="original_price">
-        <el-input-number v-model="form.original_price" :min="0" :precision="2"></el-input-number>
+      <el-form-item
+        label="原价"
+        prop="original_price"
+      >
+        <el-input-number
+          v-model="form.original_price"
+          :min="0"
+          :precision="2"
+        />
       </el-form-item>
-      <el-form-item label="现价" prop="current_price">
-        <el-input-number v-model="form.current_price" :min="0" :precision="2"></el-input-number>
+      <el-form-item
+        label="现价"
+        prop="current_price"
+      >
+        <el-input-number
+          v-model="form.current_price"
+          :min="0"
+          :precision="2"
+        />
       </el-form-item>
-      <el-form-item label="简介" prop="laber">
-        <el-input v-model="form.laber"></el-input>
+      <el-form-item
+        label="简介"
+        prop="laber"
+      >
+        <el-input v-model="form.laber" />
       </el-form-item>
-      <el-form-item label="介绍" prop="desc">
-        <el-input v-model="form.desc" type="textarea"></el-input>
+      <el-form-item
+        label="介绍"
+        prop="desc"
+      >
+        <el-input
+          v-model="form.desc"
+          type="textarea"
+        />
       </el-form-item>
-      <el-form-item label="sku" prop="skus">
+      <el-form-item
+        label="sku"
+        prop="skus"
+      >
         <el-table :data="form.skus">
           <!-- <el-table-column label="颜色" prop="color" width="100">
             <template slot-scope="scope">
               <el-input size="mini" v-model="scope.row.color"></el-input>
             </template>
           </el-table-column> -->
-          <el-table-column label="尺码" prop="size" width="90">
+          <el-table-column
+            label="尺码"
+            prop="size"
+            width="90"
+          >
             <template slot-scope="scope">
-              <el-input size="mini" v-model="scope.row.size"></el-input>
+              <el-input
+                v-model="scope.row.size"
+                size="mini"
+              />
             </template>
           </el-table-column>
-          <el-table-column label="库存" prop="num" width="150">
+          <el-table-column
+            label="库存"
+            prop="num"
+            width="150"
+          >
             <template slot-scope="scope">
-              <el-input-number :min="0" :precision="0" size="mini" v-model="scope.row.num" controls-position="right"></el-input-number>
+              <el-input-number
+                v-model="scope.row.num"
+                :min="0"
+                :precision="0"
+                size="mini"
+                controls-position="right"
+              />
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="230">
+          <el-table-column
+            label="操作"
+            width="230"
+          >
             <template slot-scope="scope">
-              <el-button size="mini" v-if="scope.$index === form.skus.length - 1" type="primary" @click="addSku">添加</el-button>
-              <el-button size="mini" v-if="scope.$index !== 0 || form.skus.length > 1" type="danger" @click="delSku(scope.row)">删除</el-button>
+              <el-button
+                v-if="scope.$index === form.skus.length - 1"
+                size="mini"
+                type="primary"
+                @click="addSku"
+              >
+                添加
+              </el-button>
+              <el-button
+                v-if="scope.$index !== 0 || form.skus.length > 1"
+                size="mini"
+                type="danger"
+                @click="delSku(scope.row)"
+              >
+                删除
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
       </el-form-item>
-      <el-form-item label="是否预售" prop="reserve_time">
-        <el-switch v-model="form.reserve" inactive-value="0" active-value="1"></el-switch>
+      <el-form-item
+        label="是否预售"
+        prop="reserve_time"
+      >
+        <el-switch
+          v-model="form.reserve"
+          inactive-value="0"
+          active-value="1"
+        />
         <el-date-picker
           v-if="form.reserve === '1'"
-          style="margin-left: 12px"
           v-model="form.reserve_time"
+          style="margin-left: 12px"
           type="datetime"
-          placeholder="选择日期时间">
-        </el-date-picker>
+          placeholder="选择日期时间"
+        />
       </el-form-item>
-      <el-form-item label="是否定时上架" prop="putaway_time">
-        <el-switch v-model="form.putaway"></el-switch>
+      <el-form-item
+        label="是否定时上架"
+        prop="putaway_time"
+      >
+        <el-switch v-model="form.putaway" />
         <el-date-picker
           v-if="form.putaway"
-          style="margin-left: 12px"
           v-model="form.putaway_time"
+          style="margin-left: 12px"
           type="datetime"
-          placeholder="选择日期时间">
-        </el-date-picker>
+          placeholder="选择日期时间"
+        />
       </el-form-item>
       <el-form-item size="large">
-        <el-button type="primary" @click="onSubmit">提交</el-button>
+        <el-button
+          type="primary"
+          @click="onSubmit"
+        >
+          提交
+        </el-button>
         <!-- <el-button type="info" @click="onSubmit">预售商品</el-button>
         <el-button type="success" @click="onSubmit">定时上架</el-button> -->
       </el-form-item>
@@ -115,7 +223,7 @@ import qs from 'querystring'
 import { format } from 'date-fns'
 
 export default {
-  data() {
+  data () {
     return {
       form: {
         name: '',
@@ -131,78 +239,92 @@ export default {
         reserve: '0',
         reserve_time: new Date(),
         skus: [
-          {size: '', num: 0}
+          { size: '', num: 0 }
         ],
         putaway: false,
         putaway_time: new Date()
       },
       rules: {
         name: [
-          { required: true, trigger: 'blur', message: '请输入商品名称' },
+          { required: true, trigger: 'blur', message: '请输入商品名称' }
         ],
         original_price: [
           { required: true, trigger: 'blur', message: '请输入原价' },
-          { validator: (r, v, cb) => {
-            if (v < this.form.current_price) {
-              cb(new Error('原价不能小于现价'))
-            } else {
-              cb()
-            }
-          }, trigger: 'change' }
+          {
+            validator: (r, v, cb) => {
+              if (v < this.form.current_price) {
+                cb(new Error('原价不能小于现价'))
+              } else {
+                cb()
+              }
+            },
+            trigger: 'change'
+          }
         ],
         current_price: [
           { required: true, trigger: 'blur', message: '请输入现价' },
-          { validator: (r, v, cb) => {
-            if (v > this.form.original_price) {
-              cb(new Error('现价不能大于原价'))
-            } else {
-              cb()
-            }
-          }, trigger: 'change' }
+          {
+            validator: (r, v, cb) => {
+              if (v > this.form.original_price) {
+                cb(new Error('现价不能大于原价'))
+              } else {
+                cb()
+              }
+            },
+            trigger: 'change'
+          }
         ],
         desc: [
-          { required: true, trigger: 'blur', message: '请输入商品描述' },
+          { required: true, trigger: 'blur', message: '请输入商品描述' }
         ],
         coverimage: [
-          { required: true, trigger: 'change', message: '请上传商品封面' },
+          { required: true, trigger: 'change', message: '请上传商品封面' }
         ],
         laber: [
-          { required: true, trigger: 'blur' },
+          { required: true, trigger: 'blur' }
         ],
         category: [
-          { required: true, trigger: 'blur', message: '请输入商品分类' },
+          { required: true, trigger: 'blur', message: '请输入商品分类' }
         ],
         images: [
-          { type: 'array', required: true, trigger: 'change', message: '请上传商品图片' },
+          { type: 'array', required: true, trigger: 'change', message: '请上传商品图片' }
         ],
         skus: [
-          { validator: (r, v, cb) => {
-            if (this.validSkus.length === 0) {
-              cb(new Error('请填写 skus 信息'))
-            } else {
-              cb()
-            }
-          }, trigger: 'change' },
+          {
+            validator: (r, v, cb) => {
+              if (this.validSkus.length === 0) {
+                cb(new Error('请填写 skus 信息'))
+              } else {
+                cb()
+              }
+            },
+            trigger: 'change'
+          }
         ],
         reserve_time: [
-          { validator: (r, v, cb) => {
-            if (this.form.reserve === '1') {
-              if (!this.form.reserve_time) {
-                return cb(new Error('请输入预定时间'))
+          {
+            validator: (r, v, cb) => {
+              if (this.form.reserve === '1') {
+                if (!this.form.reserve_time) {
+                  return cb(new Error('请输入预定时间'))
+                }
               }
+              cb()
             }
-            cb()
-          } }
+          }
         ],
         putaway_time: [
-          { validator: (r, v, cb) => {
-            if (this.form.putaway) {
-              if (!this.form.putaway_time) {
-                return cb(new Error('请输入发布时间'))
+          {
+            validator: (r, v, cb) => {
+              if (this.form.putaway) {
+                if (!this.form.putaway_time) {
+                  return cb(new Error('请输入发布时间'))
+                }
               }
-            }
-            cb()
-          }, trigger: 'change' }
+              cb()
+            },
+            trigger: 'change'
+          }
         ]
       },
       UPLOAD_PUBLIC_URL: process.env.VUE_APP_UPLOAD_PUBLIC_URL
@@ -210,7 +332,7 @@ export default {
   },
 
   computed: {
-    formData() {
+    formData () {
       const form = {
         ...this.form,
         images: JSON.stringify(this.form.images),
@@ -220,15 +342,15 @@ export default {
       }
 
       delete form.putaway
-      return form;
+      return form
     },
 
-    validSkus() {
-      return this.form.skus.filter(sku => /*sku.color &&*/ sku.size)
+    validSkus () {
+      return this.form.skus.filter(sku => /* sku.color && */ sku.size)
     }
   },
   methods: {
-    handleUpload(param) {
+    handleUpload (param) {
       const file = param.file
 
       const formData = new FormData()
@@ -238,21 +360,21 @@ export default {
         onUploadProgress: param.onProgress
       })
     },
-    handleUploadSuccess(res, rawFile) {
+    handleUploadSuccess (res, rawFile) {
       if (res?.data?.data?.fileName) {
         rawFile.url = process.env.VUE_APP_UPLOAD_PUBLIC_URL + res?.data?.data?.fileName
         rawFile.fileName = res?.data?.data?.fileName
       }
     },
-    handleUploadCover(file) {
+    handleUploadCover (file) {
       console.log(file)
       this.form.coverimage = file.fileName
     },
-    handleUploadImages(file, fileList) {
+    handleUploadImages (file, fileList) {
       this.form.images = fileList.map(f => f.fileName)
     },
 
-    addSku() {
+    addSku () {
       this.form.skus.push({
         // color: '',
         size: '',
@@ -260,13 +382,13 @@ export default {
       })
     },
 
-    delSku($sku) {
+    delSku ($sku) {
       this.form.skus = this.form.skus.filter(sku => sku !== $sku)
     },
 
-    onSubmit() {
+    onSubmit () {
       console.log(this.formData)
-      this.$refs['form'].validate(valid => {
+      this.$refs.form.validate(valid => {
         console.log(valid)
         if (!valid) return
         Axios.post('/sellerctr/addGoods', qs.stringify(this.formData))
@@ -277,8 +399,8 @@ export default {
           })
           .catch(e => {
             console.error(e)
-            this.$alert(`错误原因: ${e.message || '未知错误'}` ,'添加商品失败')
-          }) 
+            this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加商品失败')
+          })
       })
     }
   }

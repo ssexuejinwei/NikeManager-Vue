@@ -1,30 +1,72 @@
 <template>
   <div v-loading="isLoading">
     <header>
-      <el-input placeholder="请输入内容" v-model="search.value" style="width: 500px">
-        <el-select v-model="search.key" slot="prepend" placeholder="请选择" style="width: 100px">
-          <el-option label="用户名" value="name"></el-option>
-          
+      <el-input
+        v-model="search.value"
+        placeholder="请输入内容"
+        style="width: 500px"
+      >
+        <el-select
+          slot="prepend"
+          v-model="search.key"
+          placeholder="请选择"
+          style="width: 100px"
+        >
+          <el-option
+            label="用户名"
+            value="name"
+          />
+
           <!-- <el-option label="等级" value="level"></el-option> -->
         </el-select>
-        <el-button slot="append" icon="el-icon-search" @click="handleSearch"></el-button>
+        <el-button
+          slot="append"
+          icon="el-icon-search"
+          @click="handleSearch"
+        />
       </el-input>
-      <el-button style="margin-left: 16px" v-show="search.value" type="text" @click="handleClearSearch">
+      <el-button
+        v-show="search.value"
+        style="margin-left: 16px"
+        type="text"
+        @click="handleClearSearch"
+      >
         清空搜索结果
       </el-button>
     </header>
     <el-table :data="users">
-      <el-table-column prop="name" label="用户名" width="150" />
-      <el-table-column prop="score" label="积分" width="80" />
-      <el-table-column prop="level" label="会员等级" width="80">
+      <el-table-column
+        prop="name"
+        label="用户名"
+        width="150"
+      />
+      <el-table-column
+        prop="score"
+        label="积分"
+        width="80"
+      />
+      <el-table-column
+        prop="level"
+        label="会员等级"
+        width="80"
+      >
         <template slot-scope="scope">
-          <span>Lv {{scope.row.level}}</span>
+          <span>Lv {{ scope.row.level }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="create_time" label="创建时间" width="200" />
+      <el-table-column
+        prop="create_time"
+        label="创建时间"
+        width="200"
+      />
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button type="text" @click="openScoreDialog(scope.row)">修改积分</el-button>
+          <el-button
+            type="text"
+            @click="openScoreDialog(scope.row)"
+          >
+            修改积分
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -42,7 +84,10 @@
       :visible.sync="dialogVisible"
       width="450px"
     >
-      <div v-if="dialogUser" v-loading="dialogLoading">
+      <div
+        v-if="dialogUser"
+        v-loading="dialogLoading"
+      >
         <p>
           <strong>修改用户：{{ dialogUser.name }}</strong>
         </p>
@@ -51,12 +96,25 @@
           placeholder="请输入积分"
           :min="0"
           :precision="2"
-        >
-        </el-input-number>
+        />
         <p style="text-align: center">
-          <el-button :disabled="!!!dialogScore" type="primary" @click="changeScore('add')">加积分</el-button>
-          <el-button :disabled="!!!dialogScore" type="info" @click="changeScore('sub')">减积分</el-button>
-          <el-button @click="closeScoreDialog">取消</el-button>
+          <el-button
+            :disabled="!!!dialogScore"
+            type="primary"
+            @click="changeScore('add')"
+          >
+            加积分
+          </el-button>
+          <el-button
+            :disabled="!!!dialogScore"
+            type="info"
+            @click="changeScore('sub')"
+          >
+            减积分
+          </el-button>
+          <el-button @click="closeScoreDialog">
+            取消
+          </el-button>
         </p>
       </div>
     </el-dialog>
@@ -67,13 +125,13 @@
 import Axios from 'axios'
 
 export default {
-  data() {
+  data () {
     return {
       users: [],
       isLoading: false,
       cur_page: 1,
       total: 0,
-      
+
       search: {
         key: 'name',
         value: ''
@@ -86,18 +144,18 @@ export default {
     }
   },
 
-  created() {
-    this.getUser()
-  },
-
   watch: {
-    cur_page() {
+    cur_page () {
       this.getUser()
     }
   },
 
+  created () {
+    this.getUser()
+  },
+
   methods: {
-    async getUser() {
+    async getUser () {
       this.isLoading = true
       try {
         const { data } = await Axios.get(
@@ -106,7 +164,7 @@ export default {
             params: { cur_page: this.cur_page, key: this.search.key, value: this.search.value }
           }
         )
-        this.users = data.data.data;
+        this.users = data.data.data
         this.total = data.data.total
       } catch (error) {
         console.error(error)
@@ -116,30 +174,30 @@ export default {
       }
     },
 
-    handleClearSearch() {
+    handleClearSearch () {
       this.search.value = ''
       this.cur_page = 1
       this.getUser()
     },
 
-    async handleSearch() {
+    async handleSearch () {
       this.cur_page = 1
       this.getUser()
     },
 
-    openScoreDialog(user) {
+    openScoreDialog (user) {
       this.dialogVisible = true
       this.dialogUser = user
       this.dialogScore = 0
     },
 
-    closeScoreDialog() {
+    closeScoreDialog () {
       this.dialogVisible = false
       this.dialogUser = null
       this.dialogScore = 0
     },
 
-    changeScore(method = 'add') {
+    changeScore (method = 'add') {
       if (method !== 'add' && method !== 'sub') {
         throw new TypeError('error type value')
       }
@@ -161,7 +219,7 @@ export default {
       }).finally(() => {
         this.dialogLoading = false
       })
-    },
+    }
   }
 }
 </script>

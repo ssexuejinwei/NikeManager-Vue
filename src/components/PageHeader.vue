@@ -1,15 +1,20 @@
 <template>
   <header class="header">
-    <div class="title" v-if="title">{{title}}</div>
+    <div
+      v-if="title"
+      class="title"
+    >
+      {{ title }}
+    </div>
     <div>
-      <slot></slot>
+      <slot />
     </div>
   </header>
 </template>
 
 <script>
 export default {
-  name: 'page-header',
+  name: 'PageHeader',
   props: {
     title: {
       type: String,

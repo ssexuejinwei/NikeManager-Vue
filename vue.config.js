@@ -6,19 +6,19 @@ module.exports = {
         target: 'http://124.251.4.222/course/public/index.php/index/',
         changeOrigin: true,
         pathRewrite: {
-            '^/api': ''
-          }
+          '^/api': ''
         }
+      }
     },
     overlay: {
       warnings: true,
       errors: true
     }
   },
-  configureWebpack:{
+  configureWebpack: {
     externals: {
-       'echarts': 'echarts',
+      echarts: 'echarts'
     }
   },
-  lintOnSave: false,
+  lintOnSave: 'error'
 }

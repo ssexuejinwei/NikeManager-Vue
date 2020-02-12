@@ -1,7 +1,15 @@
 <template>
   <el-container style="height: 100vh">
-    <el-aside class="aside" :width="sideWidth">
-      <div class="logo" :class="{ 'is-active': !collapse }">NIKE管理系统</div>
+    <el-aside
+      class="aside"
+      :width="sideWidth"
+    >
+      <div
+        class="logo"
+        :class="{ 'is-active': !collapse }"
+      >
+        NIKE管理系统
+      </div>
       <el-menu
         class="menu"
         background-color="#171a2c"
@@ -14,25 +22,36 @@
       >
         <el-menu-item
           v-for="menu in menus"
-          :key="menu.path" :index="menu.path"
+          :key="menu.path"
+          :index="menu.path"
         >
-          <i v-if="menu.icon" :class="menu.icon"></i>
-          <span slot="title">{{menu.name}}</span>
+          <i
+            v-if="menu.icon"
+            :class="menu.icon"
+          />
+          <span slot="title">{{ menu.name }}</span>
         </el-menu-item>
       </el-menu>
     </el-aside>
     <el-container>
       <el-header class="header">
-        <div class="collapse-button" :class="{ active: collapse }" @click="toggleCollapse">
-          <i class="el-icon-s-fold"></i>
+        <div
+          class="collapse-button"
+          :class="{ active: collapse }"
+          @click="toggleCollapse"
+        >
+          <i class="el-icon-s-fold" />
         </div>
-        <div class="logo-2" :class="{ 'is-active': collapse }">
+        <div
+          class="logo-2"
+          :class="{ 'is-active': collapse }"
+        >
           NIKE管理系统
         </div>
       </el-header>
       <el-main>
         <keep-alive>
-          <router-view></router-view>
+          <router-view />
         </keep-alive>
       </el-main>
     </el-container>
@@ -49,19 +68,19 @@ const menus = [
   { name: '订单管理', path: '/order', icon: 'el-icon-tickets' },
   { name: '教务系统', path: '/teach/student', icon: 'el-icon-date' },
   { name: '用户管理', path: '/user', icon: 'el-icon-user' },
-  { name: '积分管理', path: '/score', icon: 'el-icon-coin' },
+  { name: '积分管理', path: '/score', icon: 'el-icon-coin' }
 ]
 
 export default {
-  data() {
+  data () {
     return {
       menus,
-      collapse: false,
+      collapse: false
     }
   },
 
   computed: {
-    defaultActive() {
+    defaultActive () {
       const path = this.$route.path
       const matches = this.menus.filter(m => path.indexOf(m.path) === 0)
       if (matches.length === 0) return ''
@@ -71,13 +90,13 @@ export default {
       return match.path
     },
 
-    sideWidth() {
+    sideWidth () {
       return this.collapse ? '64px' : '180px'
     }
   },
 
   methods: {
-    toggleCollapse() {
+    toggleCollapse () {
       this.collapse = !this.collapse
     }
   }

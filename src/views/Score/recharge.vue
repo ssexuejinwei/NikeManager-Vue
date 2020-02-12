@@ -1,16 +1,45 @@
 <template>
   <div v-loading="isLoading">
     <el-table :data="data">
-      <el-table-column prop="parents_name" label="用户名"></el-table-column>
-      <el-table-column prop="total_fee" label="充值积分"></el-table-column>
-      <el-table-column prop="_type" label="充值方式"></el-table-column>
-      <el-table-column prop="create_time" label="充值时间" width="180"></el-table-column>
-      <el-table-column prop="transaction_id" label="微信支付订单号" width="240"></el-table-column>
-      <el-table-column prop="out_trade_no" label="商户订单编号" width="180"></el-table-column>
-      <el-table-column prop="operator" label="经办人"></el-table-column>
+      <el-table-column
+        prop="parents_name"
+        label="用户名"
+      />
+      <el-table-column
+        prop="total_fee"
+        label="充值积分"
+      />
+      <el-table-column
+        prop="_type"
+        label="充值方式"
+      />
+      <el-table-column
+        prop="create_time"
+        label="充值时间"
+        width="180"
+      />
+      <el-table-column
+        prop="transaction_id"
+        label="微信支付订单号"
+        width="240"
+      />
+      <el-table-column
+        prop="out_trade_no"
+        label="商户订单编号"
+        width="180"
+      />
+      <el-table-column
+        prop="operator"
+        label="经办人"
+      />
     </el-table>
     <footer>
-      <el-pagination hide-on-single-page :current-page.sync="cur_page" :total="total" layout="prev, pager, next"></el-pagination>
+      <el-pagination
+        hide-on-single-page
+        :current-page.sync="cur_page"
+        :total="total"
+        layout="prev, pager, next"
+      />
     </footer>
   </div>
 </template>
@@ -25,7 +54,7 @@ const TYPE = {
 }
 
 export default {
-  data() {
+  data () {
     return {
       isLoading: false,
       data: [],
@@ -34,18 +63,18 @@ export default {
     }
   },
 
-  created() {
-    this.getData()
-  },
-
   watch: {
-    cur_page() {
+    cur_page () {
       this.getData()
     }
   },
 
+  created () {
+    this.getData()
+  },
+
   methods: {
-    async getData() {
+    async getData () {
       this.isLoading = true
       try {
         const { data } = await Axios.get('/sellerctr/getPayRecords', {

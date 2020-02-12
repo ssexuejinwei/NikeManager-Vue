@@ -4,9 +4,16 @@
       <img :src="img">
     </div>
     <div class="info">
-      <div>{{format(start)}} - {{format(end)}}</div>
-      <div>报名人数: {{count}} / {{capacity}}</div>
-      <div><button :class="btnStyle" :disabled="this.status === '已结束'">{{status}}</button></div>
+      <div>{{ format(start) }} - {{ format(end) }}</div>
+      <div>报名人数: {{ count }} / {{ capacity }}</div>
+      <div>
+        <button
+          :class="btnStyle"
+          :disabled="this.status === '已结束'"
+        >
+          {{ status }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -36,7 +43,7 @@ export default {
     }
   },
   computed: {
-    btnStyle() {
+    btnStyle () {
       return {
         btn: true,
         'btn-ing': this.status === '进行中',
@@ -45,7 +52,7 @@ export default {
     }
   },
   methods: {
-    format(date) {
+    format (date) {
       return format(date, 'yyyy.MM.dd')
     }
   }

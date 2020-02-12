@@ -21,15 +21,12 @@
     <p>
       <router-link to="/score">积分管理</router-link>
     </p> -->
-
   </div>
 </template>
 
 <script>
 
-
-
 export default {
-  name: 'home',
+  name: 'Home'
 }
 </script>

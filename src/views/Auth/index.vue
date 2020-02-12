@@ -2,18 +2,40 @@
   <div class="auth">
     <div class="auth-form-wrapper">
       <h2>
-        <i class="el-icon-d-arrow-right"></i>
+        <i class="el-icon-d-arrow-right" />
         Nike管理系统
       </h2>
-      <el-form ref="form" :model="form" :rules="rules" @submit.native="submit">
+      <el-form
+        ref="form"
+        :model="form"
+        :rules="rules"
+        @submit.native="submit"
+      >
         <el-form-item prop="username">
-          <el-input type="text" v-model="form.username" prefix-icon="el-icon-user" placeholder="Username..." />
+          <el-input
+            v-model="form.username"
+            type="text"
+            prefix-icon="el-icon-user"
+            placeholder="Username..."
+          />
         </el-form-item>
         <el-form-item prop="password">
-          <el-input type="password" v-model="form.password" prefix-icon="el-icon-lock" placeholder="Password..." />
+          <el-input
+            v-model="form.password"
+            type="password"
+            prefix-icon="el-icon-lock"
+            placeholder="Password..."
+          />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" style="width: 100%" native-type="submit" :loading="loading">登录</el-button>
+          <el-button
+            type="primary"
+            style="width: 100%"
+            native-type="submit"
+            :loading="loading"
+          >
+            登录
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -21,10 +43,10 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex'
 
 export default {
-  data() {
+  data () {
     return {
       form: {
         username: '',
@@ -44,8 +66,8 @@ export default {
     ...mapState('user', ['loading', 'error'])
   },
   methods: {
-    async submit(e) {
-      e.preventDefault();
+    async submit (e) {
+      e.preventDefault()
       if (!await this.$refs.form.validate()) return
       // console.log(this.loading,this.error)
       this.$store.dispatch('user/login', this.form).then(() => {

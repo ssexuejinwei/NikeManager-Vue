@@ -33,58 +33,58 @@ const routes = [
       {
         path: '/',
         name: 'home',
-        component: () => import('@/views/Home'),
+        component: () => import('@/views/Home')
       },
       {
         path: '/teach',
         component: () => import('@/views/TeachSystem/index'),
-        children:[
-          //学员管理
+        children: [
+          // 学员管理
           {
-            path:'student',
-            component: () => import('@/views/TeachSystem/student'),
+            path: 'student',
+            component: () => import('@/views/TeachSystem/student')
           },
-          //教练管理
+          // 教练管理
           {
             path: 'coach',
-            component: () => import('@/views/TeachSystem/coach'),
+            component: () => import('@/views/TeachSystem/coach')
           },
-          //课程管理
+          // 课程管理
           {
             path: 'course',
-            component: () => import('@/views/TeachSystem/course'),
+            component: () => import('@/views/TeachSystem/course')
           },
-          //排课管理
+          // 排课管理
           {
             path: 'schedule',
             component: () => import('@/views/TeachSystem/schedule')
           }
         ]
       },
-      //添加课程
+      // 添加课程
       {
         path: '/teach/course/add',
-        component: () => import('@/views/TeachSystem/components/courseAdd'),
+        component: () => import('@/views/TeachSystem/components/courseAdd')
       },
       {
         path: '/user',
-        component: () => import('@/views/UserManager/index'),
+        component: () => import('@/views/UserManager/index')
       },
       {
         path: '/activity',
-        component: () => import('@/views/Activity/index'),
+        component: () => import('@/views/Activity/index')
       },
       {
         path: '/activity/add',
-        component: () => import('@/views/Activity/add'),
+        component: () => import('@/views/Activity/add')
       },
       {
         path: '/product',
-        component: () => import('@/views/Product/index'),
+        component: () => import('@/views/Product/index')
       },
       {
         path: '/product/add',
-        component: () => import('@/views/Product/add'),
+        component: () => import('@/views/Product/add')
       },
       {
         path: '/order',
@@ -92,8 +92,8 @@ const routes = [
         children: [
           {
             path: '',
-            component: () => import('@/views/Order/index'),
-          },
+            component: () => import('@/views/Order/index')
+          }
         ]
       },
       {
@@ -116,9 +116,9 @@ const routes = [
           {
             path: 'return-record',
             component: () => import('@/views/Score/return')
-          },
+          }
         ]
-      },
+      }
     ]
   },
 

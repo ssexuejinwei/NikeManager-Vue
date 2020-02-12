@@ -1,14 +1,36 @@
 <template>
   <div v-loading="isLoading">
     <el-table :data="data">
-      <el-table-column prop="parents_name" label="用户名"></el-table-column>
-      <el-table-column prop="cost_score" label="消费积分"></el-table-column>
-      <el-table-column prop="title" label="名称"></el-table-column>
-      <el-table-column prop="create_time" label="消费时间" width="180"></el-table-column>
-      <el-table-column prop="order_number" label="订单号" width="240"></el-table-column>
+      <el-table-column
+        prop="parents_name"
+        label="用户名"
+      />
+      <el-table-column
+        prop="cost_score"
+        label="消费积分"
+      />
+      <el-table-column
+        prop="title"
+        label="名称"
+      />
+      <el-table-column
+        prop="create_time"
+        label="消费时间"
+        width="180"
+      />
+      <el-table-column
+        prop="order_number"
+        label="订单号"
+        width="240"
+      />
     </el-table>
     <footer>
-      <el-pagination hide-on-single-page :current-page.sync="cur_page" :total="total" layout="prev, pager, next"></el-pagination>
+      <el-pagination
+        hide-on-single-page
+        :current-page.sync="cur_page"
+        :total="total"
+        layout="prev, pager, next"
+      />
     </footer>
   </div>
 </template>
@@ -17,7 +39,7 @@
 import Axios from 'axios'
 
 export default {
-  data() {
+  data () {
     return {
       isLoading: false,
       data: [],
@@ -26,18 +48,18 @@ export default {
     }
   },
 
-  created() {
-    this.getData()
-  },
-
   watch: {
-    cur_page() {
+    cur_page () {
       this.getData()
     }
   },
 
+  created () {
+    this.getData()
+  },
+
   methods: {
-    async getData() {
+    async getData () {
       this.isLoading = true
       try {
         const { data } = await Axios.get('/sellerctr/getConsumeRecords', {

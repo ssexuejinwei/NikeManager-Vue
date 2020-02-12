@@ -1,5 +1,5 @@
-import Axios from "axios"
-import { Message } from "element-ui"
+import Axios from 'axios'
+import { Message } from 'element-ui'
 
 const tokenKey = 'nike#token'
 
@@ -11,29 +11,29 @@ const state = {
 }
 
 const getters = {
-  isLogin(state) {
+  isLogin (state) {
     return !!state.token
   }
 }
 
 const mutations = {
-  DO_LOGIN(state) {
+  DO_LOGIN (state) {
     state.loading = true
   },
-  LOGIN(state, { username = '', token = '', error = null }) {
+  LOGIN (state, { username = '', token = '', error = null }) {
     state.loading = false
     state.username = username
     state.token = token
     state.error = error
   },
-  LOGOUT(state) {
+  LOGOUT (state) {
     state.username = ''
     state.token = ''
   }
 }
 
 const actions = {
-  login({ commit }, { username, password }) {
+  login ({ commit }, { username, password }) {
     commit('DO_LOGIN')
     return Axios.post('/sellerctr/login', {
       user_name: username,
@@ -48,7 +48,7 @@ const actions = {
       commit('LOGIN', { error })
     })
   },
-  logout({ commit }) {
+  logout ({ commit }) {
     localStorage.removeItem(tokenKey)
     commit('LOGOUT')
   }

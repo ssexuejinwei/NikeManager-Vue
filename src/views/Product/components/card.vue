@@ -4,9 +4,18 @@
       <img :src="img">
     </div>
     <div class="info">
-      <div>{{name}}</div>
-      <div class="count">已售 {{sell}} / 库存 {{capacity}}</div>
-      <div><button :class="btnStyle" :disabled="this.status === '已售罄'">{{status}}</button></div>
+      <div>{{ name }}</div>
+      <div class="count">
+        已售 {{ sell }} / 库存 {{ capacity }}
+      </div>
+      <div>
+        <button
+          :class="btnStyle"
+          :disabled="this.status === '已售罄'"
+        >
+          {{ status }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -32,7 +41,7 @@ export default {
     }
   },
   computed: {
-    btnStyle() {
+    btnStyle () {
       return {
         btn: true,
         'btn-ing': this.status === '出售中',

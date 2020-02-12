@@ -1,6 +1,6 @@
 <template>
-  <div id='teach'>
-   <!-- <header class='teachHeader'>
+  <div id="teach">
+    <!-- <header class='teachHeader'>
       <h1>教务系统</h1>
       <div>
         <el-input
@@ -14,57 +14,69 @@
         </el-input>
       </div>
     </header> -->
-    
-        <!-- <br/><br/><br/><br/> -->
-          <el-menu
-          mode="horizontal"
-          active-text-color='#52bcf0'
-          text-color='#000000'
-          :default-active="this.$route.path"
-          @select="handleSelect"
-          router
-          >
-            <el-menu-item index="/teach/student" :key="teachChoose[0]">
-                {{teachChoose[0]}}
-            </el-menu-item>
-            <el-menu-item index="/teach/coach" :key="teachChoose[1]">
-                {{teachChoose[1]}}
-            </el-menu-item>
-            <el-menu-item index="/teach/course" :key="teachChoose[2]">
-                {{teachChoose[2]}}
-            </el-menu-item>
-            <el-menu-item index="/teach/schedule" :key="teachChoose[3]">
-                {{teachChoose[3]}}
-            </el-menu-item>
-            </el-menu>
-            <br/>
- <!--     <el-main>
+
+    <!-- <br/><br/><br/><br/> -->
+    <el-menu
+      mode="horizontal"
+      active-text-color="#52bcf0"
+      text-color="#000000"
+      :default-active="this.$route.path"
+      router
+      @select="handleSelect"
+    >
+      <el-menu-item
+        :key="teachChoose[0]"
+        index="/teach/student"
+      >
+        {{ teachChoose[0] }}
+      </el-menu-item>
+      <el-menu-item
+        :key="teachChoose[1]"
+        index="/teach/coach"
+      >
+        {{ teachChoose[1] }}
+      </el-menu-item>
+      <el-menu-item
+        :key="teachChoose[2]"
+        index="/teach/course"
+      >
+        {{ teachChoose[2] }}
+      </el-menu-item>
+      <el-menu-item
+        :key="teachChoose[3]"
+        index="/teach/schedule"
+      >
+        {{ teachChoose[3] }}
+      </el-menu-item>
+    </el-menu>
+    <br>
+    <!--     <el-main>
         <Student v-show="showIndex ==0"></Student>
         <Coach v-show="showIndex ==1"></Coach>
         <Schedule v-show="showIndex ==2"></Schedule>
       </el-main> -->
-      <router-view></router-view> 
+    <router-view />
   </div>
 </template>
 
 <script>
 export default {
-  data() {
+  data () {
     return {
-      showIndex : 0,
-      activeChoose :'/teach/student',
-      teachChoose:['学员档案','教练管理','课程管理','排课信息'],
+      showIndex: 0,
+      activeChoose: '/teach/student',
+      teachChoose: ['学员档案', '教练管理', '课程管理', '排课信息'],
       search: '',
       tabPosition: 'left'
     }
   },
-  created() {
+  created () {
   },
   methods: {
-    handleSelect(index) {
+    handleSelect (index) {
       this.showIndex = index
     }
-  },
+  }
 }
 </script>
 

@@ -19,24 +19,24 @@
         </el-button>
       </div>
     </header> -->
-    
-        <User/>
-        <!-- <UserAdd v-if='isAdded'/> -->
+
+    <User />
+    <!-- <UserAdd v-if='isAdded'/> -->
   </div>
 </template>
 
 <script>
-import User from './components/user';
+import User from './components/user'
 export default {
   components: { User },
-  data() {
+  data () {
     return {
     }
   },
-  created() {
+  created () {
   },
   methods: {
-    }
+  }
 }
 </script>
 

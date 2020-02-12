@@ -1,7 +1,6 @@
 <template>
   <div class="activity">
-    <page-header title="全店活动">
-    </page-header>
+    <page-header title="全店活动" />
     <div class="content">
       <el-menu>
         <el-menu-item index="0">
@@ -19,9 +18,9 @@
       </el-menu>
       <div class="list">
         <a-card
-          class="list-item"
           v-for="(activity, id) in activities"
           :key="id"
+          class="list-item"
           :start="activity.start"
           :end="activity.end"
           :count="activity.count"
@@ -29,7 +28,10 @@
           :status="activity.status"
           :img="activity.img"
         />
-        <router-link class="list-item" to="/activity/add">
+        <router-link
+          class="list-item"
+          to="/activity/add"
+        >
           <a-card-add />
         </router-link>
         <!--占位-->
@@ -40,9 +42,9 @@
 </template>
 
 <script>
-import _ from 'lodash';
-import ACard from './components/card';
-import ACardAdd from './components/card-add';
+import _ from 'lodash'
+import ACard from './components/card'
+import ACardAdd from './components/card-add'
 
 const mockActivity = () => ({
   id: 0,
@@ -56,9 +58,9 @@ const mockActivity = () => ({
 
 export default {
   components: { ACard, ACardAdd },
-  data() {
+  data () {
     return {
-      activities: Array.from({length: 8}).map(() => mockActivity())
+      activities: Array.from({ length: 8 }).map(() => mockActivity())
     }
   }
 }

@@ -1,5 +1,7 @@
 <template>
-  <el-tag :type="color">{{name}}</el-tag>
+  <el-tag :type="color">
+    {{ name }}
+  </el-tag>
 </template>
 
 <script>
@@ -11,7 +13,7 @@ export default {
     }
   },
   computed: {
-    name() {
+    name () {
       const { state, reserve, sales, store } = this.product
       if (state == '1') {
         return '未上架'
@@ -27,7 +29,7 @@ export default {
 
       return '未知'
     },
-    color() {
+    color () {
       if (this.name === '出售中') return 'danger'
       if (this.name === '预售中') return 'success'
       if (this.name === '已售罄' || this.name === '未上架') return 'info'
