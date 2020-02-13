@@ -340,7 +340,11 @@
 import Axios from 'axios'
 export default {
   props: {
-    coach: Object
+    coach: {
+      type: Object,
+      default: () => {}
+    }
+
   },
   data () {
     return {
@@ -349,7 +353,7 @@ export default {
       dialogTableVisible: false,
       curPageForCourse: 1,
       courseTotal: 3,
-      date: '',
+      dateCurrent: '',
       menuIndex: '全部课程',
       RadioIndex: 1,
       RadioType: '',
@@ -441,7 +445,7 @@ export default {
     },
     getDate (date, data) {
       if (data.isSelected) {
-        this.date = data.day
+        this.dateCurrent = data.day
       }
       return ' p-selected'
     },

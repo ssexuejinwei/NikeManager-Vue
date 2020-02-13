@@ -232,7 +232,7 @@ export default {
       teamClick: {},
       courseClick: {},
       coachClick: {},
-      date: '', // 年-月-日
+      dateCurrent: '', // 年-月-日
       coachList: ['杜教练', '赵教练', '熊教练', '林教练', '韩教练'],
       courseList: ['3-4岁兴趣班', '4-6岁初级足球班', '5-6岁初级篮球班'],
       teamList: ['Team-01', 'Team-02', 'Team-03'],
@@ -249,11 +249,6 @@ export default {
     }
   },
   watch: {
-    state (newValue) {
-      if (newValue == 'lookup') {
-
-      }
-    }
   },
   created: function () {
     for (var coach of this.coachList) {
@@ -277,24 +272,24 @@ export default {
        *   获取教练和队伍的id  并将其 放在一个对象数组里
        */
       // 获取当前排课
-      if (key == 'checkAttend') {
+      if (key === 'checkAttend') {
         this.$axios.get(api_1, {
           params: {
-            start_time: this.date,
-            end_time: this.date
+            start_time: this.dateCurrent,
+            end_time: this.dateCurrent
           }
         }).then((response) => {
           this.scheduleList = response.data.data
         })
-      } else if (key == 'edit') {
-        if (this.date == '') {
+      } else if (key === 'edit') {
+        if (this.dateCurrent === '') {
           const myDate = new Date()
-          this.date = myDate.getFullYear() + '-' + (myDate.getMonth() + 1) + '-' + myDate.getDate()
+          this.dateCurrent = myDate.getFullYear() + '-' + (myDate.getMonth() + 1) + '-' + myDate.getDate()
         }
         this.$axios.get(api_1, {
           params: {
-            start_time: this.date,
-            end_time: this.date
+            start_time: this.dateCurrent,
+            end_time: this.dateCurrent
           }
         }).then((response) => {
           this.scheduleList = response.data.data
@@ -402,7 +397,7 @@ export default {
           this.$axios.post(api_1, qs.stringify(this.schedule)
           ).then((response) => {
             const code = response.data.code
-            if (code == 0) {
+            if (code === 0) {
               this.schedule.start_time = ''
               this.schedule.end_time = ''
               this.schedule.coach_id = ''
@@ -440,7 +435,7 @@ export default {
             this.tableData = []
             const studentList = response.data.data
             const code = response.data.code
-            if (code == 0) {
+            if (code === 0) {
               for (const student of studentList) {
                 const obj = {
                   student_id: parseInt(student.student_id),
@@ -468,7 +463,7 @@ export default {
           this.$axios.post(api_3, qs.stringify(this.editSchedule)
           ).then((response) => {
             const code = response.data.code
-            if (code == 0) {
+            if (code === 0) {
               this.editSchedule.id = ''
               this.editSchedule.start_time = ''
               this.editSchedule.end_time = ''
@@ -497,8 +492,8 @@ export default {
     scheduleChange (data, key) {
       switch (key) {
         case 'schedule':
-          this.schedule.start_time = this.date + ' ' + data[0].split('-')[0]
-          this.schedule.end_time = this.date + ' ' + data[0].split('-')[1]
+          this.schedule.start_time = this.dateCurrent + ' ' + data[0].split('-')[0]
+          this.schedule.end_time = this.dateCurrent + ' ' + data[0].split('-')[1]
           this.schedule.coach_id = parseInt(data[1])
           this.schedule.team_id = parseInt(data[2])
           this.schedule.tp_id = parseInt(data[3])
@@ -513,8 +508,8 @@ export default {
           break
         case 'edit':
           this.editSchedule.id = parseInt(data[0].split('+')[1])
-          this.editSchedule.start_time = this.date + ' ' + data[0].split('+')[0].split('-')[0]
-          this.editSchedule.end_time = this.date + ' ' + data[0].split('+')[0].split('-')[1]
+          this.editSchedule.start_time = this.dateCurrent + ' ' + data[0].split('+')[0].split('-')[0]
+          this.editSchedule.end_time = this.dateCurrent + ' ' + data[0].split('+')[0].split('-')[1]
           this.editSchedule.coach_id = parseInt(data[1])
           this.editSchedule.team_id = parseInt(data[2])
           this.editSchedule.tp_id = parseInt(data[3])
@@ -591,12 +586,12 @@ export default {
           var api_1 = '/sellerctr/getSchedule'
           this.$axios.get(api_1, {
             params: {
-              start_time: this.date,
-              end_time: this.date
+              start_time: this.dateCurrent,
+              end_time: this.dateCurrent
             }
           }).then((response) => {
             this.scheduleList = response.data.data
-            const scheduleArray = this.scheduleList[this.date]
+            const scheduleArray = this.scheduleList[this.dateCurrent]
             if (typeof (scheduleArray) === 'undefined') {
               this.$alert('今日无排课信息', {
                 confirmButtonText: '确定'
@@ -621,9 +616,9 @@ export default {
                 label: duration,
                 children: []
               }
-              if (this.optionsCheckAttend.length != 0) {
+              if (this.optionsCheckAttend.length !== 0) {
                 for (const option of this.optionsCheckAttend) {
-                  if (option.value.split('+')[0] == duration) {
+                  if (option.value.split('+')[0] === duration) {
                     isHave = true
                     break
                   }
@@ -656,12 +651,12 @@ export default {
           var api_2 = '/sellerctr/getSchedule'
           this.$axios.get(api_2, {
             params: {
-              start_time: this.date,
-              end_time: this.date
+              start_time: this.dateCurrent,
+              end_time: this.dateCurrent
             }
           }).then((response) => {
             this.scheduleList = response.data.data
-            const scheduleArrayEdit = this.scheduleList[this.date]
+            const scheduleArrayEdit = this.scheduleList[this.dateCurrent]
             if (typeof (scheduleArrayEdit) === 'undefined') {
               this.$alert('今日无排课信息,请先排课在进行编辑', {
                 confirmButtonText: '确定'
@@ -686,9 +681,9 @@ export default {
                 label: duration,
                 children: []
               }
-              if (this.optionsEdit.length != 0) {
+              if (this.optionsEdit.length !== 0) {
                 for (const option of this.optionsEdit) {
-                  if (option.value.split('+')[0] == duration) {
+                  if (option.value.split('+')[0] === duration) {
                     isHave = true
                     break
                   }
@@ -737,7 +732,7 @@ export default {
     getDate (date, data) {
       // 写options
       if (data.isSelected) {
-        this.date = data.day
+        this.dateCurrent = data.day
         this.schedule.date = data.day
       }
       return ' p-selected'
@@ -757,7 +752,7 @@ export default {
       this.$axios.post(api, qs.stringify(params)
       ).then((response) => {
         const code = response.data.code
-        if (code == 0) {
+        if (code === 0) {
           this.tableData[index].sign_in = 'attend'
           this.$alert('签到成功', {
             confirmButtonText: '确定'
@@ -781,7 +776,7 @@ export default {
       this.$axios.post(api, qs.stringify(params)
       ).then((response) => {
         const code = response.data.code
-        if (code == 0) {
+        if (code === 0) {
           this.tableData[index].sign_in = 'absent'
           this.$alert('签到成功', {
             confirmButtonText: '确定'
@@ -815,12 +810,12 @@ export default {
           break
       }
       for (const index in this.buttonType) {
-        if (index != key && this.buttonType[index] == 'success') {
+        if (index !== key && this.buttonType[index] === 'success') {
           this.buttonType[index] = 'info'
         }
       }
-      this.buttonType[key] = (this.buttonType[key] == 'info') ? 'success' : 'info'
-      if (this.buttonType[key] == 'success') {
+      this.buttonType[key] = (this.buttonType[key] === 'info') ? 'success' : 'info'
+      if (this.buttonType[key] === 'success') {
         this.state = key
       } else {
         this.state = 'lookup'

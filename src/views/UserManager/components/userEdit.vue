@@ -232,7 +232,10 @@ export default {
     VDistpicker
   },
   props: {
-    user: Object
+    user: {
+      type: Object,
+      default: () => {}
+    }
   },
   data () {
     return {
@@ -297,7 +300,7 @@ export default {
         nick_name: this.form.nickName,
         avatar: this.squareImageUrl,
         name: this.form.name,
-        sex: this.form.sex == '男' ? 0 : 1,
+        sex: this.form.sex === '男' ? 0 : 1,
         tel: this.form.tel,
         age: this.form.age
       }
@@ -387,7 +390,7 @@ export default {
         let i = 0
         for (const address of this.addressList) {
           const isDefault = address.isDefault
-          if (isDefault == true) {
+          if (String(isDefault) === 'true') {
             const temp = this.addressList[i]
             this.addressList[i] = this.addressList[0]
             this.addressList[0] = temp

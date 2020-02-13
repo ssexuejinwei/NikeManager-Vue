@@ -288,7 +288,10 @@ export default {
     PMark
   },
   props: {
-    student: Object
+    student: {
+      type: Object,
+      default: () => {}
+    }
   },
   data () {
     return {
@@ -424,7 +427,7 @@ export default {
           const obj = {
             course: attend.tp_name + '(' + attend.team_name + ')',
             time: attend.start_time + '-' + attend.end_time.split(' ')[1],
-            status: attend.sign_in == '1' ? '缺席' : '签到'
+            status: String(attend.sign_in) === '1' ? '缺席' : '签到'
           }
           this.tableAttend.push(obj)
         }
@@ -485,13 +488,13 @@ export default {
       var data = {
         id: this.student.id,
         name: this.form.name,
-        sex: this.form.sex == '男' ? 0 : 1,
+        sex: String(this.form.sex) === '男' ? 0 : 1,
         birthday: this.form.birth,
         height: parseInt(this.form.height),
         weight: parseInt(this.form.weight),
         physical_training: this.form.physicalExperience,
         ball_training: this.form.ballExperience,
-        avatar: this.fileList.length == 0 ? '' : this.fileList[0].url
+        avatar: this.fileList.length === 0 ? '' : this.fileList[0].url
       }
       console.log(this.fileList)
       this.$axios.post(api, qs.stringify(data)

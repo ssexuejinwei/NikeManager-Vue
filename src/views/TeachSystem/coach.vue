@@ -270,7 +270,7 @@ export default {
             level: '主教练',
             name: coach.user_name,
             age: coach.age,
-            sex: coach.sex == 0 ? '男' : '女',
+            sex: String(coach.sex) === String(0) ? '男' : '女',
             experience: coach.experience + '年以上',
             info: coach.info,
             edit: ''
@@ -284,7 +284,7 @@ export default {
       const coach = this.coachForm
       var data = {
         user_name: coach.name,
-        sex: coach.sex == '男' ? 0 : 1,
+        sex: String(coach.sex) === '男' ? 0 : 1,
         age: coach.age,
         experience: coach.workAge,
         info: coach.info,

@@ -232,8 +232,8 @@ export default {
     handleSearch () {
       if (this.search.value) {
         // 处理一下性别的
-        if (this.search.key == 'sex') {
-          this.search.value = this.search.value == '男' ? 0 : 1
+        if (this.search.key === 'sex') {
+          this.search.value = this.search.value === '男' ? 0 : 1
         }
         const api = '/sellerctr/searchParents'
         this.$axios.get(api, {
@@ -253,7 +253,7 @@ export default {
               wechat: user.open_id,
               name: user.name,
               date: user.create_time.split(' ')[0],
-              sex: user.sex == 0 ? '男' : '女',
+              sex: String(user.sex) === '0' ? '男' : '女',
               tel: user.tel,
               points: user.score,
               age: user.age,
@@ -277,7 +277,7 @@ export default {
     handleEdit (index, row) {
       console.log(index, row)
       for (const user of this.UserTableData) {
-        if (user.id == row.id) {
+        if (user.id === row.id) {
           this.user = user
           break
         }
@@ -305,7 +305,7 @@ export default {
             wechat: user.open_id,
             name: user.name,
             date: user.create_time.split(' ')[0],
-            sex: user.sex == 0 ? '男' : '女',
+            sex: String(user.sex) === '0' ? '男' : '女',
             tel: user.tel,
             points: user.score,
             age: user.age,

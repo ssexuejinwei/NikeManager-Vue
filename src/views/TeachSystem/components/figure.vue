@@ -78,7 +78,10 @@ import echarts from 'echarts'
 
 export default {
   props: {
-    id: Number
+    id: {
+      type: Number,
+      default: 1
+    }
   },
   data () {
     return {
@@ -143,7 +146,7 @@ export default {
               padding: [1, 2]
             }
           },
-          indicator: id == 'radar1' ? this.indicatorBody : this.indicatorSense
+          indicator: String(id) === 'radar1' ? this.indicatorBody : this.indicatorSense
         },
         series: [{
           name: '',

@@ -15,11 +15,11 @@ export default {
   computed: {
     name () {
       const { state, reserve, sales, store } = this.product
-      if (state == '1') {
+      if (String(state) === String('1')) {
         return '未上架'
       }
-      if (state == '0') {
-        if (reserve == '1') return '预售中'
+      if (String(state) === String('0')) {
+        if (reserve === '1') return '预售中'
         return '出售中'
       }
 

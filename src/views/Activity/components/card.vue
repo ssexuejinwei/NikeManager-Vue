@@ -9,7 +9,7 @@
       <div>
         <button
           :class="btnStyle"
-          :disabled="this.status === '已结束'"
+          :disabled="status === '已结束'"
         >
           {{ status }}
         </button>
@@ -24,22 +24,28 @@ import { format } from 'date-fns'
 export default {
   props: {
     start: {
-      type: Date
+      type: Date,
+      default: {}
     },
     end: {
-      type: Date
+      type: Date,
+      default: {}
     },
     count: {
-      type: Number
+      type: Number,
+      default: 1
     },
     capacity: {
-      type: Number
+      type: Number,
+      default: 1
     },
     status: {
-      type: String
+      type: String,
+      default: ''
     },
     img: {
-      type: String
+      type: String,
+      default: ''
     }
   },
   computed: {

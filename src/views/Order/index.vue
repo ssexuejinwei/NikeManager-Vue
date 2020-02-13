@@ -177,7 +177,7 @@
               退/换货
             </el-button>
           </template>
-          <el-button @click="() => this.dialogVisible = false">
+          <el-button @click="() => dialogVisible = false">
             关闭
           </el-button>
         </div>

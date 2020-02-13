@@ -91,7 +91,7 @@
               <i class="el-icon-plus" />
             </el-button>
             <el-button
-              :disabled="this.stepsList.length==0?true:false"
+              :disabled="stepsList.length==0?true:false"
               @click="deleteStep"
             >
               <i class="el-icon-delete" />
@@ -294,11 +294,11 @@ export default {
       console.log(value.select)
       console.log(value.options[value.select].label)
 
-      if (value.select == '') {
+      if (value.select === '') {
         console.log('display-0')
         this.stepsList[index].className = 'radio-display'
         return 'radio-display'
-      } else if (value.options[value.select].label != '热身' && (value.options[value.select].label.indexOf('放松') == -1)) {
+      } else if (value.options[value.select].label !== '热身' && (value.options[value.select].label.indexOf('放松') === -1)) {
         this.stepsList[index].className = 'radio-display'
         return 'radio-display'
       } else {

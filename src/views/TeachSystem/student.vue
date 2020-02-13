@@ -491,13 +491,13 @@ export default {
   },
   watch: {
     activeIndexTeam (newValue) {
-      if (newValue == '全部学员') {
+      if (newValue === '全部学员') {
         this.getAllStudent()
         return
       }
       let isHave = false
       for (const info of this.infoArray) {
-        if (info.ageKey == this.activeIndexAge && info.type == this.activeIndexType && info.teamName == this.activeIndexTeam) {
+        if (info.ageKey === this.activeIndexAge && info.type === this.activeIndexType && info.teamName === this.activeIndexTeam) {
           this.tableData = info.tableData
           isHave = true
         }
@@ -506,7 +506,7 @@ export default {
         this.tableData = []
       }
       for (const info of this.infoArray) {
-        if (info.teamName == this.activeIndexTeam) {
+        if (info.teamName === this.activeIndexTeam) {
           this.current_teamId = info.teamID
           break
         }
@@ -540,7 +540,7 @@ export default {
         params: {
           age_min: parseInt(this.activeIndexAge.split('-')[0]),
           age_max: parseInt(this.activeIndexAge.split('-')[1].split('岁')[0]),
-          choose_sports: this.activeIndexType == '篮球' ? 0 : 1,
+          choose_sports: this.activeIndexType === '篮球' ? 0 : 1,
           cur_page: this.curPageForStudent,
           page_size: this.pageSizeForStudent
         }
@@ -554,7 +554,7 @@ export default {
             id: student.id,
             teamID: student.team_id,
             name: student.name,
-            sex: student.sex == 0 ? '男' : '女',
+            sex: String(student.sex) === '0' ? '男' : '女',
             birth: student.birthday,
             height: student.height + 'cm',
             weight: student.weight + 'kg',
@@ -602,9 +602,9 @@ export default {
         case 'readStudent':
           this.menuTeam = [] // 初始化team数组
           for (const info of this.infoArray) {
-            if (info.ageKey == this.activeIndexAge && info.type == this.activeIndexType) {
+            if (info.ageKey === this.activeIndexAge && info.type === this.activeIndexType) {
               this.menuTeam.push(info.teamName)
-              if (info.teamName == this.menuTeam[0]) {
+              if (info.teamName === this.menuTeam[0]) {
                 this.tableData = info.tableData
               }
             }
@@ -627,14 +627,14 @@ export default {
               const age_min = data.age_min
               const age_max = data.age_max
               const name = data.name
-              const choose_sports = data.choose_sports == '0' ? '篮球' : '足球'
+              const choose_sports = String(data.choose_sports) === '0' ? '篮球' : '足球'
               const ageKey = age_min + '-' + age_max + '岁'
               // 初始化team 数组
-              if (ageKey == this.activeIndexAge && choose_sports == this.activeIndexType) {
+              if (ageKey === this.activeIndexAge && choose_sports === this.activeIndexType) {
                 this.menuTeam.push(name)
               }
               this.activeIndexTeam = this.menuTeam[0]
-              if (this.menuTeam.length == 1) {
+              if (this.menuTeam.length === 1) {
                 this.current_teamId = id
               }
               // get 具体成员
@@ -647,7 +647,7 @@ export default {
                   const stuObj = {
                     id: student.id,
                     name: student.name,
-                    sex: student.sex == 0 ? '男' : '女',
+                    sex: String(student.sex) === '0' ? '男' : '女',
                     birth: student.birthday,
                     height: student.height + 'cm',
                     weight: student.weight + 'kg',
@@ -665,7 +665,7 @@ export default {
                   type: choose_sports,
                   tableData: tableData
                 }
-                if (obj.ageKey == this.activeIndexAge && obj.type == this.activeIndexType && obj.teamName == this.activeIndexTeam) {
+                if (obj.ageKey === this.activeIndexAge && obj.type === this.activeIndexType && obj.teamName === this.activeIndexTeam) {
                   this.tableData = obj.tableData
                 }
                 this.infoArray.push(obj)
@@ -684,7 +684,7 @@ export default {
           let teamName = ''
           var data = {
             name: student.name,
-            sex: student.sex == '男' ? 0 : 1,
+            sex: student.sex === '男' ? 0 : 1,
             birthday: student.birth,
             height: parseInt(student.height),
             weight: parseInt(student.weight),
@@ -704,7 +704,7 @@ export default {
             })
           }).catch((error) => {
             const status = error.response.status
-            if (status == 200) {
+            if (status === 200) {
               this.$alert('没有查找到家长账号,请小程序先注册')
             } else {
               this.$alert('表单填写错误,添加失败')
@@ -726,10 +726,10 @@ export default {
       this.$axios.post(api, qs.stringify(data)).then((response) => {
         const code = response.data.code
         let name = ''
-        if (code == 0) {
+        if (code === 0) {
           const response_teamid = response.data.data.team_id
           for (const info of this.infoArray) {
-            if (info.teamID == response_teamid) {
+            if (info.teamID === response_teamid) {
               name = info.teamName
             }
           }
@@ -765,12 +765,12 @@ export default {
     },
 
     handleSelect (key) {
-      if (key.indexOf('team') != -1) {
+      if (key.indexOf('team') !== -1) {
         this.activeIndexTeam = key
-      } else if (key.indexOf('岁') != -1) {
+      } else if (key.indexOf('岁') !== -1) {
         this.activeIndexAge = key
         this.update('readStudent')
-      } else if (key.indexOf('全部') != -1) {
+      } else if (key.indexOf('全部') !== -1) {
         this.activeIndexTeam = '全部学员'
       } else {
         this.activeIndexType = key
@@ -779,7 +779,7 @@ export default {
       console.log('i am here')
     },
     teamClass (index) {
-      if (index == this.menuTeam[this.menuTeam.length - 1]) {
+      if (index === this.menuTeam[this.menuTeam.length - 1]) {
         return ''
       } else {
         return ''

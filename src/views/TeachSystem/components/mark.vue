@@ -413,8 +413,14 @@ export default {
     PFigure
   },
   props: {
-    student: Object,
-    markIndex: Number
+    student: {
+      type: Object,
+      default: () => {}
+    },
+    markIndex: {
+      type: Number,
+      default: 1
+    }
   },
   data () {
     return {
@@ -466,17 +472,17 @@ export default {
       const iobj = {
         course: '3-4岁初级篮球(team-01)',
         time: '2020-03-08 17:00-16:30(周三)',
-        status: i == 0 ? '未评测' : '已评测'
+        status: i === 0 ? '未评测' : '已评测'
       }
       const jobj = {
         course: '3-4岁初级篮球(team-01)',
         time: '2020-03-08 ————2020-06-08',
-        status: i == 0 ? '未评测' : '已评测'
+        status: i === 0 ? '未评测' : '已评测'
       }
       const kobj = {
         course: '全学年体测评价(team-01)',
         time: '2020-03-08 ————2020-06-08',
-        status: i == 0 ? '未评测' : '已评测'
+        status: i === 0 ? '未评测' : '已评测'
       }
       this.tableCourse.push(iobj)
       this.tablePhase.push(jobj)

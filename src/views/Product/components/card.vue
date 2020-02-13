@@ -11,7 +11,7 @@
       <div>
         <button
           :class="btnStyle"
-          :disabled="this.status === '已售罄'"
+          :disabled="status === '已售罄'"
         >
           {{ status }}
         </button>
@@ -25,19 +25,24 @@
 export default {
   props: {
     name: {
-      type: String
+      type: String,
+      default: ''
     },
     sell: {
-      type: Number
+      type: Number,
+      default: 1
     },
     capacity: {
-      type: Number
+      type: Number,
+      default: 1
     },
     status: {
-      type: String
+      type: String,
+      default: ''
     },
     img: {
-      type: String
+      type: String,
+      default: ''
     }
   },
   computed: {
