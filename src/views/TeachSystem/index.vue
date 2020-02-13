@@ -16,40 +16,41 @@
     </header> -->
 
     <!-- <br/><br/><br/><br/> -->
-    <el-menu
-      mode="horizontal"
-      active-text-color="#52bcf0"
-      text-color="#000000"
-      :default-active="this.$route.path"
-      router
-      @select="handleSelect"
-    >
-      <el-menu-item
-        :key="teachChoose[0]"
-        index="/teach/student"
+    <page-header title="教务管理系统">
+      <el-menu
+        mode="horizontal"
+        active-text-color="#52bcf0"
+        text-color="#000000"
+        :default-active="this.$route.path"
+        router
+        @select="handleSelect"
       >
-        {{ teachChoose[0] }}
-      </el-menu-item>
-      <el-menu-item
-        :key="teachChoose[1]"
-        index="/teach/coach"
-      >
-        {{ teachChoose[1] }}
-      </el-menu-item>
-      <el-menu-item
-        :key="teachChoose[2]"
-        index="/teach/course"
-      >
-        {{ teachChoose[2] }}
-      </el-menu-item>
-      <el-menu-item
-        :key="teachChoose[3]"
-        index="/teach/schedule"
-      >
-        {{ teachChoose[3] }}
-      </el-menu-item>
-    </el-menu>
-    <br>
+        <el-menu-item
+          :key="teachChoose[0]"
+          index="/teach/student"
+        >
+          {{ teachChoose[0] }}
+        </el-menu-item>
+        <el-menu-item
+          :key="teachChoose[1]"
+          index="/teach/coach"
+        >
+          {{ teachChoose[1] }}
+        </el-menu-item>
+        <el-menu-item
+          :key="teachChoose[2]"
+          index="/teach/course"
+        >
+          {{ teachChoose[2] }}
+        </el-menu-item>
+        <el-menu-item
+          :key="teachChoose[3]"
+          index="/teach/schedule"
+        >
+          {{ teachChoose[3] }}
+        </el-menu-item>
+      </el-menu>
+    </page-header>
     <!--     <el-main>
         <Student v-show="showIndex ==0"></Student>
         <Coach v-show="showIndex ==1"></Coach>

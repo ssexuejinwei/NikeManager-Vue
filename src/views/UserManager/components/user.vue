@@ -4,7 +4,7 @@
       v-if="!isEdit"
       class="User"
     >
-      <page-header title="所有用户" />
+      <page-header title="用户管理" />
 
       <el-container>
         <el-header>
