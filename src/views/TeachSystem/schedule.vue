@@ -335,9 +335,8 @@ export default {
             })
           })
         })
-      }
-      // 获取可选的team教练课程
-      else {
+      } else {
+        // 获取可选的team教练课程
         this.$axios.get(api_2).then((response) => {
           this.coachList = []
           const data = response.data.data

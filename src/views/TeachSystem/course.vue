@@ -179,31 +179,7 @@ export default {
             this.update()
           })
         })
-      }
-      // .then(() => {
-      //             let api ='/sellerctr/deleteCoach'
-      //             var data = {
-      //              id : this.chooseID,
-      //             }
-      //             this.$axios.post(api, qs.stringify(data)
-      //             ).then(() => {
-      //               this.$alert('删除成功', {
-      //                         confirmButtonText: '确定',
-      //                       }).then(()=>{
-      //                         this.update()
-      //                       });
-      //             }).catch(()=>{
-      //               this.$alert('删除失败')
-      //             })
-      //           }).catch(() => {
-      //             this.$message({
-      //               type: 'info',
-      //               message: '已取消删除'
-      //             });
-      //           });
-
-      // }
-      else {
+      } else {
         this.$alert('请先选择课程', {
           confirmButtonText: '确定'
         })

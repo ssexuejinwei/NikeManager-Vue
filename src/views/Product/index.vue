@@ -235,7 +235,7 @@ export default {
         this.products = response.data.data.data
         this.total_page = response.data.data.total_pages
         this.selectedProducts = []
-      }).finally(() => this.loading = false)
+      }).finally(() => { this.loading = false })
     },
 
     // 下架商品
