@@ -79,6 +79,10 @@ const routes = [
         component: () => import('@/views/Activity/add')
       },
       {
+        path: '/activity/:id',
+        component: () => import('@/views/Activity/_id')
+      },
+      {
         path: '/product',
         component: () => import('@/views/Product/index')
       },

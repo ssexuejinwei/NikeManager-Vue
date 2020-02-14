@@ -22,17 +22,21 @@
         </el-radio-group>
       </div>
       <div class="list">
-        <a-card
+        <router-link
           v-for="(activity) in activities"
           :key="activity.id"
           class="list-item"
-          :start="activity.activity_start_time"
-          :end="activity.activity_end_time"
-          :count="activity.apply_num"
-          :capacity="activity.people_num"
-          :status="activity.status"
-          :img="activity.coverimage"
-        />
+          :to="'/activity/'+activity.id"
+        >
+          <a-card
+            :start="activity.activity_start_time"
+            :end="activity.activity_end_time"
+            :count="activity.apply_num"
+            :capacity="activity.people_num"
+            :status="activity.status"
+            :img="activity.coverimage"
+          />
+        </router-link>
         <router-link
           class="list-item"
           to="/activity/add"
