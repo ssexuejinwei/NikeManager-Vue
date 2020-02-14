@@ -4,6 +4,18 @@
       v-if="title"
       class="title"
     >
+      <template v-if="back">
+        <a
+          href="javascript:void(0);"
+          @click="$router.back()"
+        >
+          <i
+            class="el-icon-arrow-left"
+          />
+          <span>返回</span>
+        </a>
+        <el-divider direction="vertical" />
+      </template>
       {{ title }}
     </div>
     <div>
@@ -20,6 +32,10 @@ export default {
       type: String,
       required: false,
       default: ''
+    },
+    back: {
+      type: Boolean,
+      default: false
     }
   }
 }

@@ -23,12 +23,12 @@
       </div>
       <div class="list">
         <a-card
-          v-for="(activity, id) in activities"
-          :key="id"
+          v-for="(activity) in activities"
+          :key="activity.id"
           class="list-item"
           :start="activity.activity_start_time"
           :end="activity.activity_end_time"
-          :count="activity.appluy_num"
+          :count="activity.apply_num"
           :capacity="activity.people_num"
           :status="activity.status"
           :img="activity.coverimage"
@@ -97,6 +97,7 @@ export default {
           }
         })
         this.activities = data.data.data
+        this.total = data.data.total
       } catch (error) {
         console.log(error)
         this.$message.error('获取活动失败')

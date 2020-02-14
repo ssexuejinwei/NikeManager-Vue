@@ -367,7 +367,6 @@ export default {
       }
     },
     handleUploadCover (file) {
-      console.log(file)
       this.form.coverimage = file.fileName
     },
     handleUploadImages (file, fileList) {
