@@ -9,8 +9,8 @@
 <style lang="scss" scoped>
 .add {
   cursor: pointer;
-  width: 200px;
-  height: 300px;
+  width: 150px;
+  height: 200px;
 
   border: 1px #333 solid;
 

@@ -4,16 +4,18 @@
       <img :src="img">
     </div>
     <div class="info">
-      <div>{{ format(start) }} - {{ format(end) }}</div>
+      <div class="time">
+        {{ format(start) }} - {{ format(end) }}
+      </div>
       <div>报名人数: {{ count }} / {{ capacity }}</div>
-      <div>
+      <!-- <div>
         <button
           :class="btnStyle"
           :disabled="status === '已结束'"
         >
           {{ status }}
         </button>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -24,19 +26,19 @@ import { format } from 'date-fns'
 export default {
   props: {
     start: {
-      type: Date,
-      default: {}
+      type: [Date, String],
+      default: ''
     },
     end: {
-      type: Date,
-      default: {}
+      type: [Date, String],
+      default: ''
     },
     count: {
-      type: Number,
+      type: [Number, String],
       default: 1
     },
     capacity: {
-      type: Number,
+      type: [Number, String],
       default: 1
     },
     status: {
@@ -59,6 +61,7 @@ export default {
   },
   methods: {
     format (date) {
+      if (typeof date === 'string') return date
       return format(date, 'yyyy.MM.dd')
     }
   }
@@ -70,15 +73,19 @@ export default {
   img {
     object-fit: cover;
     width: 100%;
+    height: 100%;
   }
 
-  width: 200px;
-  height: 300px;
+  width: 150px;
+  height: 200px;
   background: #eee;
 }
 
 .info {
   text-align: center;
+  .time {
+    font-size: 0.8em;
+  }
 }
 
 .btn {

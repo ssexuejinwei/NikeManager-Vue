@@ -1,32 +1,37 @@
 <template>
   <div class="activity">
     <page-header title="全店活动" />
-    <div class="content">
-      <el-menu>
-        <el-menu-item index="0">
-          <span slot="title">全部活动</span>
-        </el-menu-item>
-        <el-menu-item index="1">
-          <span slot="title">进行中</span>
-        </el-menu-item>
-        <el-menu-item index="2">
-          <span slot="title">已结束</span>
-        </el-menu-item>
-        <el-menu-item index="2">
-          <span slot="title">未上架</span>
-        </el-menu-item>
-      </el-menu>
+    <div
+      v-loading="isLoading"
+      class="content"
+    >
+      <div class="type">
+        <el-radio-group v-model="type">
+          <el-radio-button label="0">
+            全部活动
+          </el-radio-button>
+          <el-radio-button label="1">
+            进行中
+          </el-radio-button>
+          <el-radio-button label="2">
+            已结束
+          </el-radio-button>
+          <el-radio-button label="3">
+            未上架
+          </el-radio-button>
+        </el-radio-group>
+      </div>
       <div class="list">
         <a-card
           v-for="(activity, id) in activities"
           :key="id"
           class="list-item"
-          :start="activity.start"
-          :end="activity.end"
-          :count="activity.count"
-          :capacity="activity.capacity"
+          :start="activity.activity_start_time"
+          :end="activity.activity_end_time"
+          :count="activity.appluy_num"
+          :capacity="activity.people_num"
           :status="activity.status"
-          :img="activity.img"
+          :img="activity.coverimage"
         />
         <router-link
           class="list-item"
@@ -37,30 +42,67 @@
         <!--占位-->
         <i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i />
       </div>
+      <div class="pagination">
+        <el-pagination
+          layout="prev, pager, next"
+          :total="total"
+          :current-page.sync="cur_page"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import _ from 'lodash'
+import Axios from 'axios'
 import ACard from './components/card'
 import ACardAdd from './components/card-add'
-
-const mockActivity = () => ({
-  id: 0,
-  start: new Date(),
-  end: new Date(),
-  count: 10,
-  capacity: 20,
-  status: _.sample(['进行中', '已结束']),
-  img: ''
-})
 
 export default {
   components: { ACard, ACardAdd },
   data () {
     return {
-      activities: Array.from({ length: 8 }).map(() => mockActivity())
+      type: 0,
+      cur_page: 1,
+      total: 0,
+      activities: [],
+      isLoading: false
+    }
+  },
+
+  computed: {
+    query () {
+      return [this.cur_page, this.type].join()
+    }
+  },
+
+  watch: {
+    query () {
+      this.getActivites()
+    }
+  },
+
+  created () {
+    this.getActivites()
+  },
+
+  methods: {
+    async getActivites () {
+      this.isLoading = true
+      try {
+        const { data } = await Axios.get('/sellerctr/getActivity', {
+          params: {
+            type: this.type,
+            cur_page: this.cur_page
+          }
+        })
+        this.activities = data.data.data
+      } catch (error) {
+        console.log(error)
+        this.$message.error('获取活动失败')
+      } finally {
+        this.isLoading = false
+      }
     }
   }
 }
@@ -68,7 +110,11 @@ export default {
 
 <style lang="scss" scoped>
 .content {
-  display: flex;
+  // display: flex;
+}
+
+.type {
+  margin-bottom: 1em;
 }
 
 .list {
@@ -77,13 +123,13 @@ export default {
   display: flex;
   flex-wrap: wrap;
 
-  justify-content: space-around;
+  justify-content: space-between;
 
   margin-left: -$gap;
   margin-right: -$gap;
 
   &-item {
-    width: 200px;
+    width: 150px;
     margin: 0 $gap $gap;
 
     text-decoration: none;
@@ -91,8 +137,8 @@ export default {
   }
 
   > i {
-    width: 200px;
-    margin: 0 $gap $gap;
+    width: 150px;
+    margin: 0 $gap 0;
   }
 }
 
