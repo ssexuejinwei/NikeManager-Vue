@@ -167,7 +167,7 @@ export default {
         activity_end_time: f(this.form.activity_time[1]),
         info: this.form.info,
         coverimage: this.form.coverimage,
-        images: this.form.images,
+        images: JSON.stringify(this.form.images),
         putaway: this.form.putaway,
         weight: this.form.weight,
         rich_text: this.form.rich_text
