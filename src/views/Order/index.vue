@@ -1,30 +1,26 @@
 <template>
   <div>
     <div class="content">
-      <el-menu
-        class="menu"
-        :default-active="state"
-        @select="handleSelect"
-      >
-        <el-menu-item index="1">
+      <el-radio-group v-model="state" class="menu">
+        <el-radio-button label="1">
           全部订单
-        </el-menu-item>
-        <el-menu-item index="2">
-          代发货订单
-        </el-menu-item>
-        <el-menu-item index="3">
+        </el-radio-button>
+        <el-radio-button label="2">
+          待发货订单
+        </el-radio-button>
+        <el-radio-button label="3">
           待收货订单
-        </el-menu-item>
-        <el-menu-item index="4">
+        </el-radio-button>
+        <el-radio-button label="4">
           已完成订单
-        </el-menu-item>
-        <el-menu-item index="5">
+        </el-radio-button>
+        <el-radio-button label="5">
           退/换货订单
-        </el-menu-item>
-        <el-menu-item index="6">
+        </el-radio-button>
+        <el-radio-button label="6">
           历史订单
-        </el-menu-item>
-      </el-menu>
+        </el-radio-button>
+      </el-radio-group>
       <div
         v-loading="isLoading"
         class="table"
@@ -170,9 +166,9 @@
             </el-button>
           </template>
           <template v-if="dialogOrder.state === '2'">
-            <el-button type="primary">
+            <!-- <el-button type="primary">
               确认收货
-            </el-button>
+            </el-button> -->
             <el-button type="danger">
               退/换货
             </el-button>
@@ -329,17 +325,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.content {
-  display: flex;
+// .content {
+//   display: flex;
 
-  .menu {
-    margin-right: 16px;
-  }
-
-  .table {
-    flex: 1;
-  }
+.menu {
+  margin-bottom: 16px;
 }
+
+//   .table {
+//     flex: 1;
+//   }
+// }
 
 .table-action {
   margin-top: 2rem;
