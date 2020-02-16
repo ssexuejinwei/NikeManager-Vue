@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- eslint-disable -->
     <div
       v-if="!isEdit"
       class="student"
@@ -135,6 +136,7 @@
                 v-if="activeIndexTeam=='全部学员'"
                 :page-size="pageSizeForStudent"
                 layout="prev, pager, next"
+                :current-page.sync="curPageForStudent"
                 :total="pageSizeForStudent * pagesForStudent"
                 @current-change="handleStudentPageChange"
               />
@@ -224,22 +226,10 @@
             :label-width="formLabelWidth"
           >
             <el-radio-group v-model="studentForm.pay">
-              <el-radio
-                label="微信"
-                value="0"
-              />
-              <el-radio
-                label="支付宝"
-                value="1"
-              />
-              <el-radio
-                label="信用卡"
-                value="2"
-              />
-              <el-radio
-                label="现金"
-                value="3"
-              />
+              <el-radio :label="0">微信</el-radio>
+              <el-radio :label="1">支付宝</el-radio>
+              <el-radio :label="2">信用卡</el-radio>
+              <el-radio :label="3">现金</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-form>
@@ -249,74 +239,46 @@
           :visible.sync="innerVisible"
           append-to-body
         >
-          <el-row class="formRow">
-            <el-col :span="10">
-              体能训练
-            </el-col>
-            <el-col :span="14">
-              <el-radio-group
-                v-model="physicalTrainingRadio"
-                size="medium"
-              >
-                <el-radio :label="0">
-                  否
-                </el-radio>
-                <el-radio :label="1">
-                  是
-                </el-radio>
-                <el-radio :label="2">
-                  一年以上
-                </el-radio>
+          <el-form :model="studentForm" :rules="rules">
+            <el-form-item
+              label="体能训练"
+              prop="physicalTraining"
+              :label-width="formLabelWidth"
+            >
+              <el-radio-group v-model="studentForm.physicalTraining">
+                <el-radio :label="0">否</el-radio>
+                <el-radio :label="1">是</el-radio>
+                <el-radio :label="2">一年以上</el-radio>
               </el-radio-group>
-            </el-col>
-          </el-row>
-          <el-row class="formRow">
-            <el-col :span="10">
-              球类训练
-            </el-col>
-            <el-col :span="12">
-              <el-radio-group
-                v-model="ballTrainingRadio"
-                size="medium"
-              >
-                <el-radio :label="0">
-                  否
-                </el-radio>
-                <el-radio :label="1">
-                  是
-                </el-radio>
+            </el-form-item>
+            <el-form-item
+              label="球类训练"
+              prop="ballTraining"
+              :label-width="formLabelWidth"
+            >
+              <el-radio-group v-model="studentForm.ballTraining">
+                <el-radio :label="0">否</el-radio>
+                <el-radio :label="1">是</el-radio>
               </el-radio-group>
-            </el-col>
-          </el-row>
-          <el-row class="formRow">
-            <el-col :span="10">
-              希望选择的运动项目
-            </el-col>
-            <el-col :span="12">
-              <el-radio-group
-                v-model="ballChoiceRadio"
-                size="medium"
-              >
-                <el-radio :label="0">
-                  篮球
-                </el-radio>
-                <el-radio :label="1">
-                  足球
-                </el-radio>
+            </el-form-item>
+            <el-form-item
+              label="希望选择的运动项目"
+              prop="ballChoice"
+              :label-width="formLabelWidth"
+            >
+              <el-radio-group v-model="studentForm.ballChoice">
+                <el-radio :label="0">篮球</el-radio>
+                <el-radio :label="1">足球</el-radio>
               </el-radio-group>
-            </el-col>
-          </el-row>
-          <el-row class="formRow">
-            <el-col :span="10">
-              我的队友
-            </el-col>
-            <el-col :span="12">
-              <el-input
-                v-model="inputTeammateName"
-                placeholder="输入队友姓名"
-              />
-            </el-col>
-          </el-row>
+            </el-form-item>
+            <el-form-item
+              label="我的队友"
+              prop="mateName"
+              :label-width="formLabelWidth"
+            >
+              <el-input v-model="studentForm.mateName"></el-input>
+            </el-form-item>
+          </el-form>
           <div
             slot="footer"
             class="dialog-footer"
@@ -384,6 +346,7 @@
         @update="handleEditSave"
       />
     </div>
+     <!-- eslint-enable -->
   </div>
 </template>
 
@@ -431,7 +394,6 @@ export default {
       physicalTrainingRadio: 0,
       ballTrainingRadio: 0,
       ballChoiceRadio: 0,
-      inputTeammateName: '',
       activeIndexAge: '3-4岁',
       activeIndexType: '篮球',
       activeIndexTeam: 'team-01',
@@ -445,7 +407,11 @@ export default {
         height: '',
         weight: '',
         tel: '18314785647',
-        pay: ''
+        pay: 0,
+        physicalTraining: 0,
+        ballTraining: 0,
+        ballChoice: 0,
+        mateName: ''
       },
       formLabelWidth: '140px',
       menuAge: ['3-4岁', '4-5岁', '5-6岁'],
@@ -514,7 +480,7 @@ export default {
     }
   },
   created () {
-    console.log('hello')
+    this.getAllStudent()
     this.update('getStudent')
   },
   methods: {
@@ -689,10 +655,11 @@ export default {
             height: parseInt(student.height),
             weight: parseInt(student.weight),
             tel: student.tel,
-            physical_training: this.ballTrainingRadio,
-            ball_training: this.ballChoiceRadio,
-            choose_sports: this.ballChoiceRadio,
-            mateName: this.inputTeammateName
+            physical_training: student.physicalTraining,
+            ball_training: student.ballTraining,
+            choose_sports: student.ballChoice,
+            mateName: student.mateName,
+            pay_style: student.pay
           }
 
           this.$axios.post(api, qs.stringify(data)
@@ -765,18 +732,26 @@ export default {
     },
 
     handleSelect (key) {
+      this.curPageForStudent = 1
       if (key.indexOf('team') !== -1) {
         this.activeIndexTeam = key
       } else if (key.indexOf('岁') !== -1) {
         this.activeIndexAge = key
-        this.update('readStudent')
+        if (this.activeIndexTeam === '全部学员') {
+          this.getAllStudent()
+        } else {
+          this.update('readStudent')
+        }
       } else if (key.indexOf('全部') !== -1) {
         this.activeIndexTeam = '全部学员'
       } else {
         this.activeIndexType = key
-        this.update('readStudent')
+        if (this.activeIndexTeam === '全部学员') {
+          this.getAllStudent()
+        } else {
+          this.update('readStudent')
+        }
       }
-      console.log('i am here')
     },
     teamClass (index) {
       if (index === this.menuTeam[this.menuTeam.length - 1]) {

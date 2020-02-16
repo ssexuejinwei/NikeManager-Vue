@@ -156,7 +156,7 @@
             :offset="7"
           >
             <el-radio-group
-              v-if="(menuIndex=='全部课程') || (menuIndex == '上课记录')"
+              v-if="false"
               v-model="RadioIndex"
               style="margin-bottom: 20px;"
             >
@@ -459,6 +459,7 @@ export default {
             endTime: course.end_time
           }
           const jobj = {
+            id: obj.id,
             course: obj.name + '(' + obj.team_name + ')',
             time: obj.startTime.split(' ')[1] + '-' + obj.endTime.split(' ')[1],
             edit: ''
@@ -478,6 +479,22 @@ export default {
     },
     handleCancel (index, row) {
       console.log(index, row)
+      const api = '/sellerctr/attendance'
+      const studentID = this.student.id
+      const scheduleID = this.tableCourse[index].id
+      const data = {
+        sign_in: 2,
+        schedule_id: scheduleID,
+        student_id: studentID
+      }
+      console.log(data)
+      this.$axios.post(api, qs.stringify(data)).then((response) => {
+        this.$alert('取消成功').then(() => {
+          this.getCourse()
+        })
+      }).catch(() => {
+        this.$alert('取消失败')
+      })
     },
     handleMenuSelect (index) {
       this.menuIndex = index

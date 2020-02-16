@@ -5,7 +5,7 @@
       class="coachList"
     >
       <el-container>
-        <el-header>
+        <el-header v-if="false">
           <el-col :span="4">
             <el-radio-group
               v-model="activeIndexType"

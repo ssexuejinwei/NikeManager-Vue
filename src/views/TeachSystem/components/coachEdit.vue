@@ -116,7 +116,7 @@
             :offset="9"
           >
             <el-radio-group
-              v-if="(menuIndex=='全部课程') || (menuIndex == '上课记录')"
+              v-if="false"
               v-model="RadioIndex"
               style="margin-bottom: 20px;"
             >
