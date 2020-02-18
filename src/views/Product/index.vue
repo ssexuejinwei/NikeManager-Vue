@@ -30,7 +30,7 @@
         type="selection"
         width="55"
       />
-      <el-table-column type="expand">
+      <!-- <el-table-column type="expand">
         <template slot-scope="scope">
           <div>
             <el-table :data="scope.row.sku">
@@ -47,7 +47,7 @@
             </el-table>
           </div>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column
         label="商品名称"
         min-width="300"
@@ -88,7 +88,7 @@
         width="160"
       />
       <el-table-column
-        v-if="type === '0'"
+        v-if="false && type === '0'"
         label="商品状态"
       >
         <template slot-scope="scope">
@@ -98,11 +98,18 @@
       <el-table-column
         v-else
         label="操作"
-        width="100"
       >
         <template slot-scope="scope">
           <span class="table-actions">
+            <router-link :to="`/product/edit/${scope.row.id}`">
+              <el-button type="text">编辑商品</el-button>
+            </router-link>
+            <el-divider direction="vertical" />
             <el-button
+              type="text"
+              @click="delGood(scope.row)"
+            >删除商品</el-button>
+            <!-- <el-button
               v-if="type === '4'"
               size="small"
               disabled
@@ -121,11 +128,8 @@
               v-if="type === '3'"
               size="small"
               @click="upGood(scope.row)"
-            >上架商品</el-button>
-            <el-button
-              size="small"
-              @click="delGood(scope.row)"
-            >删除商品</el-button>
+            >上架商品</el-button> -->
+
           </span>
         </template>
       </el-table-column>

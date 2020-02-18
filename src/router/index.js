@@ -91,6 +91,10 @@ const routes = [
         component: () => import('@/views/Product/add')
       },
       {
+        path: '/product/edit/:id',
+        component: () => import('@/views/Product/edit/_id')
+      },
+      {
         path: '/order',
         component: () => import('@/views/Order/_layout'),
         children: [
