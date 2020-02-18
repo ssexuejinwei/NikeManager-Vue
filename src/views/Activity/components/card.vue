@@ -116,10 +116,11 @@ export default {
 
 .score {
   position: absolute;
+  font-size: 0.8em;
 
   background: linear-gradient(to right, #1111ec, #e45ce4);
   color: #fff;
-  padding: 0.1em 0.5em;
+  padding: 0.25em 0.75em;
   border-radius: 16px;
   top: 5%;
   right: -4%;
