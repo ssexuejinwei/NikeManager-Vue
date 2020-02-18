@@ -1,7 +1,7 @@
 <template>
   <div>
     <page-header title="商品管理" />
-    <div>
+    <div style="display: flex">
       <el-radio-group v-model="type">
         <el-radio-button
           v-for="(value, key) in C_TYPES_TO_STR"
@@ -11,6 +11,15 @@
           {{ value }}
         </el-radio-button>
       </el-radio-group>
+      <span style="margin-left: auto">
+        <router-link to="/product/add">
+          <el-button
+            type="primary"
+          >
+            新增商品
+          </el-button>
+        </router-link>
+      </span>
     </div>
     <el-table
       v-loading="loading"
@@ -123,14 +132,6 @@
     </el-table>
     <div class="table-bottom">
       <div class="action">
-        <router-link to="/product/add">
-          <el-button
-            v-if="type === '0'"
-            type="primary"
-          >
-            新增商品
-          </el-button>
-        </router-link>
         <el-button
           v-if="type === '1' || type === '2' || type === '4'"
           type="primary"
@@ -149,6 +150,7 @@
         </el-button>
         <el-button
           :disabled="!selectedProducts.length"
+          type="danger"
           @click="delGoods"
         >
           批量删除
@@ -234,6 +236,12 @@ export default {
         console.debug(response.data)
         this.products = response.data.data.data
         this.total_page = response.data.data.total_pages
+        this.selectedProducts = []
+      }).catch(e => {
+        console.error(e)
+        this.$message.error(`获取商品列表失败: ${e.message || '未知错误'}`)
+        this.products = []
+        this.total_page = 0
         this.selectedProducts = []
       }).finally(() => { this.loading = false })
     },
