@@ -44,16 +44,15 @@
       </el-form-item>
       <el-form-item label="商品分类" prop="type">
         <el-radio-group v-model="form.type">
-          <el-radio label="0">
-            鞋子
-          </el-radio>
-          <el-radio label="1">
-            服饰
-          </el-radio>
-          <el-radio label="2">
-            周边
+          <el-radio v-for="type in types" :key="type.id" :label="type.type">
+            {{ type.name }}
           </el-radio>
         </el-radio-group>
+        <router-link style="margin-left: 16px" to="/product/type">
+          <el-button type="text">
+            编辑
+          </el-button>
+        </router-link>
       </el-form-item>
       <el-form-item label="小分类" prop="category">
         <el-input v-model="form.category" />
@@ -252,7 +251,8 @@ export default {
           }
         ]
       },
-      UPLOAD_PUBLIC_URL: process.env.VUE_APP_UPLOAD_PUBLIC_URL
+      UPLOAD_PUBLIC_URL: process.env.VUE_APP_UPLOAD_PUBLIC_URL,
+      types: []
     }
   },
 
@@ -278,6 +278,11 @@ export default {
     validSkus () {
       return this.form.skus.filter(sku => /* sku.color && */ sku.size)
     }
+  },
+
+  async created () {
+    const { data } = await Axios.get('/sellerctr/getGoodsType')
+    this.types = data.data
   },
   methods: {
     handleUpload (param) {
