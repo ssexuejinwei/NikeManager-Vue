@@ -50,9 +50,9 @@
           :controls="false"
         />
       </el-form-item>
-      <el-form-item label="报名积分" prop="weight">
+      <el-form-item label="报名积分" prop="score">
         <el-input-number
-          v-model="form.weight"
+          v-model="form.score"
           :min="0"
           :controls="false"
         />
@@ -124,7 +124,8 @@ export default {
         coverimage: '',
         images: [],
         putaway: 0,
-        weight: 0,
+        score: 0,
+        title: ' ',
         rich_text: ''
       },
       rules: {
@@ -138,7 +139,7 @@ export default {
           { required: true, trigger: 'blur', message: '活动人数不能为空' },
           { validator: gt0, trigger: 'blur', message: '活动人数需大于0' }
         ],
-        weight: [
+        score: [
           { required: true, trigger: 'blur', message: '报名积分不能为空' },
           { validator: gt0, trigger: 'blur', message: '报名积分需大于0' }
         ],
@@ -169,7 +170,8 @@ export default {
         coverimage: this.form.coverimage,
         images: JSON.stringify(this.form.images),
         putaway: this.form.putaway,
-        weight: this.form.weight,
+        title: this.form.title,
+        score: this.form.score,
         rich_text: this.form.rich_text
       }
     }

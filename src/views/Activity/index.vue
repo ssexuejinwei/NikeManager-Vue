@@ -33,6 +33,7 @@
             :end="activity.activity_end_time"
             :count="activity.apply_num"
             :capacity="activity.people_num"
+            :score="activity.score"
             :status="activity.status"
             :img="activity.coverimage"
           />

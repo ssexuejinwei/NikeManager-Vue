@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="card">
     <div class="cover">
       <img :src="img">
     </div>
@@ -8,6 +8,9 @@
         {{ format(start) }} - {{ format(end) }}
       </div>
       <div>报名人数: {{ count }} / {{ capacity }}</div>
+      <div v-if="score" class="score">
+        {{ score }}积分
+      </div>
       <!-- <div>
         <button
           :class="btnStyle"
@@ -36,6 +39,10 @@ export default {
     count: {
       type: [Number, String],
       default: 1
+    },
+    score: {
+      type: [Number, String],
+      default: 0
     },
     capacity: {
       type: [Number, String],
@@ -69,6 +76,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.card {
+  position: relative;
+}
+
 .cover {
   img {
     object-fit: cover;
@@ -101,5 +112,16 @@ export default {
     color: #fff;
     background: #888;
   }
+}
+
+.score {
+  position: absolute;
+
+  background: linear-gradient(to right, #1111ec, #e45ce4);
+  color: #fff;
+  padding: 0.1em 0.5em;
+  border-radius: 16px;
+  top: 5%;
+  right: -4%;
 }
 </style>
