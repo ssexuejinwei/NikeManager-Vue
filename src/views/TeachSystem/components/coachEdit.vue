@@ -10,7 +10,7 @@
           :offset="6"
           :span="8"
         >
-          <br><br>
+          <br>
           <el-upload
             class="avatar-uploader"
             action="#"
@@ -76,7 +76,7 @@
             </el-col>
             <el-col :span="8">
               <el-form-item label="微信ID">
-                <el-input v-model="form.wechat" />
+                <el-input v-model="form.wechat" disabled />
               </el-form-item>
             </el-col>
           </el-row>
@@ -87,6 +87,16 @@
                   v-model="form.intro"
                   type="textarea"
                 />
+              </el-form-item>
+            </el-col>
+            <el-col
+              :span="6"
+              :offset="14"
+            >
+              <el-form-item size="large">
+                <el-button @click="save">
+                  保存
+                </el-button>
               </el-form-item>
             </el-col>
           </el-row>
@@ -158,12 +168,6 @@
             />
           </el-table>
 
-          <el-button
-            style="margin-top: 2rem;"
-            @click="addCourse"
-          >
-            添加课程
-          </el-button>
           <span class="demonstration" />
           <el-pagination
             style="text-align: right;"
@@ -338,6 +342,7 @@
 
 <script>
 import Axios from 'axios'
+import qs from 'qs'
 export default {
   props: {
     coach: {
@@ -386,6 +391,8 @@ export default {
     this.form.workAge = this.coach.experience
     this.form.wechat = this.coach.wechat == null ? '暂无' : this.coach.wechat
     this.form.intro = this.coach.info
+    this.squareImageUrl = this.coach.avatar == null ? '' : this.coach.avatar
+    console.log(this.coach.id)
     this.update()
     for (let i = 0; i < 4; i++) {
       const jobj = {
@@ -460,6 +467,22 @@ export default {
     },
     save () {
       console.log(this.form)
+      const api = '/sellerctr/updateCoach'
+      var data = {
+        id: this.coach.id,
+        user_name: this.form.name,
+        sex: String(this.form.sex) === '男' ? 0 : 1,
+        age: this.form.age,
+        experience: this.form.workAge,
+        info: this.form.info,
+        tel: this.form.tel,
+        avatar: this.squareImageUrl
+      }
+      this.$axios.post(api, qs.stringify(data)).then((response) => {
+        this.$alert('保存成功').then(() => {
+          this.$emit('update', true)
+        })
+      })
     },
     handleUpload (param) {
       const file = param.file
@@ -490,9 +513,30 @@ export default {
   $Red : #92535e;
   .editInfo{
     .el-container{
-      .upload{
-        text-align: center;
-        margin-top: 50px;
+      .el-aside{
+        .avatar-uploader .el-upload {
+            border: 1px dashed #d9d9d9;
+            border-radius: 6px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+          }
+          .avatar-uploader .el-upload:hover {
+            border-color: #409EFF;
+          }
+          .avatar-uploader-icon {
+            font-size: 28px;
+            color: #8c939d;
+            width: 178px;
+            height: 178px;
+            line-height: 178px;
+            text-align: center;
+          }
+          .avatar {
+            width: 178px;
+            height: 178px;
+            display: block;
+          }
       }
     }
     .bottom{

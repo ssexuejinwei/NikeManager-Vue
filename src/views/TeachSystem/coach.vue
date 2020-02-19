@@ -114,6 +114,7 @@
         v-if="isEdit==true"
         :coach="editCoach"
         @back="handleBack"
+        @update="handleSave"
       />
     </div>
     <!-- 添加新教练 -->
@@ -265,19 +266,25 @@ export default {
       this.$axios.get(api).then((response) => {
         const list = response.data.data
         for (const coach of list) {
+          console.log(coach.tel)
           const obj = {
             id: coach.id,
             level: '主教练',
             name: coach.user_name,
             age: coach.age,
+            tel: coach.tel,
             sex: String(coach.sex) === String(0) ? '男' : '女',
-            experience: coach.experience + '年以上',
+            experience: coach.experience,
             info: coach.info,
+            avatar: coach.avatar,
             edit: ''
           }
           this.coachTable.push(obj)
         }
       })
+    },
+    handleSave (val) {
+      this.update()
     },
     submit () {
       const api = '/sellerctr/addCoach'
