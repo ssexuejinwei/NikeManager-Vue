@@ -27,9 +27,15 @@
         </el-form-item>
         <el-form-item label="原价" prop="original_price">
           {{ product.original_price }}
+          <el-button type="text" @click="updateProperty('original_price', '原价', { inputValidator(v) { return Number(v) > 0 && Number(v) >= product.current_price } } )">
+            修改
+          </el-button>
         </el-form-item>
         <el-form-item label="现价" prop="current_price">
           {{ product.current_price }}
+          <el-button type="text" @click="updateProperty('current_price', '现价', { inputValidator(v) { return Number(v) > 0 && Number(v) <= product.original_price } } )">
+            修改
+          </el-button>
         </el-form-item>
         <el-form-item label="简介" prop="laber">
           {{ product.laber }}
@@ -149,27 +155,23 @@ export default {
         inputErrorMessage: '请输入整数',
         inputValue: sku.num
       })
-        .then(
-          ({ value }) => {
-            return Axios.post(
-              '/sellerctr/updateSku',
-              qs.stringify({
-                id: sku.id,
-                goods_id: sku.goods_id,
-                num: value
-              })
-            )
-          },
-          () => {}
-        )
-        .then(() => {
-          this.$message.success('修改成功')
-          this.fetchGood()
-        })
-        .catch(e => {
-          console.error(e)
-          this.$message.error('修改失败: ' + e.message)
-        })
+        .then(({ value }) => {
+          Axios.post(
+            '/sellerctr/updateSku',
+            qs.stringify({
+              id: sku.id,
+              goods_id: sku.goods_id,
+              num: value
+            })
+          ).then(() => {
+            this.$message.success('修改成功')
+            this.fetchGood()
+          })
+            .catch(e => {
+              console.error(e)
+              this.$message.error('修改失败: ' + e.message)
+            })
+        }).catch(() => {})
     },
 
     addSku () {
@@ -188,6 +190,24 @@ export default {
         console.error(e)
         this.$message.error('添加sku失败')
       }
+    },
+
+    updateProperty (prop, name, options) {
+      this.$prompt(`修改商品${name}`, '修改', {
+        ...options,
+        inputValue: this.product[prop]
+      }).then(({ value }) => {
+        Axios.post('/sellerctr/updateGoods', {
+          id: this.id,
+          [prop]: value
+        }).then(() => {
+          this.$message.success('修改成功')
+          this.fetchGood()
+        }).catch(e => {
+          console.error(e)
+          this.$message.error('修改失败: ' + e.message)
+        })
+      }).catch(() => {})
     }
   }
 }
