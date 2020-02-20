@@ -3,6 +3,14 @@
     <page-header title="活动详情" back />
 
     <div v-loading="isLoading">
+      <div style="margin-bottom: 16px">
+        <el-button style="margin-right: 16px" @click="parentDialog = true">
+          查看报名用户
+        </el-button>
+        <a :href="'/api/sellerctr/getFileByActivityId?id='+id" download>
+          <el-button>下载报名信息</el-button>
+        </a>
+      </div>
       <act-form
         v-if="origin"
         submit-text="修改活动"
@@ -10,11 +18,22 @@
         @submit="onSubmit"
       />
     </div>
+
+    <el-dialog title="报名用户" :visible.sync="parentDialog">
+      <el-table :data="parents">
+        <el-table-column label="id" prop="id" width="50" />
+        <el-table-column label="姓名" prop="name" width="120" />
+        <el-table-column label="年龄" prop="age" width="50" />
+        <el-table-column label="联系方式" prop="tel" />
+        <el-table-column label="报名时间" prop="create_time" />
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import Axios from 'axios'
+import qs from 'querystring'
 import ActForm from './components/form'
 
 export default {
@@ -23,27 +42,55 @@ export default {
     return {
       id: this.$route.params.id,
       origin: null,
-      isLoading: false
+      isLoading: false,
+
+      parentDialog: false,
+      cur_page: 1,
+      parents: []
     }
   },
 
   created () {
-    this.isLoading = true
-    Axios.get('/sellerctr/getActivityById', {
-      params: { id: this.id }
-    }).then(({ data }) => {
-      this.origin = data.data
-    }).catch((e) => {
-      this.$message.error(`获取活动信息失败: ${e.message || '未知错误'}`)
-      console.error(e)
-    }).finally(() => {
-      this.isLoading = false
-    })
+    this.getActivity()
+
+    this.getParents()
   },
 
   methods: {
+    getActivity () {
+      this.isLoading = true
+      Axios.get('/sellerctr/getActivityById', {
+        params: { id: this.id }
+      }).then(({ data }) => {
+        this.origin = data.data
+      }).catch((e) => {
+        this.$message.error(`获取活动信息失败: ${e.message || '未知错误'}`)
+        console.error(e)
+      }).finally(() => {
+        this.isLoading = false
+      })
+    },
+
+    getParents () {
+      Axios.get('/sellerctr/getParentsByActivityId', { params: { id: this.id, cur_page: this.cur_page } })
+        .then(({ data }) => {
+          this.parents = data.data
+        }).catch((e) => {
+          console.error(e)
+          this.$message.error('修改失败: ' + e.message)
+        })
+    },
+
     onSubmit (formData) {
-      console.log(formData)
+      Axios.post('/sellerctr/updateActivity', qs.stringify({
+        id: this.id,
+        ...formData
+      })).then(() => {
+        this.$message.success('修改成功')
+      }).catch(e => {
+        console.error(e)
+        this.$message.error('修改失败: ' + e.message)
+      })
     }
   }
 }
