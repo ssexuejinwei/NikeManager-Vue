@@ -56,7 +56,7 @@
           <div class="product">
             <img
               class="cover"
-              :src="IMAGE_PREFIX + scope.row.coverimage"
+              :src="scope.row.coverimage"
               decoding="async"
               importance="low"
             >
@@ -195,7 +195,6 @@ export default {
       page: this.$route.query.page || 1,
       loading: false,
 
-      IMAGE_PREFIX: '', // process.env.VUE_APP_UPLOAD_PUBLIC_URL,
       C_TYPES_TO_STR
     }
   },

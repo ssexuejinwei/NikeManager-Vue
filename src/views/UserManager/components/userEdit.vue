@@ -442,8 +442,11 @@ export default {
       })
     },
     handleUploadSuccess (res, rawFile) {
+      if (!rawFile.url) {
+        this.$set(rawFile, 'url', URL.createObjectURL(rawFile.raw))
+      }
       if (res?.data?.data?.fileName) {
-        rawFile.url = process.env.VUE_APP_UPLOAD_PUBLIC_URL + res?.data?.data?.fileName
+        this.$set(rawFile, 'name', res?.data?.data?.fileName)
       }
     },
     handleUploadChange (file, fileList) {
