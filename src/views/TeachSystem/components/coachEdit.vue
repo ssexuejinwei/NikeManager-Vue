@@ -215,7 +215,7 @@
                         <el-button
                           size="medium"
                           type="text"
-                          disabled
+                          @click="handleAttend(0, scope.$index)"
                         >
                           <span :class="tableAttend[scope.$index]['sign_in']==0?'attend':'normal'">
                             签到
@@ -224,7 +224,7 @@
                         <el-button
                           size="medium"
                           type="text"
-                          disabled
+                          @click="handleAttend(1, scope.$index)"
                         >
                           <span :class="tableAttend[scope.$index]['sign_in']==1?'absent':'normal'">
                             缺席
@@ -244,14 +244,6 @@
               </el-dialog>
             </template>
           </el-calendar>
-          <el-row>
-            <el-col
-              :offset="1"
-              :span="2"
-            >
-              1月未有缺勤
-            </el-col>
-          </el-row>
         </div>
       </el-main>
     </el-container>
@@ -394,13 +386,6 @@ export default {
     this.squareImageUrl = this.coach.avatar == null ? '' : this.coach.avatar
     console.log(this.coach.id)
     this.update()
-    for (let i = 0; i < 4; i++) {
-      const jobj = {
-        course: '16:00-17:00 4-5岁初级篮球班',
-        sign_in: 0
-      }
-      this.tableAttend.push(jobj)
-    }
     // this.$axios.get(){
 
     // }
@@ -433,11 +418,50 @@ export default {
       this.curPageForCourse = val
       this.update()
     },
+    handleAttend (sign, index) {
+      const api = '/sellerctr/coachAttendance'
+      const scheduleId = this.tableAttend[index].id
+      const data = {
+        schedule_id: scheduleId,
+        coach_id: this.coach.id,
+        sign_in: sign
+      }
+      console.log(data)
+      this.$axios.post(api, qs.stringify(data)).then((response) => {
+        this.tableAttend[index].sign_in = sign
+        this.$alert('考勤成功')
+      }).catch(() => {
+        this.$alert('考勤失败')
+      })
+    },
     handleSelected () {
-      this.dialogTableVisible = true
+      const api = '/sellerctr/getCoachAttendance'
+      const day = Number(this.dateCurrent.split('-')[2]) + 1
+      const end_time = this.dateCurrent.split('-')[0] + '-' + this.dateCurrent.split('-')[1] + '-' + day.toString()
+      this.$axios.get(api, {
+        params: {
+          id: this.coach.id,
+          start_time: this.dateCurrent,
+          end_time: end_time
+        }
+      }).then((response) => {
+        this.tableAttend = []
+        for (const course of response.data.data) {
+          const jobj = {
+            id: course.id,
+            course: course.start_time.split(' ')[1] + '-' + course.end_time.split(' ')[1] + ' ' + course.tp_name,
+            sign_in: course.sign_in
+          }
+          this.tableAttend.push(jobj)
+        }
+        if (this.tableAttend.length === 0) {
+          this.$alert('今日暂无课程')
+        } else {
+          this.dialogTableVisible = true
+        }
+      })
     },
     confirm () {
-      console.log('i am here')
       this.dialogTableVisible = false
     },
     submit () {
@@ -511,6 +535,15 @@ export default {
   $Green: #69bc38;
   $Gray: #cdcdcb;
   $Red : #92535e;
+  .normal{
+    color:$Gray;
+  }
+  .attend {
+    color: $Green;
+  }
+  .absent{
+    color:$Red;
+  }
   .editInfo{
     .el-container{
       .el-aside{

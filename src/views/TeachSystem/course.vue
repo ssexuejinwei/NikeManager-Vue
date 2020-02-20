@@ -4,22 +4,6 @@
     class="courseList"
   >
     <el-container>
-      <!-- <el-header >
-        <el-col :span="4" :offset="20" style='text-align: right;'>
-        <el-menu
-         mode = "horizontal"
-         :default-active="activeIndexType"
-         active-text-color="#ffffff"
-         class='typeMenu'
-         >
-         <template v-for="typeData in menuType">
-           <el-menu-item :index="typeData" :key="typeData">
-               {{typeData}}
-           </el-menu-item>
-         </template>
-           </el-menu>
-           </el-col>
-      </el-header> -->
       <br>
       <el-main>
         <el-table
@@ -33,20 +17,26 @@
             type="selection"
           />
           <el-table-column
-            prop="time"
-            label="上课时间"
-            class="borderBottom"
-            align="center"
-          />
-          <el-table-column
             prop="name"
             label="课程"
             class="borderBottom"
             align="center"
           />
           <el-table-column
-            prop="duration"
-            label="起止时间"
+            prop="type"
+            label="类型"
+            class="borderBottom"
+            align="center"
+          />
+          <el-table-column
+            prop="age"
+            label="年龄段"
+            class="borderBottom"
+            align="center"
+          />
+          <el-table-column
+            prop="num"
+            label="人数"
             class="borderBottom"
             align="center"
           />
@@ -90,6 +80,8 @@
 </template>
 
 <script>
+import qs from 'qs'
+
 export default {
   data () {
     return {
@@ -104,63 +96,29 @@ export default {
   watch: {
   },
   created () {
-    // this.update()
-    this.courseTable = []
-    const array = [1, 2, 3, 4, 5]
-    for (const index of array) {
-      const obj = {
-        id: index,
-        name: '体验课A',
-        time: '16-30-17-30',
-        duration: '2019.6.6-2019.8.8',
-        edit: ''
-      }
-      this.courseTable.push(obj)
-    }
+    this.update()
   },
   methods: {
-    // update(){
-    //   this.coachTable=[]
-    //   let api ='/sellerctr/getCoach'
-    //   this.$axios.get(api).then((response)=>{
-    //     let list=response['data']['data']
-    //     for(let coach of list){
-    //       let obj={
-    //         id :coach['id'],
-    //         level :'主教练',
-    //         name : coach['user_name'],
-    //         age : coach['age'],
-    //         sex : coach['sex']==0?'男':'女',
-    //         experience : coach['experience']+'年以上',
-    //         info :coach['info'],
-    //         edit :'',
-    //       }
-    //      this.coachTable.push(obj)
-    //     }
-    //   })
-    // },
+    update () {
+      this.courseTable = []
+      const api = '/sellerctr/getTeachingPlan'
+      this.$axios.get(api).then((response) => {
+        const list = response.data.data
+        for (const teachPlan of list) {
+          const obj = {
+            id: teachPlan.id,
+            name: teachPlan.name,
+            type: teachPlan.type === '0' ? '篮球' : '足球',
+            age: teachPlan.age_min + '-' + teachPlan.age_max + '岁',
+            num: teachPlan.people_num === null ? '无' : teachPlan.people_num,
+            star: teachPlan.star,
+            training_id: teachPlan.training_id
+          }
+          this.courseTable.push(obj)
+        }
+      })
+    },
     submit () {
-      // let api ='/sellerctr/addCoach'
-      // let coach = this.coachForm
-      // var data = {
-      //  user_name : coach.name,
-      //  sex : coach.sex == "男"?0:1,
-      //  age : coach.age,
-      //  experience : coach.workAge,
-      //  info : coach.info,
-      //  tel : coach.tel,
-      // }
-      // this.$axios.post(api, qs.stringify(data)
-      // ).then(() => {
-      //   this.$alert('添加成功', {
-      //             confirmButtonText: '确定',
-      //           }).then(()=>{
-      //             this.outerVisible = false
-      //             this.update()
-      //           });
-      // }).catch(()=>{
-      //   this.$alert('表单填写错误,添加失败')
-      // })
     },
     handleCurrentChange (val) {
       this.chooseID = val.id
@@ -173,10 +131,24 @@ export default {
           cancelButtonText: '返回',
           type: 'warning'
         }).then(() => {
-          this.$alert('删除成功', {
-            confirmButtonText: '确定'
-          }).then(() => {
-            this.update()
+          const api = '/sellerctr/deleteTeachingPlan'
+          var data = {
+            id: this.chooseID
+          }
+          this.$axios.post(api, qs.stringify(data)
+          ).then(() => {
+            this.$alert('删除成功', {
+              confirmButtonText: '确定'
+            }).then(() => {
+              this.update()
+            })
+          }).catch(() => {
+            this.$alert('删除失败')
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
           })
         })
       } else {
@@ -184,6 +156,14 @@ export default {
           confirmButtonText: '确定'
         })
       }
+    },
+    handleModify (index, row) {
+      this.$router.push({
+        path: '/teach/course/change',
+        query: {
+          teachPlan: this.courseTable[index]
+        }
+      })
     },
     handleBack (data) {
       this.isEdit = data

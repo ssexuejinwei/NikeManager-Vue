@@ -67,6 +67,10 @@ const routes = [
         component: () => import('@/views/TeachSystem/components/courseAdd')
       },
       {
+        path: '/teach/course/change',
+        component: () => import('@/views/TeachSystem/components/courseEdit')
+      },
+      {
         path: '/user',
         component: () => import('@/views/UserManager/index')
       },

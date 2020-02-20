@@ -1,7 +1,7 @@
 <template>
   <div class="courseAdd">
     <header style="background-color: #FFFFFF;">
-      <h1>添加课程</h1>
+      <h1>编辑课程</h1>
     </header>
     <el-container>
       <el-aside />
@@ -58,7 +58,7 @@
                 size="large"
                 style="text-align: center;"
               >
-                <el-button @click="handleRest(0)">
+                <el-button @click="handleReset(0)">
                   重置
                 </el-button>
               </el-form-item>
@@ -127,7 +127,7 @@
           </el-row>
           <el-row>
             <el-col style="text-align: center;">
-              <el-button @click="handleRest(1)">
+              <el-button @click="handleReset(1)">
                 重置
               </el-button>
             </el-col>
@@ -174,7 +174,7 @@
               </el-col>
             </el-form-item>
             <el-col style="text-align: center;">
-              <el-button @click="handleRest(2)">
+              <el-button @click="handleReset(2)">
                 重置
               </el-button>
             </el-col>
@@ -205,11 +205,12 @@ export default {
   data () {
     return {
       outerVisible: false,
+      teachPlan: {},
       courseForm: {
         age: '3-4岁',
         type: '篮球',
-        person: '',
-        name: ''
+        person: '6',
+        name: '5-6岁初级篮球'
       },
       markForm: {
         body: [],
@@ -245,21 +246,130 @@ export default {
     }
   },
   created () {
+    this.teachPlan = this.$route.query.teachPlan
+    console.log(this.teachPlan)
+    this.courseForm.age = this.teachPlan.age
+    this.courseForm.name = this.teachPlan.name
+    this.courseForm.type = this.teachPlan.type
+    this.courseForm.person = this.teachPlan.num
     for (let i = 0; i < 6; i++) {
       this.markForm.body.push('')
       this.markForm.technical.push('')
       this.markForm.sense.push('')
     }
+    const star = JSON.parse(this.teachPlan.star)
+    for (let i = 0; i < star[0].list.length; i++) {
+      this.markForm.body[i] = star[0].list[i]
+    }
+    for (let i = 0; i < star[0].list.length; i++) {
+      this.markForm.technical[i] = star[1].list[i]
+    }
+    for (let i = 0; i < star[0].list.length; i++) {
+      this.markForm.sense[i] = star[2].list[i]
+    }
+    const trainList = this.teachPlan.training_id.split(',')
+    this.stepsList.pop()
+    // console.log('iamhere' + trainList)
+    for (const train of trainList) {
+      const obj = {
+        stepName: '',
+        radio: '有球',
+        index: 0,
+        select: train,
+        options: [{
+          value: '0',
+          label: '热身'
+        }, {
+          value: '1',
+          label: '跑步一小时'
+        }, {
+          value: '2',
+          label: '仰卧起坐30个'
+        },
+        {
+          value: '3',
+          label: '放松'
+        },
+        {
+          value: '4',
+          label: '无'
+        }]
+      }
+      this.stepsList.push(obj)
+    }
   },
   methods: {
+    handleReset (data) {
+      switch (data) {
+        case 0:
+          this.courseForm.age = this.teachPlan.age
+          this.courseForm.name = this.teachPlan.name
+          this.courseForm.type = this.teachPlan.type
+          this.courseForm.person = this.teachPlan.num
+          break
+        case 2:
+          this.markForm = {
+            body: [],
+            technical: [],
+            sense: []
+          }
+          for (let i = 0; i < 6; i++) {
+            this.markForm.body.push('')
+            this.markForm.technical.push('')
+            this.markForm.sense.push('')
+          }
+          var star = JSON.parse(this.teachPlan.star)
+          for (let i = 0; i < star[0].list.length; i++) {
+            this.markForm.body[i] = star[0].list[i]
+          }
+          for (let i = 0; i < star[0].list.length; i++) {
+            this.markForm.technical[i] = star[1].list[i]
+          }
+          for (let i = 0; i < star[0].list.length; i++) {
+            this.markForm.sense[i] = star[2].list[i]
+          }
+          break
+        case 1:
+          var trainList = this.teachPlan.training_id.split(',')
+          this.stepsList = []
+          // console.log('iamhere' + trainList)
+          for (const train of trainList) {
+            const obj = {
+              stepName: '',
+              radio: '有球',
+              index: 0,
+              select: train,
+              options: [{
+                value: '0',
+                label: '热身'
+              }, {
+                value: '1',
+                label: '跑步一小时'
+              }, {
+                value: '2',
+                label: '仰卧起坐30个'
+              },
+              {
+                value: '3',
+                label: '放松'
+              },
+              {
+                value: '4',
+                label: '无'
+              }]
+            }
+            this.stepsList.push(obj)
+          }
+          break
+        default:
+          break
+      }
+    },
     cancel () {
       this.$router.go(-1)// 返回上一层
     },
-    makeSure () {
-
-    },
     save () {
-      const api = '/sellerctr/addTeachingPlan'
+      const api = '/sellerctr/updateTeachingPlan'
       const star = [{
         title: '身体素质目标',
         list: this.markForm.body
@@ -275,6 +385,7 @@ export default {
         trainingId.push(Number(step.options[step.select].value))
       }
       const data = {
+        id: this.teachPlan.id,
         training_id: trainingId.toString(),
         type: this.courseForm === '篮球' ? 0 : 1,
         age_min: Number(this.courseForm.age.split('-')[0]),
@@ -290,11 +401,11 @@ export default {
       })
     },
     radioDisplay (value, index) {
-      console.log(value.select)
-      console.log(value.options[value.select].label)
+      // console.log(value.select)
+      // console.log(value.options[value.select].label)
 
       if (value.select === '') {
-        console.log('display-0')
+        // console.log('display-0')
         this.stepsList[index].className = 'radio-display'
         return 'radio-display'
       } else if (value.options[value.select].label !== '热身' && (value.options[value.select].label.indexOf('放松') === -1)) {
@@ -303,60 +414,6 @@ export default {
       } else {
         this.stepsList[index].className = 'radio-hide'
         return 'radio-hide'
-      }
-    },
-    handleRest (data) {
-      switch (data) {
-        case 0:
-          this.courseForm = {
-            age: '3-4岁',
-            type: '篮球',
-            person: '',
-            name: ''
-          }
-          break
-        case 2:
-          this.markForm = {
-            body: [],
-            technical: [],
-            sense: []
-          }
-          for (let i = 0; i < 6; i++) {
-            this.markForm.body.push('')
-            this.markForm.technical.push('')
-            this.markForm.sense.push('')
-          }
-          break
-        case 1:
-          this.stepsList = [{
-            stepName: '',
-            radio: '有球',
-            index: 0,
-            select: '0',
-            className: '',
-            options: [{
-              value: '0',
-              label: '热身'
-            }, {
-              value: '1',
-              label: '跑步一小时'
-            }, {
-              value: '2',
-              label: '仰卧起坐30个'
-            },
-            {
-              value: '3',
-              label: '放松'
-            },
-            {
-              value: '4',
-              label: '无'
-            }]
-          }
-          ]
-          break
-        default:
-          break
       }
     },
     deleteStep () {
