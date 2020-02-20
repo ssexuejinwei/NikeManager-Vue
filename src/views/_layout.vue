@@ -48,6 +48,11 @@
         >
           NIKE管理系统
         </div>
+        <div class="right">
+          <el-button type="text" @click="logout">
+            登出
+          </el-button>
+        </div>
       </el-header>
       <el-main>
         <router-view />
@@ -96,6 +101,12 @@ export default {
   methods: {
     toggleCollapse () {
       this.collapse = !this.collapse
+    },
+
+    logout () {
+      this.$store.dispatch('user/logout').then(() => {
+        this.$router.replace('/auth')
+      })
     }
   }
 }
@@ -142,6 +153,10 @@ export default {
   padding-left: 0;
 
   display: flex;
+
+  .right {
+    margin-left: auto;
+  }
 }
 
 .collapse-button {
