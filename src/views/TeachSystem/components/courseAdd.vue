@@ -276,7 +276,7 @@ export default {
       }
       const data = {
         training_id: trainingId.toString(),
-        type: this.courseForm === '篮球' ? 0 : 1,
+        type: this.courseForm.type === '篮球' ? 0 : 1,
         age_min: Number(this.courseForm.age.split('-')[0]),
         age_max: Number(this.courseForm.age.split('-')[1].split('岁')[0]),
         name: this.courseForm.name,
