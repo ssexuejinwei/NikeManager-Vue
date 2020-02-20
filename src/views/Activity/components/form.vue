@@ -176,8 +176,7 @@ export default {
         info: [
           { required: true, trigger: 'blur', message: '活动信息不能为空' }
         ]
-      },
-      UPLOAD_PUBLIC_URL: process.env.VUE_APP_UPLOAD_PUBLIC_URL
+      }
     }
   },
 

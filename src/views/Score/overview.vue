@@ -12,18 +12,10 @@
           placeholder="请选择"
           style="width: 100px"
         >
-          <el-option
-            label="用户名"
-            value="name"
-          />
-
+          <el-option label="用户名" value="name" />
           <!-- <el-option label="等级" value="level"></el-option> -->
         </el-select>
-        <el-button
-          slot="append"
-          icon="el-icon-search"
-          @click="handleSearch"
-        />
+        <el-button slot="append" icon="el-icon-search" @click="handleSearch" />
       </el-input>
       <el-button
         v-show="search.value"
@@ -34,22 +26,20 @@
         清空搜索结果
       </el-button>
     </header>
-    <el-table :data="users">
+    <el-table :data="users" @sort-change="handleSortChange">
       <el-table-column
         prop="name"
         label="用户名"
         width="150"
+        sortable="custom"
       />
       <el-table-column
         prop="score"
         label="积分"
         width="80"
+        sortable="custom"
       />
-      <el-table-column
-        prop="level"
-        label="会员等级"
-        width="80"
-      >
+      <el-table-column prop="level" label="会员等级" width="80">
         <template slot-scope="scope">
           <span>Lv {{ scope.row.level }}</span>
         </template>
@@ -58,13 +48,11 @@
         prop="create_time"
         label="创建时间"
         width="200"
+        sortable="custom"
       />
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button
-            type="text"
-            @click="openScoreDialog(scope.row)"
-          >
+          <el-button type="text" @click="openScoreDialog(scope.row)">
             修改积分
           </el-button>
         </template>
@@ -79,15 +67,8 @@
       />
     </footer>
 
-    <el-dialog
-      title="修改积分"
-      :visible.sync="dialogVisible"
-      width="450px"
-    >
-      <div
-        v-if="dialogUser"
-        v-loading="dialogLoading"
-      >
+    <el-dialog title="修改积分" :visible.sync="dialogVisible" width="450px">
+      <div v-if="dialogUser" v-loading="dialogLoading">
         <p>
           <strong>修改用户：{{ dialogUser.name }}</strong>
         </p>
@@ -124,6 +105,14 @@
 <script>
 import Axios from 'axios'
 
+const SORT_MAP = {
+  create_time: 0,
+  age: 1,
+  sex: 2,
+  name: 3,
+  score: 4
+}
+
 export default {
   data () {
     return {
@@ -131,6 +120,7 @@ export default {
       isLoading: false,
       cur_page: 1,
       total: 0,
+      sortkey: null,
 
       search: {
         key: 'name',
@@ -147,6 +137,9 @@ export default {
   watch: {
     cur_page () {
       this.getUser()
+    },
+    sortkey () {
+      this.getUser()
     }
   },
 
@@ -159,9 +152,16 @@ export default {
       this.isLoading = true
       try {
         const { data } = await Axios.get(
-          this.search.value ? '/sellerctr/searchParents' : '/sellerctr/getParents',
+          this.search.value
+            ? '/sellerctr/searchParents'
+            : '/sellerctr/getParents',
           {
-            params: { cur_page: this.cur_page, key: this.search.key, value: this.search.value }
+            params: {
+              cur_page: this.cur_page,
+              key: this.search.key,
+              value: this.search.value,
+              type: this.sortkey
+            }
           }
         )
         this.users = data.data.data
@@ -171,6 +171,22 @@ export default {
         this.$message.error('获取用户列表失败')
       } finally {
         this.isLoading = false
+      }
+    },
+
+    handleSortChange ({ column, prop, order }) {
+      console.log(column, prop, order)
+      const key = SORT_MAP[prop]
+      if (key == null) {
+        throw new Error('sort key not found')
+      }
+
+      if (order === 'ascending') {
+        this.sortkey = key + 10
+      } else if (order === 'descending') {
+        this.sortkey = key
+      } else {
+        this.sortkey = null
       }
     },
 
@@ -208,17 +224,20 @@ export default {
       return Axios.post(`/sellerctr/${method}Score`, {
         parents_id: this.dialogUser.id,
         score: this.dialogScore
-      }).then(() => {
-        this.$message.success('修改积分成功')
-        this.closeScoreDialog()
-        // refresh
-        this.getUser()
-      }).catch(e => {
-        console.error(e)
-        this.$message.error('修改积分失败')
-      }).finally(() => {
-        this.dialogLoading = false
       })
+        .then(() => {
+          this.$message.success('修改积分成功')
+          this.closeScoreDialog()
+          // refresh
+          this.getUser()
+        })
+        .catch(e => {
+          console.error(e)
+          this.$message.error('修改积分失败')
+        })
+        .finally(() => {
+          this.dialogLoading = false
+        })
     }
   }
 }

@@ -132,10 +132,16 @@
             <el-input :value="dialogOrder.address && dialogOrder.address.tel" />
           </el-form-item>
           <el-form-item
-            v-if="dialogOrder.express_number && dialogOrder.express_name"
+            v-if="dialogOrder.express_number"
             label="物流单号"
           >
             <el-input :value="[dialogOrder.express_name, dialogOrder.express_number].join(' ')" />
+          </el-form-item>
+          <el-form-item
+            v-if="dialogOrder.return_express_number"
+            label="退货物流单号"
+          >
+            <el-input :value="dialogOrder.return_express_number" />
           </el-form-item>
           <el-form-item
             v-if="dialogOrder.message"
@@ -166,11 +172,32 @@
             </el-button>
           </template>
           <template v-if="dialogOrder.state === '2'">
-            <!-- <el-button type="primary">
-              确认收货
-            </el-button> -->
-            <el-button type="danger">
+            <el-button type="danger" @click="openReturnDialog">
               退/换货
+            </el-button>
+            <el-dialog
+              title="填写退货信息"
+              :visible.sync="returnDialogVisible"
+              append-to-body
+              width="500px"
+            >
+              <el-form ref="returnDialogForm" :model="returnDialogForm" label-width="120px">
+                <el-form-item required label="退货原因" prop="message">
+                  <el-input v-model="returnDialogForm.message" placeholder="填写退货原因" />
+                </el-form-item>
+                <el-form-item required label="退货快递单号" prop="return_express_number">
+                  <el-input v-model="returnDialogForm.return_express_number" placeholder="快递公司 快递单号" />
+                </el-form-item>
+              </el-form>
+              <span slot="footer">
+                <el-button @click="returnDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="returnOrder">确认</el-button>
+              </span>
+            </el-dialog>
+          </template>
+          <template v-if="dialogOrder.state === '5'">
+            <el-button type="primary" @click="returnOrderDone">
+              完成
             </el-button>
           </template>
           <el-button @click="() => dialogVisible = false">
@@ -202,7 +229,13 @@ export default {
 
       // 对话框
       dialogVisible: false,
-      dialogOrder: null
+      dialogOrder: null,
+
+      returnDialogVisible: false,
+      returnDialogForm: {
+        message: '',
+        return_express_number: ''
+      }
     }
   },
 
@@ -316,9 +349,46 @@ export default {
         }).catch(e => {
           console.error(e)
           this.$message.error('操作失败')
-        })
-          .then(this.getOrders)
+        }).then(this.getOrders)
       }).catch(() => {})
+    },
+
+    openReturnDialog () {
+      this.returnDialogVisible = true
+      this.returnDialogForm = {
+        message: '',
+        return_express_number: ''
+      }
+    },
+
+    returnOrder () {
+      this.$refs.returnDialogForm.validate(valid => {
+        if (!valid) return
+        Axios.post('/sellerctr/updateOrder', qs.stringify({
+          id: this.dialogOrder.id,
+          state: '5',
+          ...this.returnDialogForm
+        })).then(() => {
+          this.$message.success('操作成功')
+          this.returnDialogVisible = false
+        }).catch(e => {
+          console.error(e)
+          this.$message.error('操作失败')
+        }).then(this.getOrders)
+      })
+    },
+
+    returnOrderDone () {
+      this.$confirm('退货完成，积分将返还到账户', '提示')
+        .then(() => {
+          Axios.post('/sellerctr/returnGoods', qs.stringify({ id: this.dialogOrder.id }))
+            .then(() => {
+              this.$message.success('成功')
+            }).catch(e => {
+              console.error(e)
+              this.$message.error('操作失败')
+            }).then(this.getOrders)
+        }).catch(() => {})
     }
   }
 }

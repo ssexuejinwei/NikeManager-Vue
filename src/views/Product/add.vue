@@ -21,7 +21,7 @@
         >
           <img
             v-if="form.coverimage"
-            :src="UPLOAD_PUBLIC_URL + form.coverimage"
+            :src="form.coverimage.url"
             class="cover"
           >
           <i v-else class="el-icon-plus" />
@@ -32,6 +32,7 @@
           action="#"
           list-type="picture-card"
           accept="image/*"
+          :file-list="form.images"
           :http-request="handleUpload"
           :on-success="handleUploadSuccess"
           :on-change="handleUploadImages"
@@ -251,7 +252,6 @@ export default {
           }
         ]
       },
-      UPLOAD_PUBLIC_URL: process.env.VUE_APP_UPLOAD_PUBLIC_URL,
       types: []
     }
   },
@@ -260,7 +260,8 @@ export default {
     formData () {
       const form = {
         ...this.form,
-        images: JSON.stringify(this.form.images),
+        coverimage: this.form.coverimage.name,
+        images: JSON.stringify(this.form.images.map(img => img.name)),
         skus: JSON.stringify(this.validSkus),
         putaway_time: this.form.putaway
           ? format(this.form.putaway_time, 'yyyy-MM-dd HH:mm:ss')
@@ -296,17 +297,18 @@ export default {
       })
     },
     handleUploadSuccess (res, rawFile) {
+      if (!rawFile.url) {
+        this.$set(rawFile, 'url', URL.createObjectURL(rawFile.raw))
+      }
       if (res?.data?.data?.fileName) {
-        rawFile.url =
-          process.env.VUE_APP_UPLOAD_PUBLIC_URL + res?.data?.data?.fileName
-        rawFile.fileName = res?.data?.data?.fileName
+        this.$set(rawFile, 'name', res?.data?.data?.fileName)
       }
     },
-    handleUploadCover (file) {
-      this.form.coverimage = file.fileName
+    handleUploadCover (file, fileList) {
+      this.form.coverimage = fileList.slice(-1)[0]
     },
     handleUploadImages (file, fileList) {
-      this.form.images = fileList.map(f => f.fileName)
+      this.form.images = fileList
     },
 
     addSku () {
