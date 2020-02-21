@@ -323,7 +323,7 @@ export default {
       },
       tableCourse: [],
       tableAttend: [],
-      tableEvaluate: [],
+      tableStar: [],
       // tableEvaluate:[{
       //   content:'教学内容',
       //   value:4,
@@ -372,7 +372,7 @@ export default {
     this.form.wechat = this.student.wechat
     this.form.weight = this.student.weight
     this.squareImageUrl = this.student.avatar == null ? '' : this.student.avatar
-    console.log('img', this.squareImageUrl)
+    console.log(this.student)
     this.getCourse()
     this.getAttend()
     this.getMark()

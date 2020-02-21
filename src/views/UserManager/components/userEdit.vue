@@ -390,7 +390,7 @@ export default {
         let i = 0
         for (const address of this.addressList) {
           const isDefault = address.isDefault
-          if (String(isDefault) === 'true') {
+          if (String(isDefault) === true) {
             const temp = this.addressList[i]
             this.addressList[i] = this.addressList[0]
             this.addressList[0] = temp
@@ -442,11 +442,8 @@ export default {
       })
     },
     handleUploadSuccess (res, rawFile) {
-      if (!rawFile.url) {
-        this.$set(rawFile, 'url', URL.createObjectURL(rawFile.raw))
-      }
       if (res?.data?.data?.fileName) {
-        this.$set(rawFile, 'name', res?.data?.data?.fileName)
+        rawFile.url = process.env.VUE_APP_UPLOAD_PUBLIC_URL + res?.data?.data?.fileName
       }
     },
     handleUploadChange (file, fileList) {

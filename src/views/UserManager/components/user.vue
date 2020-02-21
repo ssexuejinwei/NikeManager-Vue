@@ -10,6 +10,7 @@
         <el-header>
           <el-col :span="4">
             <el-menu
+              v-if="false"
               mode="horizontal"
               text-color="#000000"
               :default-active="activeIndexFilter"
@@ -42,7 +43,7 @@
           </el-col>
           <el-col
             :span="4"
-            :offset="9"
+            :offset="10"
             style="margin-top: 0.625rem;"
           >
             <el-input
@@ -104,22 +105,26 @@
             class="UserTableData"
             highlight-current-row
             :border="true"
+            @sort-change="handleSortChange"
             @current-change="handleCurrentChangeTable"
           >
             <el-table-column
               prop="name"
               label="姓名"
               align="center"
+              sortable="custom"
             />
             <el-table-column
               prop="sex"
               label="性别"
               align="center"
+              sortable="custom"
             />
             <el-table-column
               prop="age"
               label="年龄"
               align="center"
+              sortable="custom"
             />
             <el-table-column
               prop="tel"
@@ -135,11 +140,13 @@
               prop="points"
               label="积分"
               align="center"
+              sortable="custom"
             />
             <el-table-column
               prop="date"
               label="加入时间"
               align="center"
+              sortable="custom"
             />
             <el-table-column
               label="操作"
@@ -195,6 +202,14 @@
 <script>
 import UserEdit from './userEdit'
 import qs from 'qs'
+const SORT_MAP = {
+  date: 0,
+  age: 1,
+  sex: 2,
+  name: 3,
+  points: 4
+}
+
 export default {
   components: {
     UserEdit
@@ -205,6 +220,7 @@ export default {
         key: 'name',
         value: ''
       },
+      sortkey: null,
       title: '更多',
       chooseID: 0,
       isChoose: false,
@@ -220,9 +236,13 @@ export default {
     }
   },
   watch: {
+    sortkey (newValue) {
+      this.getUser()
+    }
   },
   created () {
-    this.getUser(0)
+    this.sortkey = 0
+    this.getUser()
   },
   methods: {
     handleClearSearch () {
@@ -287,12 +307,12 @@ export default {
     backHome (val) {
       this.isEdit = val
     },
-    getUser (type) {
+    getUser () {
       const api = 'sellerctr/getParents'
       this.$axios.get(api, {
         params: {
           cur_page: this.cur_page,
-          type: type
+          type: this.sortkey
         }
       }).then((response) => {
         const list = response.data.data.data
@@ -316,9 +336,23 @@ export default {
         }
       })
     },
+    handleSortChange ({ column, prop, order }) {
+      console.log(column, prop, order)
+      const key = SORT_MAP[prop]
+      if (key === null) {
+        throw new Error('sort key not found')
+      }
+      if (order === 'ascending') {
+        this.sortkey = key + 10
+      } else if (order === 'descending') {
+        this.sortkey = key
+      } else {
+        this.sortkey = null
+      }
+    },
     handleCurrentChange (val) {
       this.cur_page = val
-      this.getUser(this.currentIndex)
+      this.getUser()
     },
     handleSelect (key) {
       this.currentIndex = key
