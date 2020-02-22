@@ -7,9 +7,12 @@
         <el-button style="margin-right: 16px" @click="parentDialog = true">
           查看报名用户
         </el-button>
-        <a :href="'/api/sellerctr/getFileByActivityId?id='+id" download>
+        <a :href="'/api/sellerctr/getFileByActivityId?id='+id" download style="margin-right: 16px">
           <el-button>下载报名信息</el-button>
         </a>
+        <el-button type="danger" @click="handleDelete">
+          删除活动
+        </el-button>
       </div>
       <act-form
         v-if="origin"
@@ -91,6 +94,22 @@ export default {
         console.error(e)
         this.$message.error('修改失败: ' + e.message)
       })
+    },
+
+    handleDelete () {
+      this.$confirm('是否删除该活动', '提示', { type: 'warning' })
+        .then(() => {
+          Axios.post('/sellerctr/deleteActivity', { id: this.id })
+            .then(() => {
+              this.$message.success('删除成功')
+              this.$router.back()
+            })
+            .catch(e => {
+              console.error(e)
+              this.$message.error('删除失败, ' + e.message)
+            })
+        })
+        .catch(() => {})
     }
   }
 }
