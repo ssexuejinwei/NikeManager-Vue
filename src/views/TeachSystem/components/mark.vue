@@ -42,15 +42,14 @@
           </template>
         </el-table-column>
       </el-table>
-      <!-- <span class="demonstration" ></span>
-          <el-pagination
-          @current-change="handleCoursePageChange"
-          :page-size="pageSizeForCourse"
-          style="text-align: right;"
-            layout="prev, pager, next"
-            :total="courseTotal">
-          </el-pagination> -->
-
+      <el-pagination
+        v-if="!isClicked"
+        :page-size="pageSizeForCourse"
+        style="text-align: right;"
+        layout="prev, pager, next"
+        :total="courseTotal"
+        @current-change="handleCoursePageChange"
+      />
       <!-- 评测页面 -->
       <div
         v-if="isClicked"
@@ -185,6 +184,14 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        v-if="!isClicked"
+        :page-size="pageSizeForPhase"
+        style="text-align: right;"
+        layout="prev, pager, next"
+        :total="phaseTotal"
+        @current-change="handlePhaseChange"
+      />
 
       <!-- 具体评测页面 -->
       <div
@@ -336,7 +343,14 @@
           </template>
         </el-table-column>
       </el-table>
-
+      <el-pagination
+        v-if="!isClicked"
+        :page-size="pageSizeForYear"
+        style="text-align: right;"
+        layout="prev, pager, next"
+        :total="yearTotal"
+        @current-change="handleYearChange"
+      />
       <!-- 具体评测页面 -->
       <div
         v-if="isClicked"
@@ -408,6 +422,7 @@
 
 <script>
 import PFigure from './figure'
+import qs from 'qs'
 export default {
   components: {
     PFigure
@@ -431,6 +446,12 @@ export default {
       pageSizeForCourse: 4,
       courseTotal: 1,
       curPageForCourse: 1,
+      pageSizeForPhase: 4,
+      phaseTotal: 1,
+      curPageForPhase: 1,
+      pageSizeForYear: 4,
+      yearTotal: 1,
+      curPageForYear: 1,
       tableCourse: [],
       tablePhase: [],
       tableYear: [],
@@ -469,11 +490,6 @@ export default {
   },
   created () {
     for (let i = 0; i < 3; i++) {
-      const iobj = {
-        course: '3-4岁初级篮球(team-01)',
-        time: '2020-03-08 17:00-16:30(周三)',
-        status: i === 0 ? '未评测' : '已评测'
-      }
       const jobj = {
         course: '3-4岁初级篮球(team-01)',
         time: '2020-03-08 ————2020-06-08',
@@ -484,13 +500,70 @@ export default {
         time: '2020-03-08 ————2020-06-08',
         status: i === 0 ? '未评测' : '已评测'
       }
-      this.tableCourse.push(iobj)
+      // this.tableCourse.push(iobj)
       this.tablePhase.push(jobj)
       this.tableYear.push(kobj)
     }
-    // this.getCourse()
+    this.getCourse()
   },
   methods: {
+    getCourse () {
+      const api = '/sellerctr/getMarkingList'
+      const data = {
+        student_id: this.student.id,
+        team_id: this.student.teamID,
+        cur_page: this.curPageForCourse
+      }
+      this.$axios.post(api, qs.stringify(data)).then((response) => {
+        this.tablePhase = []
+        this.phaseTotal = response.data.data.total
+        if (this.phaseTotal === 0) {
+          return
+        }
+        this.pageSizeForPhase = response.data.data.per_page
+        const data = response.data.data.data
+        for (const phase of data) {
+          const obj = {
+            id: phase.id,
+            tpID: phase.tp_id,
+            course: phase.tp_name + '(' + this.student.teamName + ')',
+            time: phase.start_time + '-' + phase.end_time.split(' ')[1],
+            status: phase.star === 0 ? '未评测' : '已评测',
+            data: phase.data
+          }
+          console.log(phase)
+          this.tablePhase.push(obj)
+        }
+      }).catch(() => {
+        this.$alert('获取阶段性评测数据失败')
+      })
+    },
+    getPhase () {
+      const api = '/sellerctr/getSessionScore'
+      const data = {
+        id: this.student.id,
+        cur_page: this.curPageForPhase
+      }
+      this.$axios.post(api, qs.stringify(data)).then((response) => {
+        this.tableCourse = []
+        this.courseTotal = response.data.data.total
+        this.pageSizeForCourse = response.data.data.per_page
+        const data = response.data.data.data
+        for (const course of data) {
+          const obj = {
+            id: course.id,
+            tpID: course.tp_id,
+            course: course.tp_name + '(' + course.team_name.name + ')',
+            time: course.start_time + '-' + course.end_time.split(' ')[1],
+            status: course.star === 0 ? '未评测' : '已评测'
+          }
+          console.log(course)
+          this.tableCourse.push(obj)
+        }
+      }).catch(() => {
+        this.$alert('获取课后反馈数据失败')
+      })
+    },
     yearSubmit () {
       this.$alert('提交成功', {
         confirmButtonText: '确定'
@@ -529,36 +602,6 @@ export default {
     handleCheckMark () {
       this.isClicked = true
       this.mode = 'check'
-    },
-    getCourse () {
-      const api = '/sellerctr/getScheduleByTeamId'
-      this.$axios.get(api, {
-        params: {
-          team_id: this.student.teamID,
-          cur_page: this.curPageForCourse,
-          page_size: this.pageSizeForCourse
-        }
-      }).then((response) => {
-        const list = response.data.data.data
-        this.courseTotal = response.data.data.total
-        // console.log(this.coursePages)
-        this.tableCourse = []
-        for (const course of list) {
-          const obj = {
-            id: course.id,
-            name: course.tp_name,
-            team_name: course.team_id,
-            startTime: course.start_time,
-            endTime: course.end_time
-          }
-          const jobj = {
-            course: obj.name + '(' + obj.team_name + ')',
-            time: obj.startTime.split(' ')[1] + '-' + obj.endTime.split(' ')[1],
-            finish: ''
-          }
-          this.tableCourse.push(jobj)
-        }
-      })
     },
     handleCoursePageChange (val) {
       this.curPageForCourse = val

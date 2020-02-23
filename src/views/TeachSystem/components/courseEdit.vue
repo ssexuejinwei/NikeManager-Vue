@@ -10,7 +10,7 @@
         <el-main class="basicInfo">
           <el-form :model="courseForm">
             <el-row>
-              <el-col :span="10">
+              <el-col :span="14">
                 <el-form-item prop="age">
                   <el-radio-group v-model="courseForm.age">
                     <el-radio-button label="3-4岁" />
@@ -20,7 +20,7 @@
                 </el-form-item>
               </el-col>
               <el-col
-                :span="6"
+                :span="8"
                 :offset="2"
               >
                 <el-form-item prop="type">
@@ -95,7 +95,7 @@
               </el-card>
             </el-col>
             <el-col
-              :span="6"
+              :span="8"
               :offset="3"
             >
               <el-radio-group
@@ -108,7 +108,7 @@
             </el-col>
             <el-col
               :span="6"
-              :offset="value.className=='radio-hide'?9:0"
+              :offset="value.className=='radio-hide'?11:0"
             >
               <el-select
                 v-model="value.select"
@@ -148,7 +148,7 @@
                 v-for="(value,index) in markForm.body"
                 :key="index"
                 :span="3"
-                style="margin-left: 1.25rem;"
+                style="margin-left: 0.625rem;"
               >
                 <el-input v-model="markForm.body[index]" />
               </el-col>
@@ -158,7 +158,7 @@
                 v-for="(value,index) in markForm.technical"
                 :key="index"
                 :span="3"
-                style="margin-left: 1.25rem;"
+                style="margin-left: 0.625rem;"
               >
                 <el-input v-model="markForm.technical[index]" />
               </el-col>
@@ -168,7 +168,7 @@
                 v-for="(value,index) in markForm.sense"
                 :key="index"
                 :span="3"
-                style="margin-left: 1.25rem;"
+                style="margin-left: 0.625rem;"
               >
                 <el-input v-model="markForm.sense[index]" />
               </el-col>
@@ -464,10 +464,10 @@ export default {
     .el-container{
       .el-container{
         .basicInfo{
-          border: 2px solid ;
+          border: 1px solid ;
         }
         .stepInfo{
-          border: 2px solid ;
+          border: 1px solid ;
           .radio-display{
           }
           .radio-hide{
@@ -475,7 +475,7 @@ export default {
           }
         }
         .markInfo{
-          border: 2px solid ;
+          border: 1px solid ;
         }
       }
     }

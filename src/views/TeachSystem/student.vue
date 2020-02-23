@@ -619,7 +619,9 @@ export default {
                     weight: student.weight + 'kg',
                     tel: student.tel,
                     do: '',
-                    avatar: student.avatar
+                    avatar: student.avatar,
+                    teamID: id,
+                    teamName: name
                   }
                   tableData.push(stuObj)
                 }
