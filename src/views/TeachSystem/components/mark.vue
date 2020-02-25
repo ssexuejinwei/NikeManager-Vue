@@ -134,7 +134,7 @@
             <el-button
               type="success"
               style="text-align: center;"
-              @click="classSubmit"
+              @click="courseSubmit"
             >
               提交
             </el-button>
@@ -147,6 +147,38 @@
       v-if="markIndex==2"
       class="phaseMark"
     >
+      <el-form :model="timeForm" label-width="80px">
+        <el-row>
+          <el-col :span="8">
+            <el-form-item
+              label="开始时间"
+              prop="start"
+            >
+              <el-date-picker
+                v-model="timeForm.start"
+                type="date"
+                placeholder="选择日期"
+                format="yyyy 年 MM 月 dd 日"
+                value-format="yyyy-MM-dd"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item
+              label="结束时间"
+              prop="end"
+            >
+              <el-date-picker
+                v-model="timeForm.end"
+                type="date"
+                placeholder="选择日期"
+                format="yyyy 年 MM 月 dd 日"
+                value-format="yyyy-MM-dd"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
       <el-table
         v-if="!isClicked"
         :data="tablePhase"
@@ -166,12 +198,12 @@
         >
           <template slot-scope="scope">
             <el-button
-              v-if="tablePhase[scope.$index]['status']=='未评测'"
+              v-if="tablePhase[scope.$index]['status']=='评测'"
               size="medium"
               type="success"
               @click="handleMark(scope.$index,scope.row)"
             >
-              未评测
+              评测
             </el-button>
             <el-button
               v-if="tablePhase[scope.$index]['status']=='已评测'"
@@ -184,14 +216,14 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination
+      <!-- <el-pagination
         v-if="!isClicked"
         :page-size="pageSizeForPhase"
         style="text-align: right;"
         layout="prev, pager, next"
         :total="phaseTotal"
         @current-change="handlePhaseChange"
-      />
+      /> -->
 
       <!-- 具体评测页面 -->
       <div
@@ -280,6 +312,7 @@
           <br>
           教练评语:
           <el-input
+            v-model="phaseTextArea"
             type="textarea"
             placeholder="输入评语"
             style="text-align: center; "
@@ -439,7 +472,11 @@ export default {
   },
   data () {
     return {
+      phaseTextArea: 'xxxxxx',
+      scheduleId: 1,
       yearMarkId: 1,
+      phaseTpId: 1,
+      phaseStar: {},
       textarea: 'xxxxxxxxxxxxxxxxxxxxxxxxx',
       mode: '',
       isClicked: false,
@@ -452,6 +489,11 @@ export default {
       pageSizeForYear: 4,
       yearTotal: 1,
       curPageForYear: 1,
+      timeForm: {
+        start: '2020-1-1',
+        end: '2020-1-2'
+      },
+      markItem: [],
       tableCourse: [],
       tablePhase: [],
       tableYear: [],
@@ -488,60 +530,56 @@ export default {
       ]
     }
   },
+  watch: {
+    markIndex () {
+      this.isClicked = false
+    }
+  },
   created () {
     for (let i = 0; i < 3; i++) {
-      const jobj = {
-        course: '3-4岁初级篮球(team-01)',
-        time: '2020-03-08 ————2020-06-08',
-        status: i === 0 ? '未评测' : '已评测'
-      }
+      // const jobj = {
+      //   course: '3-4岁初级篮球(team-01)',
+      //   time: '2020-03-08 ————2020-06-08',
+      //   status: i === 0 ? '未评测' : '已评测'
+      // }
       const kobj = {
         course: '全学年体测评价(team-01)',
         time: '2020-03-08 ————2020-06-08',
         status: i === 0 ? '未评测' : '已评测'
       }
       // this.tableCourse.push(iobj)
-      this.tablePhase.push(jobj)
+      // this.tablePhase.push(jobj)
       this.tableYear.push(kobj)
     }
     this.getCourse()
+    this.getPhase()
   },
   methods: {
-    getCourse () {
-      const api = '/sellerctr/getMarkingList'
-      const data = {
-        student_id: this.student.id,
-        team_id: this.student.teamID,
-        cur_page: this.curPageForCourse
+    getPhase () {
+      const api = '/sellerctr/LearnedTpid'
+      const param = {
+        team_id: this.student.teamID
       }
-      this.$axios.post(api, qs.stringify(data)).then((response) => {
-        this.tablePhase = []
-        this.phaseTotal = response.data.data.total
-        if (this.phaseTotal === 0) {
-          return
-        }
-        this.pageSizeForPhase = response.data.data.per_page
-        const data = response.data.data.data
+      this.$axios.post(api, qs.stringify(param)).then((response) => {
+        const data = response.data.data
         for (const phase of data) {
           const obj = {
-            id: phase.id,
             tpID: phase.tp_id,
-            course: phase.tp_name + '(' + this.student.teamName + ')',
-            time: phase.start_time + '-' + phase.end_time.split(' ')[1],
-            status: phase.star === 0 ? '未评测' : '已评测',
-            data: phase.data
+            course: phase.name + '(' + this.student.teamName + ')',
+            time: this.timeForm.start + '----' + this.timeForm.end,
+            status: '评测'
           }
-          console.log(phase)
           this.tablePhase.push(obj)
         }
       }).catch(() => {
         this.$alert('获取阶段性评测数据失败')
       })
     },
-    getPhase () {
-      const api = '/sellerctr/getSessionScore'
+    getCourse () {
+      const api = '/sellerctr/getMarkingList'
       const data = {
-        id: this.student.id,
+        student_id: this.student.id,
+        team_id: this.student.teamID,
         cur_page: this.curPageForPhase
       }
       this.$axios.post(api, qs.stringify(data)).then((response) => {
@@ -553,13 +591,14 @@ export default {
           const obj = {
             id: course.id,
             tpID: course.tp_id,
-            course: course.tp_name + '(' + course.team_name.name + ')',
+            course: course.tp_name + '(' + course.team_name + ')',
             time: course.start_time + '-' + course.end_time.split(' ')[1],
-            status: course.star === 0 ? '未评测' : '已评测'
+            status: course.star === 0 ? '未评测' : '已评测',
+            sortKey: course.star
           }
-          console.log(course)
           this.tableCourse.push(obj)
         }
+        this.tableCourse.sort((a, b) => b.sortKey - a.sortKey)
       }).catch(() => {
         this.$alert('获取课后反馈数据失败')
       })
@@ -569,14 +608,63 @@ export default {
         confirmButtonText: '确定'
       })
     },
-    classSubmit () {
-      this.$alert('提交成功', {
-        confirmButtonText: '确定'
+    courseSubmit () {
+      const api = '/sellerctr/marking'
+      let i = 0
+      const star = []
+      for (const itemLength of this.markItem) {
+        const list = []
+        let title = ''
+        for (let j = 0; j < itemLength; j++) {
+          title = this.tableMark[i].content
+          list.push({
+            id: this.tableMark[i].id,
+            score: this.tableMark[i].value
+          })
+          i++
+        }
+        star.push({
+          title: title,
+          list: list
+        })
+      }
+      const data = {
+        schedule_id: this.scheduleId,
+        student_id: this.student.id,
+        star: JSON.stringify(star)
+      }
+      this.$axios.post(api, qs.stringify(data)).then((response) => {
+        this.$alert('提交成功', {
+          confirmButtonText: '确定'
+        }).then(() => {
+          this.getCourse()
+        })
+      }).catch(() => {
+        this.$alert('提交失败', {
+          confirmButtonText: '确定'
+        })
       })
     },
     phaseSubmit () {
-      this.$alert('提交成功', {
-        confirmButtonText: '确定'
+      const api = '/sellerctr/sessionScore'
+      this.$axios.post(api, qs.stringify({
+        schedule_id: this.scheduleId,
+        tp_id: this.phaseTpId,
+        star: JSON.stringify(this.tableMark),
+        advice: this.phaseTextArea,
+        start_time: this.timeForm.start,
+        end_time: this.timeForm.end,
+        name: 'test'
+      })).then((response) => {
+        this.$alert('提交成功', {
+          confirmButtonText: '确定'
+        }).then(() => {
+          this.getCourse()
+        })
+      }).catch(() => {
+        this.$alert('提交失败', {
+          confirmButtonText: '确定'
+        })
       })
     },
     objectSpanMethod ({ row, column, rowIndex, columnIndex }) {
@@ -595,13 +683,103 @@ export default {
         }
       }
     },
-    handleMark () {
-      this.isClicked = true
-      this.mode = 'submit'
+    handleMark (index, row) {
+      console.log(row)
+      if (this.markIndex === 1) {
+        const api = '/sellerctr/getMarkingById'
+        this.scheduleId = this.tableCourse[index].id
+        const data = {
+          student_id: this.student.id,
+          schedule_id: this.tableCourse[index].id,
+          tp_id: this.tableCourse[index].tpID
+        }
+        this.$axios.get(api, {
+          params: data
+        }).then((response) => {
+          const data = response.data.data.star
+          this.tableMark = []
+          this.markItem = []
+          let i = 0
+          for (const mark of data) {
+            const list = mark.list
+            this.markItem.push(list.length)
+            for (const item of list) {
+              this.tableMark.push({
+                content: mark.title,
+                id: item.id,
+                value: 0,
+                performance: item.name,
+                type: i
+              })
+            }
+            i++
+          }
+          this.isClicked = true
+          this.mode = 'submit'
+        })
+      } else if (this.markIndex === 2) {
+        const api = '/sellerctr/getStarByTpid'
+        this.phaseTpId = this.tablePhase[index].tpID
+        this.$axios.post(api, qs.stringify({
+          tp_id: this.tablePhase[index].tpID,
+          student_id: this.student.id,
+          start_time: this.timeForm.start,
+          end_time: this.timeForm.end
+        })).then((response) => {
+          const star = response.data.data.star_max
+          this.tableMark = []
+          for (const item of star) {
+            this.tableMark.push({
+              content: item.title,
+              value: item.score,
+              id: item.id,
+              performance: item.name
+            })
+          }
+          this.isClicked = true
+          this.mode = 'submit'
+        })
+      } else {
+        console.log(1)
+      }
     },
-    handleCheckMark () {
-      this.isClicked = true
-      this.mode = 'check'
+    handleCheckMark (index, row) {
+      console.log(row)
+      if (this.markIndex === 1) {
+        const api = '/sellerctr/getMarkingById'
+        this.scheduleId = this.tableCourse[index].id
+        const data = {
+          student_id: this.student.id,
+          schedule_id: this.tableCourse[index].id,
+          tp_id: this.tableCourse[index].tpID
+        }
+        this.$axios.get(api, {
+          params: data
+        }).then((response) => {
+          const data = response.data.data.star
+          this.tableMark = []
+          this.markItem = []
+          let i = 0
+          for (const mark of data) {
+            const list = mark.list
+            this.markItem.push(list.length)
+            for (const item of list) {
+              this.tableMark.push({
+                content: mark.title,
+                id: item.id,
+                value: item.score,
+                performance: item.name,
+                type: i
+              })
+            }
+            i++
+          }
+          this.isClicked = true
+          this.mode = 'check'
+        })
+      } else {
+        console.log('我在checkmark')
+      }
     },
     handleCoursePageChange (val) {
       this.curPageForCourse = val
