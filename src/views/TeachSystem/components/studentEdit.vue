@@ -359,6 +359,11 @@ export default {
 
     }
   },
+  watch: {
+    menuIndex () {
+      this.RadioIndex = 1
+    }
+  },
   created () {
     this.form.name = this.student.name
     this.form.height = this.student.height

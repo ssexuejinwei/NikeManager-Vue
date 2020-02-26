@@ -147,7 +147,7 @@
       v-if="markIndex==2"
       class="phaseMark"
     >
-      <el-form :model="timeForm" label-width="80px">
+      <el-form v-if="false" :model="timeForm" label-width="80px">
         <el-row>
           <el-col :span="8">
             <el-form-item
@@ -198,12 +198,12 @@
         >
           <template slot-scope="scope">
             <el-button
-              v-if="tablePhase[scope.$index]['status']=='评测'"
+              v-if="tablePhase[scope.$index]['status']=='详情'"
               size="medium"
               type="success"
               @click="handleMark(scope.$index,scope.row)"
             >
-              评测
+              详情
             </el-button>
             <el-button
               v-if="tablePhase[scope.$index]['status']=='已评测'"
@@ -305,6 +305,7 @@
                   v-model="tableMark[scope.$index]['value']"
                   text-color="#ff9900"
                   score-template="{value}"
+                  disabled
                 />
               </template>
             </el-table-column>
@@ -358,12 +359,12 @@
         >
           <template slot-scope="scope">
             <el-button
-              v-if="tableYear[scope.$index]['status']=='未评测'"
+              v-if="tableYear[scope.$index]['status']=='详情'"
               size="medium"
               type="success"
               @click="handleMark(scope.$index,scope.row)"
             >
-              未评测
+              详情
             </el-button>
             <el-button
               v-if="tableYear[scope.$index]['status']=='已评测'"
@@ -376,14 +377,14 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination
+      <!-- <el-pagination
         v-if="!isClicked"
         :page-size="pageSizeForYear"
         style="text-align: right;"
         layout="prev, pager, next"
         :total="yearTotal"
         @current-change="handleYearChange"
-      />
+      /> -->
       <!-- 具体评测页面 -->
       <div
         v-if="isClicked"
@@ -396,7 +397,7 @@
         >
           返回
         </el-button>
-        <PFigure :id="parseInt(yearMarkId)" />
+        <PFigure :star="yearStar" />
         <!-- 查看评测页面 -->
         <br>
         <div
@@ -423,13 +424,13 @@
           class="check"
         >
           教练评语:<el-input
-            v-model="textarea"
+            v-model="yearEvaluate"
             type="textarea"
             placeholder="输入评语"
             style="text-align: center; "
           />
           针对性建议:<el-input
-            v-model="textarea"
+            v-model="yearAdvice"
             type="textarea"
             placeholder="输入评语"
             style="text-align: center; "
@@ -473,8 +474,11 @@ export default {
   data () {
     return {
       phaseTextArea: 'xxxxxx',
+      yearEvaluate: 'xxxx',
+      yearAdvice: 'xxxxxx',
       scheduleId: 1,
-      yearMarkId: 1,
+      yearTpId: 1,
+      yearStar: {},
       phaseTpId: 1,
       phaseStar: {},
       textarea: 'xxxxxxxxxxxxxxxxxxxxxxxxx',
@@ -536,38 +540,60 @@ export default {
     }
   },
   created () {
-    for (let i = 0; i < 3; i++) {
-      // const jobj = {
-      //   course: '3-4岁初级篮球(team-01)',
-      //   time: '2020-03-08 ————2020-06-08',
-      //   status: i === 0 ? '未评测' : '已评测'
-      // }
-      const kobj = {
-        course: '全学年体测评价(team-01)',
-        time: '2020-03-08 ————2020-06-08',
-        status: i === 0 ? '未评测' : '已评测'
-      }
-      // this.tableCourse.push(iobj)
-      // this.tablePhase.push(jobj)
-      this.tableYear.push(kobj)
-    }
+    // for (let i = 0; i < 3; i++) {
+    //   // const jobj = {
+    //   //   course: '3-4岁初级篮球(team-01)',
+    //   //   time: '2020-03-08 ————2020-06-08',
+    //   //   status: i === 0 ? '未评测' : '已评测'
+    //   // }
+    //   // const kobj = {
+    //   //   course: '全学年体测评价(team-01)',
+    //   //   time: '2020-03-08 ————2020-06-08',
+    //   //   status: i === 0 ? '未评测' : '已评测'
+    //   // }
+    //   // this.tableCourse.push(iobj)
+    //   // this.tablePhase.push(jobj)
+    //   // this.tableYear.push(kobj)
+    // }
     this.getCourse()
     this.getPhase()
+    this.getYear()
   },
   methods: {
-    getPhase () {
-      const api = '/sellerctr/LearnedTpid'
+    getYear () {
+      const api = '/sellerctr/getYearScore'
       const param = {
-        team_id: this.student.teamID
+        id: this.student.id
       }
+      this.tableYear = []
+      this.$axios.post(api, qs.stringify(param)).then((response) => {
+        const data = response.data.data
+        for (const year of data) {
+          this.tableYear.push({
+            tpID: year.tp_id,
+            course: year.name + '(' + this.student.teamName + ')',
+            time: year.start_time + '----' + year.end_time,
+            status: '详情'
+          })
+        }
+      }).catch(() => {
+        this.$alert('获取全年评测数据失败')
+      })
+    },
+    getPhase () {
+      const api = '/sellerctr/getSessionScore'
+      const param = {
+        id: this.student.id
+      }
+      this.tablePhase = []
       this.$axios.post(api, qs.stringify(param)).then((response) => {
         const data = response.data.data
         for (const phase of data) {
           const obj = {
             tpID: phase.tp_id,
             course: phase.name + '(' + this.student.teamName + ')',
-            time: this.timeForm.start + '----' + this.timeForm.end,
-            status: '评测'
+            time: phase.start_time + '----' + phase.end_time,
+            status: '详情'
           }
           this.tablePhase.push(obj)
         }
@@ -604,8 +630,22 @@ export default {
       })
     },
     yearSubmit () {
-      this.$alert('提交成功', {
-        confirmButtonText: '确定'
+      const api = '/sellerctr/updateYearScore'
+      this.$axios.post(api, qs.stringify({
+        id: this.yearTpId,
+        evaluate: this.yearEvaluate,
+        advice: this.yearAdvice
+      })).then((response) => {
+        this.$alert('提交成功', {
+          confirmButtonText: '确定'
+        }).then(() => {
+          this.isClicked = false
+          this.getYear()
+        })
+      }).catch(() => {
+        this.$alert('提交失败', {
+          confirmButtonText: '确定'
+        })
       })
     },
     courseSubmit () {
@@ -638,6 +678,7 @@ export default {
           confirmButtonText: '确定'
         }).then(() => {
           this.getCourse()
+          this.isClicked = false
         })
       }).catch(() => {
         this.$alert('提交失败', {
@@ -646,20 +687,16 @@ export default {
       })
     },
     phaseSubmit () {
-      const api = '/sellerctr/sessionScore'
+      const api = '/sellerctr/updateSessionScore'
       this.$axios.post(api, qs.stringify({
-        schedule_id: this.scheduleId,
-        tp_id: this.phaseTpId,
-        star: JSON.stringify(this.tableMark),
-        advice: this.phaseTextArea,
-        start_time: this.timeForm.start,
-        end_time: this.timeForm.end,
-        name: 'test'
+        id: this.phaseTpId,
+        advice: this.phaseTextArea
       })).then((response) => {
         this.$alert('提交成功', {
           confirmButtonText: '确定'
         }).then(() => {
-          this.getCourse()
+          this.getPhase()
+          this.isClicked = false
         })
       }).catch(() => {
         this.$alert('提交失败', {
@@ -670,9 +707,9 @@ export default {
     objectSpanMethod ({ row, column, rowIndex, columnIndex }) {
       console.log(row, column)
       if (columnIndex === 0) {
-        if (rowIndex % 2 === 0) {
+        if (rowIndex % this.tableMark[rowIndex].type === 0) {
           return {
-            rowspan: 2,
+            rowspan: this.tableMark[rowIndex].type,
             colspan: 1
           }
         } else {
@@ -704,12 +741,15 @@ export default {
             const list = mark.list
             this.markItem.push(list.length)
             for (const item of list) {
+              if (item.name === '') {
+                continue
+              }
               this.tableMark.push({
                 content: mark.title,
                 id: item.id,
                 value: 0,
                 performance: item.name,
-                type: i
+                type: this.markItem[i]
               })
             }
             i++
@@ -718,29 +758,58 @@ export default {
           this.mode = 'submit'
         })
       } else if (this.markIndex === 2) {
-        const api = '/sellerctr/getStarByTpid'
+        const api = '/sellerctr/getgetSessionScoreDetail'
         this.phaseTpId = this.tablePhase[index].tpID
         this.$axios.post(api, qs.stringify({
           tp_id: this.tablePhase[index].tpID,
-          student_id: this.student.id,
-          start_time: this.timeForm.start,
-          end_time: this.timeForm.end
+          student_id: this.student.id
         })).then((response) => {
-          const star = response.data.data.star_max
+          const star = response.data.data.star
+          this.phaseTextArea = response.data.data.advice
           this.tableMark = []
-          for (const item of star) {
-            this.tableMark.push({
-              content: item.title,
-              value: item.score,
-              id: item.id,
-              performance: item.name
-            })
+          const b = {}
+          star.forEach(v => {
+            b[v.title] || (b[v.title] = [])
+            b[v.title] && b[v.title].push(v)
+          })
+          console.log('index', b)
+          this.markItem = []
+          for (const key of Object.keys(b)) {
+            this.markItem.push(b[key].length)
+            for (const item of b[key]) {
+              this.tableMark.push({
+                content: item.title,
+                value: item.score,
+                id: item.id,
+                performance: item.name,
+                type: b[key].length
+              })
+            }
           }
           this.isClicked = true
           this.mode = 'submit'
+        }).catch(() => {
+          this.$alert('暂无评测数据')
         })
       } else {
-        console.log(1)
+        const api = '/sellerctr/getgetYearScoreDetail'
+        this.yearTpId = this.tableYear[index].tpID
+        this.$axios.post(api, qs.stringify({
+          tp_id: this.tablePhase[index].tpID,
+          student_id: this.student.id
+        })).then((response) => {
+          this.yearStar = response.data.data
+          if (this.yearStar.length !== 0) {
+            this.yearTextArea1 = response.data.data.advice
+            this.yearTextArea2 = response.data.data.evaluate
+            this.isClicked = true
+            this.mode = 'submit'
+          } else {
+            this.$alert('暂无评测数据')
+          }
+        }).catch(() => {
+          this.$alert('暂无评测数据')
+        })
       }
     },
     handleCheckMark (index, row) {
@@ -769,7 +838,7 @@ export default {
                 id: item.id,
                 value: item.score,
                 performance: item.name,
-                type: i
+                type: this.markItem[i]
               })
             }
             i++

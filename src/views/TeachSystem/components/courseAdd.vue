@@ -260,6 +260,25 @@ export default {
     },
     save () {
       const api = '/sellerctr/addTeachingPlan'
+      for (let i = 0; i < 6; i++) {
+        if (this.markForm.body[i] === '') {
+          this.markForm.body.splice(i, 1)
+          i--
+        }
+      }
+      console.log(this.markForm.body)
+      for (let i = 0; i < 6; i++) {
+        if (this.markForm.technical[i] === '') {
+          this.markForm.technical.splice(i, 1)
+          i--
+        }
+      }
+      for (let i = 0; i < 6; i++) {
+        if (this.markForm.sense[i] === '') {
+          this.markForm.sense.splice(i, 1)
+          i--
+        }
+      }
       const star = [{
         title: '身体素质目标',
         list: this.markForm.body
@@ -275,7 +294,7 @@ export default {
         trainingId.push(Number(step.options[step.select].value))
       }
       const data = {
-        training_id: trainingId.toString(),
+        training_id: JSON.stringify(trainingId),
         type: this.courseForm.type === '篮球' ? 0 : 1,
         age_min: Number(this.courseForm.age.split('-')[0]),
         age_max: Number(this.courseForm.age.split('-')[1].split('岁')[0]),
@@ -284,7 +303,9 @@ export default {
         people_num: Number(this.courseForm.person)
       }
       this.$axios.post(api, qs.stringify(data)).then((response) => {
-        this.$alert('保存成功')
+        this.$alert('保存成功').then(() => {
+          this.$router.go(-1)
+        })
       }).catch(() => {
         this.$alert('保存失败')
       })

@@ -8,30 +8,53 @@
         </h1>
       </el-row>
       <el-row>
-        <el-col :span="12">
+        <el-col
+          v-if="title.length === 1"
+          :span="8"
+        >
           <div
             id="radar1"
             style="width: 600px;height: 400px;"
           />
           <br>
-          <p>
-            身体素质测试雷达图
-          </p>
+          <el-row>
+            <el-col :span="8" :offset="16">
+              <span>
+                {{ title[0] }}
+              </span>
+            </el-col>
+          </el-row>
         </el-col>
-        <el-col :span="12">
+        <el-col
+          v-if="title.length === 2"
+          :span="8"
+        >
           <div
             id="radar2"
             style="width: 600px;height: 400px;"
           />
           <br>
           <p>
-            情感测试数据雷达图
+            {{ title[1] }}
+          </p>
+        </el-col>
+        <el-col
+          v-if="title.length === 3"
+          :span="8"
+        >
+          <div
+            id="radar3"
+            style="width: 600px;height: 400px;"
+          />
+          <br>
+          <p>
+            {{ title[2] }}
           </p>
         </el-col>
       </el-row>
     </div>
     <!-- 直方图 -->
-    <div class="histogram">
+    <div v-if="false" class="histogram">
       <el-row>
         <h1>
           全学年健康数据（幼儿个人）
@@ -78,24 +101,29 @@ import echarts from 'echarts'
 
 export default {
   props: {
-    id: {
-      type: Number,
-      default: 1
+    star: {
+      type: Object,
+      default: () => {}
     }
   },
   data () {
     return {
       charts: '',
+      title: [],
+      title1: '',
+      title2: '',
+      title3: '',
       opinionData: [
         {
-          value: [2, 3, 4, 2, 1, 3],
-          name: '学年末'
+          value: [],
+          name: '最高'
         },
         {
-          value: [2, 1, 1, 4, 3, 2],
-          name: '平均成绩'
+          value: [],
+          name: '平均'
         }
       ],
+      indicator: [],
       indicatorBody: [
         { name: '速度', max: 4 },
         { name: '柔韧', max: 4 },
@@ -103,6 +131,13 @@ export default {
         { name: '协调', max: 4 },
         { name: '灵敏', max: 4 },
         { name: '力量', max: 4 }
+      ],
+      indicatorTechnical: [
+        { name: '独立', max: 4 },
+        { name: '团结', max: 4 },
+        { name: '尊重', max: 4 },
+        { name: '友爱', max: 4 },
+        { name: '专注', max: 4 }
       ],
       indicatorSense: [
         { name: '独立', max: 4 },
@@ -116,7 +151,49 @@ export default {
     }
   },
   created () {
-
+    const maxStar = this.star.star_max
+    const avgStar = this.star.star_ave
+    const star = []
+    for (let i = 0; i < maxStar.length; i++) {
+      if (maxStar[i].id === avgStar[i].id) {
+        star.push({
+          id: maxStar[i].id,
+          name: maxStar[i].name,
+          title: maxStar[i].title,
+          max: maxStar[i].score,
+          avg: avgStar[i].score
+        })
+      }
+    }
+    const b = {}
+    star.forEach(v => {
+      b[v.title] || (b[v.title] = [])
+      b[v.title] && b[v.title].push(v)
+    })
+    let i = 0
+    this.opinionData = [
+      {
+        value: [],
+        name: '最高'
+      },
+      {
+        value: [],
+        name: '平均'
+      }
+    ]
+    for (const key of Object.keys(b)) {
+      this.indicator.push([])
+      this.title.push(b[key][0].title)
+      for (const item of b[key]) {
+        this.indicator[i].push({
+          name: item.name,
+          max: 5
+        })
+        this.opinionData[0].value.push(item.max)
+        this.opinionData[1].value.push(item.avg)
+      }
+      i++
+    }
   },
   mounted () {
     this.$nextTick(() => {
@@ -134,7 +211,7 @@ export default {
         },
         tooltip: {},
         legend: {
-          data: ['学年末', '平均成绩']
+          data: ['最高', '平均']
         },
         radar: {
           // shape: 'circle',
@@ -146,7 +223,7 @@ export default {
               padding: [1, 2]
             }
           },
-          indicator: String(id) === 'radar1' ? this.indicatorBody : this.indicatorSense
+          indicator: this.indicator[Number(id.split('radar')[1]) - 1]
         },
         series: [{
           name: '',
