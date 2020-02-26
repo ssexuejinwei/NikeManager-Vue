@@ -800,8 +800,8 @@ export default {
         })).then((response) => {
           this.yearStar = response.data.data
           if (this.yearStar.length !== 0) {
-            this.yearTextArea1 = response.data.data.advice
-            this.yearTextArea2 = response.data.data.evaluate
+            this.yearAdvice = response.data.data.advice
+            this.yearEvaluate = response.data.data.evaluate
             this.isClicked = true
             this.mode = 'submit'
           } else {
