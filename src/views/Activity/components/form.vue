@@ -40,6 +40,9 @@
         <i class="el-icon-plus" />
       </el-upload>
     </el-form-item>
+    <el-form-item label="活动标题" prop="title">
+      <el-input v-model="form.title" />
+    </el-form-item>
     <el-form-item label="活动人数" prop="people_num">
       <el-input-number
         v-model="form.people_num"
@@ -102,7 +105,7 @@
 
 <script>
 import Axios from 'axios'
-import { format, parse } from 'date-fns'
+import { format, parse, isAfter } from 'date-fns'
 
 const gt0 = (r, v, cb) => {
   if (v > 0) cb()
@@ -137,6 +140,10 @@ export default {
     }
   },
   data () {
+    const validActivityDate = (r, v, cb) => {
+      if (isAfter(this.form.activity_time[0], this.form.apply_time[1])) cb()
+      return cb(new Error('活动开始时间不得早于报名结束时间'))
+    }
     return {
       form: {
         people_num: this.origin?.people_num ?? 1,
@@ -167,14 +174,19 @@ export default {
         ],
         apply_time: [
           { required: true, trigger: 'blur', message: '报名时间不能为空' },
-          { validator: validDate, trigger: 'blur', message: '报名时间不能为空' }
+          { validator: validDate, trigger: 'blur', message: '报名时间不能为空' },
+          { validator: validActivityDate, trigger: 'blur' }
         ],
         activity_time: [
           { required: true, trigger: 'blur', message: '活动时间不能为空' },
-          { validator: validDate, trigger: 'blur', message: '活动时间不能为空' }
+          { validator: validDate, trigger: 'blur', message: '活动时间不能为空' },
+          { validator: validActivityDate, trigger: 'blur' }
         ],
         info: [
           { required: true, trigger: 'blur', message: '活动信息不能为空' }
+        ],
+        title: [
+          { required: true, trigger: 'blur', message: '活动标题不能为空' }
         ]
       }
     }
