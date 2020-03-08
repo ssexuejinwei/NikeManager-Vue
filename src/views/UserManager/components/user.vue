@@ -2,105 +2,74 @@
   <div>
     <div
       v-if="!isEdit"
+      v-loading="isLoading"
       class="User"
     >
       <page-header title="用户管理" />
-
       <el-container>
         <el-header>
-          <el-col :span="4">
-            <el-menu
-              v-if="false"
-              mode="horizontal"
-              text-color="#000000"
-              :default-active="activeIndexFilter"
-              @select="handleSelect"
-            >
-              <el-menu-item
-                :key="0"
-                index="0"
-              >
-                {{ Menufilter[0] }}
-              </el-menu-item>
-              <el-submenu index="更多">
-                <template slot="title">
-                  更多
-                </template>
-                <el-menu-item
-                  :key="1"
-                  index="1"
-                >
-                  {{ Menufilter[1] }}
-                </el-menu-item>
-                <el-menu-item
-                  :key="2"
-                  index="2"
-                >
-                  {{ Menufilter[2] }}
-                </el-menu-item>
-              </el-submenu>
-            </el-menu>
-          </el-col>
-          <el-col
-            :span="4"
-            :offset="10"
-            style="margin-top: 0.625rem;"
+          <el-button
+            v-if="isSearch === true"
+            style="margin-right: 10px"
+            @click="goBack"
           >
-            <el-input
-              v-model="search.value"
-              placeholder="请输入内容"
-              style="width: 500px"
+            返回全部用户
+          </el-button>
+          <el-input
+            v-model="search.value"
+            placeholder="请输入内容"
+            style="width: 500px"
+          >
+            <el-select
+              slot="prepend"
+              v-model="search.key"
+              placeholder="请选择"
+              style="width: 100px"
             >
-              <el-select
-                slot="prepend"
-                v-model="search.key"
-                placeholder="请选择"
-                style="width: 100px"
-              >
-                <el-option
-                  label="用户名"
-                  value="name"
-                />
-                <el-option
-                  label="性别"
-                  value="sex"
-                />
-                <el-option
-                  label="年龄"
-                  value="age"
-                />
-                <el-option
-                  label="电话"
-                  value="tel"
-                />
-                <el-option
-                  label="积分"
-                  value="score"
-                />
-                <el-option
-                  label="加入时间"
-                  value="create_time"
-                />
-              </el-select>
-              <el-button
-                slot="append"
-                @click="handleSearch"
-              >
-                搜索
-              </el-button>
-            </el-input>
+              <el-option
+                label="用户名"
+                value="name"
+              />
+              <el-option
+                label="性别"
+                value="sex"
+              />
+              <el-option
+                label="年龄"
+                value="age"
+              />
+              <el-option
+                label="电话"
+                value="tel"
+              />
+              <el-option
+                label="积分"
+                value="score"
+              />
+              <el-option
+                label="加入时间"
+                value="create_time"
+              />
+            </el-select>
             <el-button
-              v-show="search.value"
-              style="margin-left: 16px"
-              type="text"
-              @click="handleClearSearch"
-            >
-              清空搜索结果
-            </el-button>
-          </el-col>
+              slot="append"
+              icon="el-icon-search"
+              class="search"
+              @click="handleSearch"
+            />
+          </el-input>
+          <el-button
+            v-show="search.value"
+            style="margind-left: 16px"
+            type="text"
+            @click="handleClearSearch"
+          >
+            清空搜索结果
+          </el-button>
         </el-header>
         <el-main>
           <el-table
+            v-if="isSearch === false"
             :data="UserTableData"
             class="UserTableData"
             highlight-current-row
@@ -108,6 +77,9 @@
             @sort-change="handleSortChange"
             @current-change="handleCurrentChangeTable"
           >
+            <el-table-column
+              type="selection"
+            />
             <el-table-column
               prop="name"
               label="姓名"
@@ -147,6 +119,67 @@
               label="加入时间"
               align="center"
               sortable="custom"
+            />
+            <el-table-column
+              label="操作"
+              align="center"
+            >
+              <template slot-scope="scope">
+                <el-button
+                  size="medium"
+                  @click="handleEdit(scope.$index,scope.row)"
+                >
+                  详情
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-table
+            v-else
+            :data="UserTableData"
+            class="UserTableData"
+            highlight-current-row
+            :border="true"
+            @sort-change="handleSortChange"
+            @current-change="handleCurrentChangeTable"
+          >
+            <el-table-column
+              type="selection"
+            />
+            <el-table-column
+              prop="name"
+              label="姓名"
+              align="center"
+            />
+            <el-table-column
+              prop="sex"
+              label="性别"
+              align="center"
+            />
+            <el-table-column
+              prop="age"
+              label="年龄"
+              align="center"
+            />
+            <el-table-column
+              prop="tel"
+              label="电话"
+              align="center"
+            />
+            <el-table-column
+              prop="level"
+              label="等级"
+              align="center"
+            />
+            <el-table-column
+              prop="points"
+              label="积分"
+              align="center"
+            />
+            <el-table-column
+              prop="date"
+              label="加入时间"
+              align="center"
             />
             <el-table-column
               label="操作"
@@ -216,10 +249,12 @@ export default {
   },
   data () {
     return {
+      isLoading: false,
       search: {
         key: 'name',
         value: ''
       },
+      isSearch: false,
       sortkey: null,
       title: '更多',
       chooseID: 0,
@@ -245,22 +280,34 @@ export default {
     this.getUser()
   },
   methods: {
+    goBack () {
+      // this.$router.go(0)
+      this.isSearch = false
+      this.getUser()
+      this.handleClearSearch()
+    },
     handleClearSearch () {
       this.search.value = ''
+      this.search.key = 'name'
+      this.isSearch = false
+      this.getUser()
       // @todo
     },
     handleSearch () {
+      this.isLoading = true
+      let value = ''
+      this.isSearch = true
       if (this.search.value) {
         // 处理一下性别的
         if (this.search.key === 'sex') {
-          this.search.value = this.search.value === '男' ? 0 : 1
+          value = this.search.value === '男' ? 0 : 1
         }
         const api = '/sellerctr/searchParents'
         this.$axios.get(api, {
           params: {
             cur_page: 1,
             key: this.search.key,
-            value: this.search.value
+            value: value === '' ? this.search.value : value
           }
         }).then((response) => {
           const list = response.data.data.data
@@ -283,6 +330,7 @@ export default {
             this.UserTableData.push(obj)
             this.activeIndexFilter = ''
           }
+          this.isLoading = false
         }).catch(() => {
           this.$alert('error')
         })
@@ -308,6 +356,7 @@ export default {
       this.isEdit = val
     },
     getUser () {
+      this.isLoading = true
       const api = 'sellerctr/getParents'
       this.$axios.get(api, {
         params: {
@@ -334,6 +383,7 @@ export default {
           }
           this.UserTableData.push(obj)
         }
+        this.isLoading = false
       })
     },
     handleSortChange ({ column, prop, order }) {
@@ -429,9 +479,9 @@ export default {
        .el-input{
          border-color:#52bcf0 ;
        }
-       .el-button{
-         color:#FFFFFF ;
-         background-color: #52bcf0;
+       .search{
+          color:#FFFFFF;
+          background-color: #52bcf0;
        }
      }
      .el-main{

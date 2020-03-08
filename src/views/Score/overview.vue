@@ -13,6 +13,7 @@
           style="width: 100px"
         >
           <el-option label="用户名" value="name" />
+          <el-option label="手机号码" value="tel" />
           <!-- <el-option label="等级" value="level"></el-option> -->
         </el-select>
         <el-button slot="append" icon="el-icon-search" @click="handleSearch" />
@@ -26,7 +27,13 @@
         清空搜索结果
       </el-button>
     </header>
-    <el-table :data="users" @sort-change="handleSortChange">
+    <br>
+    <el-table
+      v-if="search.value === ''"
+      :data="users"
+      :border="true"
+      @sort-change="handleSortChange"
+    >
       <el-table-column
         prop="name"
         label="用户名"
@@ -49,6 +56,45 @@
         label="创建时间"
         width="200"
         sortable="custom"
+      />
+      <el-table-column
+        prop="tel"
+        label="手机号码"
+        width="200"
+      />
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button type="text" @click="openScoreDialog(scope.row)">
+            修改积分
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-table v-else :data="users" :border="true">
+      <el-table-column
+        prop="name"
+        label="用户名"
+        width="150"
+      />
+      <el-table-column
+        prop="score"
+        label="积分"
+        width="80"
+      />
+      <el-table-column prop="level" label="会员等级" width="80">
+        <template slot-scope="scope">
+          <span>Lv {{ scope.row.level }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="create_time"
+        label="创建时间"
+        width="200"
+      />
+      <el-table-column
+        prop="tel"
+        label="手机号码"
+        width="200"
       />
       <el-table-column label="操作">
         <template slot-scope="scope">

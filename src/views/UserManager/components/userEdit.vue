@@ -1,9 +1,9 @@
 <template>
   <div class="userEditInfo">
+    <page-header title="用户信息" />
     <br>
     <el-page-header @back="goBack" />
     <br>
-    <page-header title="用户信息" />
     <el-container style="width: 100%;">
       <el-col :span="18">
         <el-main>
@@ -159,6 +159,12 @@
               >
                 保存
               </el-button>
+              <el-button
+                class="save"
+                @click="deleteUser"
+              >
+                删除
+              </el-button>
             </el-form-item>
           </el-form>
         </el-main>
@@ -293,6 +299,23 @@ export default {
       this.region = data
       console.log(this.region.province.value + '-' + this.region.city.value + '-' + this.region.area.value)
     },
+    deleteUser () {
+      const api = '/sellerctr/deleteParents'
+      var data = {
+        id: this.user.id
+      }
+      this.$axios.post(api, qs.stringify(data)
+      ).then(() => {
+        this.$alert('删除成功', {
+          confirmButtonText: '确定'
+        }).then(() => {
+          this.goBack()
+          this.$emit('update', true)
+        })
+      }).catch(() => {
+        this.$alert('删除失败')
+      })
+    },
     save () {
       const api = '/sellerctr/updateParents'
       const params = {
@@ -309,7 +332,7 @@ export default {
         this.$alert('保存成功', {
           confirmButtonText: '确定'
         }).then(() => {
-          console.log('update')
+          this.goBack()
           this.$emit('update', true)
         })
       }).catch(() => {

@@ -1,6 +1,33 @@
 <template>
   <div v-loading="isLoading">
-    <el-table :data="data">
+    <header>
+      <el-input
+        v-model="search.value"
+        placeholder="请输入内容"
+        style="width: 500px"
+      >
+        <el-select
+          slot="prepend"
+          v-model="search.key"
+          placeholder="请选择"
+          style="width: 100px"
+        >
+          <el-option label="用户名" value="parents_name" />
+          <el-option label="手机号码" value="tel" />
+        </el-select>
+        <el-button slot="append" icon="el-icon-search" @click="handleSearch" />
+      </el-input>
+      <el-button
+        v-show="search.value"
+        style="margin-left: 16px"
+        type="text"
+        @click="handleClearSearch"
+      >
+        清空搜索结果
+      </el-button>
+    </header>
+    <br>
+    <el-table :data="data" :border="true">
       <el-table-column
         prop="parents_name"
         label="用户名"
@@ -41,6 +68,10 @@ export default {
     return {
       data: [],
       isLoading: false,
+      search: {
+        key: 'parents_name',
+        value: ''
+      },
       cur_page: 1,
       total: 0
     }
@@ -57,12 +88,29 @@ export default {
   },
 
   methods: {
+    handleClearSearch () {
+      this.search.value = ''
+      this.cur_page = 1
+      this.getData()
+    },
+    async handleSearch () {
+      this.cur_page = 1
+      this.getData()
+    },
     async getData () {
       this.isLoading = true
       try {
-        const { data } = await Axios.get('/sellerctr/getScoreReturn', {
-          params: { cur_page: this.cur_page }
-        })
+        const { data } = await Axios.get(
+          this.search.value
+            ? '/sellerctr/searchScoreReturn'
+            : '/sellerctr/getScoreReturn',
+          {
+            params: {
+              cur_page: this.cur_page,
+              key: this.search.key,
+              value: this.search.value
+            }
+          })
         this.data = data.data.data
         this.total = data.data.total
       } catch (error) {
