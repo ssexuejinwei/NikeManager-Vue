@@ -288,7 +288,7 @@ export default {
         this.pages = data.data.last_page
         this.data = data.data.data.map(d => ({
           ...d,
-          address_str: [d.address?.address?.region?.label, d.address?.name, d.address?.tel].join(' ')
+          address_str: [d.address?.address?.region?.label, d.address?.address?.detailed, d.address?.name, d.address?.tel].join(' ')
         }))
       } catch (e) {
         console.error(e)

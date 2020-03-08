@@ -10,6 +10,7 @@
         <a :href="'/api/sellerctr/getFileByActivityId?id='+id" download style="margin-right: 16px">
           <el-button>下载报名信息</el-button>
         </a>
+
         <el-button type="danger" @click="handleDelete">
           删除活动
         </el-button>
@@ -29,6 +30,13 @@
         <el-table-column label="年龄" prop="age" width="50" />
         <el-table-column label="联系方式" prop="tel" />
         <el-table-column label="报名时间" prop="create_time" />
+        <el-table-column label="操作">
+          <template>
+            <el-button type="danger" size="mini" @click="handleCancel">
+              取消报名
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </el-dialog>
   </div>
@@ -93,6 +101,12 @@ export default {
       }).catch(e => {
         console.error(e)
         this.$message.error('修改失败: ' + e.message)
+      })
+    },
+
+    handleCancel () {
+      this.$confirm('是否取消该活动', '提示', { type: 'warning' }).then(() => {
+        Axios.post('/sellerctr/cancelActivity', { id: this.id })
       })
     },
 

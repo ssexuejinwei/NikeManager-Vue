@@ -1,7 +1,7 @@
 <template>
   <div>
     <page-header title="商品管理" />
-    <div style="display: flex">
+    <div style="display: flex; align-items: center">
       <el-radio-group v-model="type">
         <el-radio-button
           v-for="(value, key) in C_TYPES_TO_STR"
@@ -11,6 +11,34 @@
           {{ value }}
         </el-radio-button>
       </el-radio-group>
+      <div style="margin-left: 16px">
+        <el-input
+          v-model="search.value"
+          placeholder="请输入搜索关键词"
+          size="small"
+          style="width: 350px"
+        >
+          <el-select
+            slot="prepend"
+            v-model="search.key"
+            size="mini"
+            placeholder="请选择"
+            style="width: 100px"
+          >
+            <el-option label="用户名" value="name" />
+          <!-- <el-option label="等级" value="level"></el-option> -->
+          </el-select>
+          <el-button slot="append" icon="el-icon-search" @click="handleSearch" />
+        </el-input>
+        <el-button
+          v-show="search.value"
+          style="margin-left: 16px"
+          type="text"
+          @click="handleClearSearch"
+        >
+          清空搜索结果
+        </el-button>
+      </div>
       <span style="margin-left: auto">
         <router-link to="/product/add">
           <el-button
@@ -30,27 +58,9 @@
         type="selection"
         width="55"
       />
-      <!-- <el-table-column type="expand">
-        <template slot-scope="scope">
-          <div>
-            <el-table :data="scope.row.sku">
-              <el-table-column
-                label="尺码"
-                prop="size"
-                width="80"
-              />
-              <el-table-column
-                label="库存"
-                prop="num"
-                width="80"
-              />
-            </el-table>
-          </div>
-        </template>
-      </el-table-column> -->
       <el-table-column
         label="商品名称"
-        min-width="300"
+        min-width="240"
       >
         <template slot-scope="scope">
           <div class="product">
@@ -105,30 +115,28 @@
               <el-button type="text">编辑商品</el-button>
             </router-link>
             <el-divider direction="vertical" />
-            <el-button
-              type="text"
-              @click="delGood(scope.row)"
-            >删除商品</el-button>
+            <el-button type="text" @click="delGood(scope.row)">删除商品</el-button>
+            <template v-if="type === '1' || type === '2' || type === '4'">
+              <el-divider direction="vertical" />
+              <el-button type="text" @click="downGood(scope.row)">下架商品</el-button>
+            </template>
+            <template v-if="type === '3'">
+              <el-divider direction="vertical" />
+              <el-button type="text" @click="upGood(scope.row)">上架商品</el-button>
+            </template>
+
             <!-- <el-button
               v-if="type === '4'"
               size="small"
               disabled
             >增加库存</el-button>
-            <el-button
-              v-if="type === '1' || type === '2' || type === '4'"
-              size="small"
-              @click="downGood(scope.row)"
-            >下架商品</el-button>
+
             <el-button
               v-if="type === '3'"
               size="small"
               disabled
             >编辑商品</el-button>
-            <el-button
-              v-if="type === '3'"
-              size="small"
-              @click="upGood(scope.row)"
-            >上架商品</el-button> -->
+             -->
 
           </span>
         </template>
@@ -194,6 +202,11 @@ export default {
       type: this.$route.query.type || '0',
       page: this.$route.query.page || 1,
       loading: false,
+
+      search: {
+        key: '',
+        value: ''
+      },
 
       C_TYPES_TO_STR
     }
@@ -282,6 +295,17 @@ export default {
 
     handleSelect (val) {
       this.selectedProducts = val
+    },
+
+    handleSearch () {
+      this.cur_page = 1
+      this.fetchProduct()
+    },
+
+    handleClearSearch () {
+      this.search.value = ''
+      this.cur_page = 1
+      this.fetchProduct()
     },
 
     downGood (good) {
