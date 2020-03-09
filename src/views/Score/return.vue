@@ -12,7 +12,7 @@
           placeholder="请选择"
           style="width: 100px"
         >
-          <el-option label="用户名" value="parents_name" />
+          <el-option label="用户名" value="name" />
           <el-option label="手机号码" value="tel" />
         </el-select>
         <el-button slot="append" icon="el-icon-search" @click="handleSearch" />
@@ -69,7 +69,7 @@ export default {
       data: [],
       isLoading: false,
       search: {
-        key: 'parents_name',
+        key: 'name',
         value: ''
       },
       cur_page: 1,

@@ -12,7 +12,7 @@
           placeholder="请选择"
           style="width: 100px"
         >
-          <el-option label="用户名" value="parents_name" />
+          <el-option label="用户名" value="name" />
           <el-option label="手机号码" value="tel" />
           <el-option label="订单号" value="order_number" />
           <el-option label="名称" value="title" />
@@ -74,7 +74,7 @@ export default {
       isLoading: false,
       data: [],
       search: {
-        key: 'parents_name',
+        key: 'name',
         value: ''
       },
       cur_page: 1,

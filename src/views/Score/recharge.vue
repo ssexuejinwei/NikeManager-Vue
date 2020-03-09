@@ -12,7 +12,7 @@
           placeholder="请选择"
           style="width: 100px"
         >
-          <el-option label="用户名" value="parents_name" />
+          <el-option label="用户名" value="name" />
           <el-option label="手机号码" value="tel" />
           <el-option label="微信支付订单号" value="transaction_id" />
           <el-option label="商品订单号" value="out_trade_no" />
@@ -86,7 +86,7 @@ export default {
   data () {
     return {
       search: {
-        key: 'parents_name',
+        key: 'name',
         value: ''
       },
       isLoading: false,
