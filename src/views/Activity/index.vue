@@ -11,12 +11,18 @@
             全部活动
           </el-radio-button>
           <el-radio-button label="1">
-            进行中
+            报名中
           </el-radio-button>
           <el-radio-button label="2">
-            已结束
+            报名结束
           </el-radio-button>
           <el-radio-button label="3">
+            进行中
+          </el-radio-button>
+          <el-radio-button label="4">
+            活动结束
+          </el-radio-button>
+          <el-radio-button label="5">
             未上架
           </el-radio-button>
         </el-radio-group>
