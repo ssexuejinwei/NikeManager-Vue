@@ -1,26 +1,55 @@
 <template>
   <div>
     <div class="content">
-      <el-radio-group v-model="state" class="menu">
-        <el-radio-button label="1">
-          全部订单
-        </el-radio-button>
-        <el-radio-button label="2">
-          待发货订单
-        </el-radio-button>
-        <el-radio-button label="3">
-          待收货订单
-        </el-radio-button>
-        <el-radio-button label="4">
-          已完成订单
-        </el-radio-button>
-        <el-radio-button label="5">
-          退/换货订单
-        </el-radio-button>
-        <el-radio-button label="6">
-          历史订单
-        </el-radio-button>
-      </el-radio-group>
+      <header style="display: flex">
+        <el-radio-group v-model="state" class="menu">
+          <el-radio-button label="1">
+            全部订单
+          </el-radio-button>
+          <el-radio-button label="2">
+            待发货订单
+          </el-radio-button>
+          <el-radio-button label="3">
+            待收货订单
+          </el-radio-button>
+          <el-radio-button label="4">
+            已完成订单
+          </el-radio-button>
+          <el-radio-button label="5">
+            退/换货订单
+          </el-radio-button>
+          <el-radio-button label="6">
+            历史订单
+          </el-radio-button>
+        </el-radio-group>
+        <div style="margin-left: 32px">
+          <el-input
+            v-model="search.value"
+            placeholder="请输入内容"
+            style="width: 450px"
+          >
+            <el-select
+              slot="prepend"
+              v-model="search.key"
+              placeholder="请选择"
+              style="width: 120px"
+            >
+              <el-option label="商品名称" value="g.name" />
+              <el-option label="收货地址" value="address" />
+            </el-select>
+            <el-button slot="append" icon="el-icon-search" @click="handleSearch" />
+          </el-input>
+          <el-button
+            v-show="search.value"
+            style="margin-left: 16px"
+            type="text"
+            @click="handleClearSearch"
+          >
+            清空搜索结果
+          </el-button>
+        </div>
+      </header>
+
       <div
         v-loading="isLoading"
         class="table"
@@ -235,6 +264,11 @@ export default {
       returnDialogForm: {
         message: '',
         return_express_number: ''
+      },
+
+      search: {
+        key: 'g.name',
+        value: ''
       }
     }
   },
@@ -269,12 +303,14 @@ export default {
     async getOrders () {
       this.isLoading = true
       try {
-        const { data } = await Axios.get('/sellerctr/getOrder', {
-          params: {
-            cur_page: this.current,
-            state: this.state
-          }
-        })
+        const { data } = await Axios.get(
+          this.search.value ? '/sellerctr/searchOrder' : '/sellerctr/getOrder', {
+            params: {
+              cur_page: this.current,
+              state: this.state,
+              ...this.search
+            }
+          })
 
         console.log(data)
 
@@ -295,6 +331,17 @@ export default {
       } finally {
         this.isLoading = false
       }
+    },
+
+    handleClearSearch () {
+      this.search.value = ''
+      this.cur_page = 1
+      this.debouncedGetOrder()
+    },
+
+    async handleSearch () {
+      this.cur_page = 1
+      this.debouncedGetOrder()
     },
 
     updateOrder (order, data) {
