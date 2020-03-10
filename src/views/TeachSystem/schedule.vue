@@ -1,21 +1,21 @@
 <template>
   <div id="schedule">
     <el-container
-      v-loading.fullscreen.lock="fullscreenLoading"
+      v-loading="isLoading"
       class="container"
-      element-loading-text="加载信息中"
     >
       <el-main class="main">
-        <el-calendar>
+        <el-calendar v-model="value">
           <template
             slot="dateCell"
             slot-scope="{date, data}"
           >
             <p
               :id="getDate(date,data)"
-              :class="data.isSelected ?'is-selected':''"
+              :class="courseDateArray.indexOf(data.day) !== -1 ?'':'is-selected'"
             >
               {{ data.day.split('-').slice(2).join('') }}
+              <span v-if="courseDateArray.indexOf(data.day) !==-1" class="spanText">有课</span>
             </p>
             <!-- 排课菜单 -->
             <el-dialog
@@ -200,6 +200,8 @@ export default {
   name: 'Schedule',
   data () {
     return {
+      courseDateArray: [],
+      value: new Date(),
       fullscreenLoading: false,
       editVisible: false,
       dialogTableVisible: false,
@@ -245,10 +247,20 @@ export default {
       tableData: [],
       optionsSchedule: [],
       optionsCheckAttend: [],
-      optionsEdit: []
+      optionsEdit: [],
+      isLoading: false
     }
   },
   watch: {
+    value (newValue, oldValue) {
+      const oldYear = oldValue.getFullYear()
+      const oldMonth = oldValue.getMonth()
+      const newYear = newValue.getFullYear()
+      const newMonth = newValue.getMonth()
+      if (oldYear !== newYear || newMonth !== oldMonth) {
+        this.getCourseDateArray()
+      }
+    }
   },
   created: function () {
     for (var coach of this.coachList) {
@@ -261,8 +273,31 @@ export default {
       this.courseClick[course] = false
     }
     this.getData('edit')
+    this.getCourseDateArray()
   },
   methods: {
+    getCourseDateArray () {
+      this.isLoading = true
+      const api_1 = '/sellerctr/getSchedule'
+      const year = this.value.getFullYear()
+      const month = this.value.getMonth() + 1
+      const day = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+      if ((year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0)) {
+        day[1] = 29
+      }
+      this.$axios.get(api_1, {
+        params: {
+          start_time: year + '-' + month + '-1',
+          end_time: year + '-' + month + '-' + day[month - 1]
+        }
+      }).then((response) => {
+        this.courseDateArray = []
+        for (const data of Object.keys(response.data.data)) {
+          this.courseDateArray.push(data)
+        }
+        this.isLoading = false
+      })
+    },
     getData (key) {
       const api_1 = '/sellerctr/getSchedule'
       const api_2 = '/sellerctr/getCoach'
@@ -730,6 +765,7 @@ export default {
       // 只要点击了button之后就开始获取
     },
     getDate (date, data) {
+      // console.log(data.day)
       // 写options
       if (data.isSelected) {
         this.dateCurrent = data.day
@@ -838,6 +874,13 @@ $Red : #92535e;
 }
 .absent{
   color:$Red;
+}
+.haveCourse{
+  background-color: #87CEFA;
+}
+.spanText{
+  margin-left: 20px;
+  color: #52bcf0
 }
 #schedule {
   .container{

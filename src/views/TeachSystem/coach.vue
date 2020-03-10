@@ -2,6 +2,7 @@
   <div>
     <div
       v-if="isEdit==false"
+      v-loading="isLoading"
       class="coachList"
     >
       <el-container>
@@ -219,6 +220,7 @@ export default {
   },
   data () {
     return {
+      isLoading: false,
       chooseID: '', // 选中的id
       isChoose: false,
       outerVisible: false,
@@ -261,6 +263,7 @@ export default {
   },
   methods: {
     update () {
+      this.isLoading = true
       this.coachTable = []
       const api = '/sellerctr/getCoach'
       this.$axios.get(api).then((response) => {
@@ -281,6 +284,7 @@ export default {
           }
           this.coachTable.push(obj)
         }
+        this.isLoading = false
       })
     },
     handleSave (val) {

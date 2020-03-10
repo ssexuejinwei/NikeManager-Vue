@@ -3,6 +3,7 @@
     <!-- eslint-disable -->
     <div
       v-if="!isEdit"
+      v-loading="isLoading"
       class="student"
     >
       <el-container>
@@ -122,10 +123,11 @@
               :offset="2"
             >
               <el-button
+                v-if="activeIndexTeam==='全部学员' ? false : true"
                 class="tempButton"
                 @click="addTemporaryStudent"
               >
-                添加临时学员
+                调动学员
               </el-button>
             </el-col>
             <el-col
@@ -330,6 +332,7 @@
           </el-table-column>
         </el-table>
         <el-pagination
+          v-if="false"
           :page-size="page_size"
           layout="prev, pager, next, jumper"
           :total="1000"
@@ -381,6 +384,7 @@ export default {
       }, 100)
     }
     return {
+      isLoading: false,
       isEdit: false, // 是否点击了操作按钮
       student: 0, // 编辑的学生
       curPageForStudent: 1,
@@ -501,6 +505,7 @@ export default {
       this.getTempStudent(this.current_teamId)
     },
     getAllStudent () {
+      this.isLoading = true
       const api = '/sellerctr/getStudents'
       this.$axios.get(api, {
         params: {
@@ -536,6 +541,7 @@ export default {
           }
           this.tableData.push(obj)
         }
+        this.isLoading = false
       })
     },
     getTempStudent (teamId) {
@@ -560,6 +566,80 @@ export default {
             add: false
           }
           this.tempTableData.push(obj)
+        }
+      })
+    },
+    addTempStudent (name) {
+      const api_3 = '/sellerctr/getStudentsByTeamId?id=' + this.current_teamId
+      this.$axios.get(api_3).then((response) => {
+        // i++
+        const studentArray = response.data.data
+        this.tableData = []
+        for (const student of studentArray) {
+          const stuObj = {
+            id: student.id,
+            name: student.name,
+            sex: String(student.sex) === '0' ? '男' : '女',
+            birth: student.birthday,
+            height: student.height + 'cm',
+            weight: student.weight + 'kg',
+            tel: student.tel,
+            do: '',
+            avatar: student.avatar,
+            teamID: this.current_teamId,
+            teamName: name
+          }
+          this.tableData.push(stuObj)
+        }
+        this.activeIndexTeam = name
+      })
+      this.infoArray = []
+      const api_1 = 'sellerctr/getTeam'
+      this.$axios.get(api_1).then((response) => {
+        const dataArray = response.data.data
+        // let teamObj = {'3-4岁':[],'4-5岁':[],'5-6岁':[]}
+        // 遍历team数组
+        // let i = 0
+        for (const data of dataArray) {
+          const id = data.id
+          const age_min = data.age_min
+          const age_max = data.age_max
+          const name = data.name
+          const choose_sports = String(data.choose_sports) === '0' ? '篮球' : '足球'
+          const ageKey = age_min + '-' + age_max + '岁'
+          // 初始化team 数组
+          // get 具体成员
+          const api_2 = '/sellerctr/getStudentsByTeamId?id=' + id
+          this.$axios.get(api_2).then((response) => {
+            // i++
+            const studentArray = response.data.data
+            const tableData = []
+            for (const student of studentArray) {
+              const stuObj = {
+                id: student.id,
+                name: student.name,
+                sex: String(student.sex) === '0' ? '男' : '女',
+                birth: student.birthday,
+                height: student.height + 'cm',
+                weight: student.weight + 'kg',
+                tel: student.tel,
+                do: '',
+                avatar: student.avatar,
+                teamID: id,
+                teamName: name
+              }
+              tableData.push(stuObj)
+            }
+            // 封装相同岁数相同类型的数据
+            const obj = {
+              teamID: id,
+              ageKey: ageKey,
+              teamName: name,
+              type: choose_sports,
+              tableData: tableData
+            }
+            this.infoArray.push(obj)
+          })// api-2请求完成
         }
       })
     },
@@ -706,7 +786,8 @@ export default {
             confirmButtonText: '确定'
           })
           this.tempTableData[index].add = true
-          this.update('getStudent')
+          // this.tempVisible = false
+          this.addTempStudent(name)
         } else {
           this.$alert('添加失败', {
             confirmButtonText: '确定'

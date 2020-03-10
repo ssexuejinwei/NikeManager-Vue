@@ -1,6 +1,7 @@
 <template>
   <div
     v-if="isEdit==false"
+    v-loading="isLoading"
     class="courseList"
   >
     <el-container>
@@ -90,7 +91,8 @@ export default {
       isEdit: false,
       // activeIndexType:'篮球',
       // menuType: ['篮球','足球'],
-      courseTable: []
+      courseTable: [],
+      isLoading: false
     }
   },
   watch: {
@@ -100,6 +102,7 @@ export default {
   },
   methods: {
     update () {
+      this.isLoading = true
       this.courseTable = []
       const api = '/sellerctr/getTeachingPlan'
       this.$axios.get(api).then((response) => {
@@ -116,6 +119,7 @@ export default {
           }
           this.courseTable.push(obj)
         }
+        this.isLoading = false
       })
     },
     submit () {
