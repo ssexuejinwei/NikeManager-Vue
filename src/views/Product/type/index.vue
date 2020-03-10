@@ -2,7 +2,11 @@
   <div>
     <page-header title="商品分类编辑" back />
     <el-table :data="types">
-      <el-table-column prop="coverimage" label="图片" />
+      <el-table-column prop="coverimage" label="图片" width="100">
+        <template slot-scope="scope">
+          <img class="cover" :src="scope.row.coverimage">
+        </template>
+      </el-table-column>
       <el-table-column prop="name" label="名称" />
       <el-table-column prop="type" label="值" />
       <el-table-column label="操作">
@@ -24,7 +28,12 @@
       :visible.sync="dialogVisible"
       width="500px"
     >
-      <el-form :model="form" label-width="80px">
+      <el-form
+        ref="form"
+        :model="form"
+        :rules="rules"
+        label-width="80px"
+      >
         <el-form-item label="封面" prop="coverimage">
           <el-upload
             action="#"
@@ -60,7 +69,7 @@
 
 <script>
 import Axios from 'axios'
-// eslint-disable-next-line no-unused-vars
+import _ from 'lodash'
 import qs from 'querystring'
 
 function reformatImage (url) {
@@ -81,6 +90,22 @@ export default {
         coverimage: null,
         name: '',
         type: ''
+      },
+      rules: {
+        coverimage: [{ required: true, trigger: 'blur', message: '图片不能为空' }],
+        name: [{ required: true, trigger: 'blur', message: '名称不能为空' }],
+        type: [
+          { required: true, trigger: 'blur', message: '值不能为空' }
+          // {
+          //   validator: (r, v, cb) => {
+          //     const types = this.types.map(t => t.type)
+          //     if (types.includes(v)) cb(new Error())
+          //     else cb()
+          //   },
+          //   trigger: 'change',
+          //   message: '值不能重复'
+          // }
+        ]
       }
     }
   },
@@ -138,21 +163,30 @@ export default {
       }
     },
 
-    async handleSubmit () {
-      // const api = this.isEdited ? '/sellerctr/updateGoodsType' : '/sellerctr/addGoodsType'
+    handleSubmit () {
+      this.$refs.form.validate(async valid => {
+        if (!valid) return
+        try {
+          const api = this.isEdited ? '/sellerctr/updateGoodsType' : '/sellerctr/addGoodsType'
+          const data = _.pick(this.form, [
+            this.isEdited && 'id',
+            'name',
+            'coverimage',
+            'type'
+          ].filter(Boolean))
+          data.coverimage = this.form.coverimage.name
+
+          await Axios.post(api, qs.stringify(data)).then(this.getTypes)
+          this.dialogVisible = false
+          this.$message.success('成功')
+        } catch (e) {
+          console.error(e)
+          this.$message.error('操作失败: ' + e.message)
+        }
+      })
       // const data = qs.stringify(this.isEdited ? {
 
       // })
-      try {
-        if (!this.isEdited) {
-          // Axios.post()
-        } else {
-
-        }
-      } catch (e) {
-        console.error(e)
-        this.$message.error('操作失败: ' + e.message)
-      }
     }
   }
 }

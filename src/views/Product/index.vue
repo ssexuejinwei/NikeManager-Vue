@@ -25,7 +25,7 @@
             placeholder="请选择"
             style="width: 100px"
           >
-            <el-option label="用户名" value="name" />
+            <el-option label="商品名称" value="name" />
           <!-- <el-option label="等级" value="level"></el-option> -->
           </el-select>
           <el-button slot="append" icon="el-icon-search" @click="handleSearch" />
@@ -124,20 +124,6 @@
               <el-divider direction="vertical" />
               <el-button type="text" @click="upGood(scope.row)">上架商品</el-button>
             </template>
-
-            <!-- <el-button
-              v-if="type === '4'"
-              size="small"
-              disabled
-            >增加库存</el-button>
-
-            <el-button
-              v-if="type === '3'"
-              size="small"
-              disabled
-            >编辑商品</el-button>
-             -->
-
           </span>
         </template>
       </el-table-column>
@@ -204,7 +190,7 @@ export default {
       loading: false,
 
       search: {
-        key: '',
+        key: 'name',
         value: ''
       },
 
@@ -236,17 +222,19 @@ export default {
   },
 
   created () {
-    this.debouncedFetchProduct = _.debounce(this.fetchProduct, 100)
+    this.debouncedFetchProduct = _.debounce(this.fetchProduct, 200)
     this.debouncedFetchProduct()
   },
 
   methods: {
     fetchProduct () {
       this.loading = true
-      Axios.get('/sellerctr/getGoods', {
+      Axios.get(this.search.value ? '/sellerctr/searchGoods' : '/sellerctr/getGoods', {
         params: {
           cur_page: this.page,
-          type: this.type
+          type: this.type,
+          key: this.search.key,
+          value: this.search.value
         }
       }).then(response => {
         console.debug(response.data)
@@ -299,13 +287,13 @@ export default {
 
     handleSearch () {
       this.cur_page = 1
-      this.fetchProduct()
+      this.debouncedFetchProduct()
     },
 
     handleClearSearch () {
       this.search.value = ''
       this.cur_page = 1
-      this.fetchProduct()
+      this.debouncedFetchProduct()
     },
 
     downGood (good) {

@@ -31,10 +31,12 @@
         <el-table-column label="联系方式" prop="tel" />
         <el-table-column label="报名时间" prop="create_time" />
         <el-table-column label="操作">
-          <template>
-            <el-button type="danger" size="mini" @click="handleCancel">
-              取消报名
-            </el-button>
+          <template slot-scope="scope">
+            <el-popconfirm title="是否取消该用户报名？" @onConfirm="handleCancel(scope.row.id, scope.row.parents_id)">
+              <el-button slot="reference" type="danger" size="mini">
+                取消报名
+              </el-button>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
@@ -104,10 +106,10 @@ export default {
       })
     },
 
-    handleCancel () {
-      this.$confirm('是否取消该活动', '提示', { type: 'warning' }).then(() => {
-        Axios.post('/sellerctr/cancelActivity', { id: this.id })
-      })
+    handleCancel (activity_apply_id, parents_id) {
+      Axios
+        .post('/sellerctr/cancelActivity', { activity_id: this.id, activity_apply_id, parents_id })
+        .then(this.getParents)
     },
 
     handleDelete () {
