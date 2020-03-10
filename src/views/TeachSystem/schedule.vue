@@ -443,6 +443,7 @@ export default {
               })
               this.scheduleVisible = false
               this.buttonType.schedule = 'info'
+              this.getCourseDateArray()
               this.getData('checkAttend')
             } else {
               this.$alert('排课失败', {
