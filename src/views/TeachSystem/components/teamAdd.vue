@@ -42,26 +42,53 @@
                   </el-col>
                 </el-form-item>
               </el-col>
-              <el-col :span="12">
+            </el-row>
+            <el-row>
+              <el-col :span="14">
                 <el-form-item
-                  label="学员人数设置(人):"
-                  prop="person"
+                  label="体能训练"
+                  prop="physicalTraining"
                 >
-                  <el-col :span="10">
-                    <el-input v-model="teamForm.person" />
-                  </el-col>
+                  <el-radio-group v-model="teamForm.physicalTraining">
+                    <el-radio :label="0">
+                      否
+                    </el-radio>
+                    <el-radio :label="1">
+                      是
+                    </el-radio>
+                    <el-radio :label="2">
+                      一年以上
+                    </el-radio>
+                  </el-radio-group>
                 </el-form-item>
               </el-col>
-              <br><br><br><br>
-              <el-form-item
-                size="large"
-                style="text-align: center;"
+              <el-col
+                :span="8"
+                :offset="2"
               >
-                <el-button @click="handleRest(0)">
-                  重置
-                </el-button>
-              </el-form-item>
+                <el-form-item
+                  label="球类训练"
+                  prop="ballTraining"
+                >
+                  <el-radio-group v-model="teamForm.ballTraining">
+                    <el-radio :label="0">
+                      否
+                    </el-radio>
+                    <el-radio :label="1">
+                      是
+                    </el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </el-col>
             </el-row>
+            <el-form-item
+              size="large"
+              style="text-align: center;"
+            >
+              <el-button @click="handleRest(0)">
+                重置
+              </el-button>
+            </el-form-item>
           </el-form>
         </el-main>
       </el-container>
@@ -82,15 +109,16 @@
   </div>
 </template>
 <script>
-// import qs from 'qs'
+import qs from 'qs'
 export default {
   data () {
     return {
       teamForm: {
         age: '3-4岁',
         type: '篮球',
-        person: '',
-        name: ''
+        name: '',
+        physicalTraining: '',
+        ballTraining: ''
       }
     }
   },
@@ -99,11 +127,28 @@ export default {
       this.teamForm = {
         age: '3-4岁',
         type: '篮球',
-        person: '',
-        name: ''
+        name: '',
+        physicalTraining: '',
+        ballTraining: ''
       }
     },
     save () {
+      const api = '/sellerctr/addTeams'
+      const data = {
+        name: this.teamForm.name,
+        physical_training: this.teamForm.physicalTraining,
+        ball_training: this.teamForm.ballTraining,
+        choose_sports: this.teamForm.type === '篮球' ? '0' : '1',
+        age_min: this.teamForm.age.split('-')[0],
+        age_max: this.teamForm.age.split('-')[1].split('岁')[0]
+      }
+      this.$axios.post(api, qs.stringify(data)).then((response) => {
+        this.$alert('保存成功').then(() => {
+          this.$router.go(-1)
+        })
+      }).catch(() => {
+        this.$alert('保存失败')
+      })
     },
     cancel () {
       this.$router.go(-1)// 返回上一层

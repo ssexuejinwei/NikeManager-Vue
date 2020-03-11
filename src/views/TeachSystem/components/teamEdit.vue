@@ -12,7 +12,7 @@
             <el-row>
               <el-col :span="14">
                 <el-form-item prop="age">
-                  <el-radio-group v-model="teamForm.age">
+                  <el-radio-group v-model="teamForm.age" disabled>
                     <el-radio-button label="3-4岁" />
                     <el-radio-button label="4-5岁" />
                     <el-radio-button label="5-6岁" />
@@ -24,7 +24,7 @@
                 :offset="2"
               >
                 <el-form-item prop="type">
-                  <el-radio-group v-model="teamForm.type">
+                  <el-radio-group v-model="teamForm.type" disabled>
                     <el-radio-button label="篮球" />
                     <el-radio-button label="足球" />
                   </el-radio-group>
@@ -42,26 +42,53 @@
                   </el-col>
                 </el-form-item>
               </el-col>
-              <el-col :span="12">
+            </el-row>
+            <el-row>
+              <el-col :span="14">
                 <el-form-item
-                  label="学员人数设置(人):"
-                  prop="person"
+                  label="体能训练"
+                  prop="physicalTraining"
                 >
-                  <el-col :span="10">
-                    <el-input v-model="teamForm.person" />
-                  </el-col>
+                  <el-radio-group v-model="teamForm.physicalTraining" disabled>
+                    <el-radio :label="0">
+                      否
+                    </el-radio>
+                    <el-radio :label="1">
+                      是
+                    </el-radio>
+                    <el-radio :label="2">
+                      一年以上
+                    </el-radio>
+                  </el-radio-group>
                 </el-form-item>
               </el-col>
-              <br><br><br><br>
-              <el-form-item
-                size="large"
-                style="text-align: center;"
+              <el-col
+                :span="8"
+                :offset="2"
               >
-                <el-button @click="handleRest()">
-                  重置
-                </el-button>
-              </el-form-item>
+                <el-form-item
+                  label="球类训练"
+                  prop="ballTraining"
+                >
+                  <el-radio-group v-model="teamForm.ballTraining" disabled>
+                    <el-radio :label="0">
+                      否
+                    </el-radio>
+                    <el-radio :label="1">
+                      是
+                    </el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </el-col>
             </el-row>
+            <el-form-item
+              size="large"
+              style="text-align: center;"
+            >
+              <el-button @click="handleRest(0)">
+                重置
+              </el-button>
+            </el-form-item>
           </el-form>
         </el-main>
       </el-container>
@@ -90,24 +117,31 @@ export default {
       teamForm: {
         age: '3-4岁',
         type: '篮球',
-        person: '',
-        name: ''
+        name: '',
+        physicalTraining: '',
+        ballTraining: ''
       }
     }
   },
   created () {
     this.team = this.$route.query.team
-    this.teamForm.name = this.team.name
-    this.teamForm.age = this.team.age_min + '-' + this.team.age_max + '岁'
-    this.teamForm.type = this.team.choose_sports === '0' ? '篮球' : '足球'
+    console.log(this.team)
+    this.teamForm = {
+      age: this.team.age_min + '-' + this.team.age_max + '岁',
+      type: '篮球',
+      name: this.team.name,
+      physicalTraining: Number(this.team.physical_training),
+      ballTraining: Number(this.team.ball_training)
+    }
   },
   methods: {
     handleRest () {
       this.teamForm = {
         age: '3-4岁',
         type: '篮球',
-        person: '',
-        name: ''
+        name: '',
+        physicalTraining: '',
+        ballTraining: ''
       }
     },
     save () {

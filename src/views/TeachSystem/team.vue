@@ -72,10 +72,18 @@
             <el-button
               :disabled="!selectedTeams.length"
               class="delete-button"
-              @click="deleteCourses"
+              @click="deleteTeams"
             >
               删除队伍
             </el-button>
+          </el-col>
+          <el-col style="text-align: right;">
+            <el-pagination
+              :current-page.sync="currentPage"
+              :page-size="pageSize"
+              layout="prev, pager, next, jumper"
+              :total="total"
+            />
           </el-col>
         </el-row>
       </el-footer>
@@ -89,6 +97,9 @@ import qs from 'qs'
 export default {
   data () {
     return {
+      currentPage: 1,
+      total: 10,
+      pageSize: 10,
       selectedTeams: [],
       chooseID: '', // 选中的id
       isChoose: false,
@@ -100,6 +111,10 @@ export default {
     }
   },
   watch: {
+    currentPage () {
+      console.log(this.currentPage)
+      this.update()
+    }
   },
   created () {
     this.update()
@@ -108,10 +123,15 @@ export default {
     update () {
       this.isLoading = true
       this.courseTable = []
-      const api = 'sellerctr/getTeam'
+      const api = 'sellerctr/getTeams'
       this.menuTeam = [] // 初始化team数组
-      this.$axios.get(api).then((response) => {
-        this.teamTable = response.data.data
+      this.$axios.get(api, {
+        params: {
+          cur_page: this.currentPage
+        }
+      }).then((response) => {
+        this.total = response.data.data.total
+        this.teamTable = response.data.data.data
         this.isLoading = false
       })
     },
@@ -122,11 +142,12 @@ export default {
       this.isChoose = true
     },
     handleTableSelect (val) {
-      this.selectedCourses = val
+      this.selectedTeams = val
+      console.log(this.selectedTeams)
     },
-    deleteCourses () {
-      this.$confirm('是否删除选中的课程', '提示', { type: 'warning' }).then(() => {
-        Promise.all(this.selectedCourses.map(this.deleteCourse))
+    deleteTeams () {
+      this.$confirm('是否删除选中的队伍', '提示', { type: 'warning' }).then(() => {
+        Promise.all(this.selectedTeams.map(this.deleteTeam))
           .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
             console.error(e)
             this.$alert('删除失败', '错误', { type: 'error' })
@@ -134,11 +155,12 @@ export default {
           .then(this.update())
       })
     },
-    deleteCourse (course) {
+    deleteTeam (team) {
       const data = {
-        id: course.id
+        id: team.id
       }
-      return this.$axios.post('/sellerctr/deleteTeachingPlan', qs.stringify(data))
+      console.log(data)
+      return this.$axios.post('/sellerctr/deleteTeams', qs.stringify(data))
     },
     handleModify (index, row) {
       this.$router.push({
