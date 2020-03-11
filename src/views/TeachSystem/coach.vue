@@ -30,6 +30,7 @@
             highlight-current-row
             height="540"
             :border="true"
+            @selection-change="handleTableSelect"
             @current-change="handleCurrentChange"
           >
             <!-- <el-table-column
@@ -100,8 +101,9 @@
             </el-col>
             <el-col :span="5">
               <el-button
+                :disabled="!selectedCoachs.length"
                 class="delete-button"
-                @click="deleteCoach"
+                @click="deleteCoachs"
               >
                 删除教练
               </el-button>
@@ -231,6 +233,7 @@ export default {
       coachTable: [],
       coachForm: [],
       formLabelWidth: '140px',
+      selectedCoachs: [],
       rules: {
         name: [
           { required: true, message: '请输入姓名', trigger: 'blur' }
@@ -262,6 +265,25 @@ export default {
     this.update()
   },
   methods: {
+    handleTableSelect (val) {
+      this.selectedCoachs = val
+    },
+    deleteCoach (coach) {
+      var data = {
+        id: coach.id
+      }
+      return this.$axios.post('/sellerctr/deleteCoach', qs.stringify(data))
+    },
+    deleteCoachs () {
+      this.$confirm('是否删除选中的教练', '提示', { type: 'warning' }).then(() => {
+        Promise.all(this.selectedCoachs.map(this.deleteCoach))
+          .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
+            console.error(e)
+            this.$alert('删除失败', '错误', { type: 'error' })
+          })
+          .then(this.update())
+      })
+    },
     update () {
       this.isLoading = true
       this.coachTable = []
@@ -316,39 +338,6 @@ export default {
     handleCurrentChange (val) {
       this.chooseID = val.id
       this.isChoose = true
-    },
-    deleteCoach () {
-      if (this.isChoose) {
-        this.$confirm('确认删除该教练?', '', {
-          confirmButtonText: '确定',
-          cancelButtonText: '返回',
-          type: 'warning'
-        }).then(() => {
-          const api = '/sellerctr/deleteCoach'
-          var data = {
-            id: this.chooseID
-          }
-          this.$axios.post(api, qs.stringify(data)
-          ).then(() => {
-            this.$alert('删除成功', {
-              confirmButtonText: '确定'
-            }).then(() => {
-              this.update()
-            })
-          }).catch(() => {
-            this.$alert('删除失败')
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          })
-        })
-      } else {
-        this.$alert('请先选择教练', {
-          confirmButtonText: '确定'
-        })
-      }
     },
     handleBack (data) {
       this.isEdit = data

@@ -307,7 +307,7 @@
         </div>
       </el-dialog>
       <el-dialog
-        title="添加临时成员"
+        title="调动学员"
         :visible.sync="tempVisible"
       >
         <el-table :data="tempTableData">
@@ -821,6 +821,7 @@ export default {
       } else if (key.indexOf('岁') !== -1) {
         this.activeIndexAge = key
         if (this.activeIndexTeam === '全部学员') {
+          this.update('readStudent')
           this.getAllStudent()
         } else {
           this.update('readStudent')
@@ -830,6 +831,7 @@ export default {
       } else {
         this.activeIndexType = key
         if (this.activeIndexTeam === '全部学员') {
+          this.update('readStudent')
           this.getAllStudent()
         } else {
           this.update('readStudent')

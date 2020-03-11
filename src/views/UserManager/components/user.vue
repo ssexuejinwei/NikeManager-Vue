@@ -74,6 +74,7 @@
             class="UserTableData"
             highlight-current-row
             :border="true"
+            @selection-change="handleSelect"
             @sort-change="handleSortChange"
             @current-change="handleCurrentChangeTable"
           >
@@ -140,6 +141,7 @@
             class="UserTableData"
             highlight-current-row
             :border="true"
+            @selection-change="handleSelect"
             @sort-change="handleSortChange"
             @current-change="handleCurrentChangeTable"
           >
@@ -201,8 +203,9 @@
             <el-col :span="6">
               <!-- <el-button type='danger' @click='isAdd = true'>添加新用户</el-button> -->
               <el-button
+                :disabled="!selectedUsers.length"
                 class="delete-button"
-                @click="deleteUser"
+                @click="deleteUsers"
               >
                 删除用户
               </el-button>
@@ -254,6 +257,7 @@ export default {
         key: 'name',
         value: ''
       },
+      selectedUsers: [],
       isSearch: false,
       sortkey: null,
       title: '更多',
@@ -273,6 +277,9 @@ export default {
   watch: {
     sortkey (newValue) {
       this.getUser()
+    },
+    selectedUsers (newValue) {
+      console.log(newValue)
     }
   },
   created () {
@@ -280,6 +287,9 @@ export default {
     this.getUser()
   },
   methods: {
+    handleSelect (val) {
+      this.selectedUsers = val
+    },
     goBack () {
       // this.$router.go(0)
       this.isSearch = false
@@ -404,47 +414,26 @@ export default {
       this.cur_page = val
       this.getUser()
     },
-    handleSelect (key) {
-      this.currentIndex = key
-      this.title = this.Menufilter[key]
-      this.getUser(key)
-    },
     handleCurrentChangeTable (val) {
       this.chooseID = val.id
       this.isChoose = true
     },
-    deleteUser () {
-      if (this.isChoose) {
-        this.$confirm('确认删除该用户?', '', {
-          cancelButtonText: '返回',
-          confirmButtonText: '确定',
-          type: 'warning'
-        }).then(() => {
-          const api = '/sellerctr/deleteParents'
-          var data = {
-            id: this.chooseID
-          }
-          this.$axios.post(api, qs.stringify(data)
-          ).then(() => {
-            this.$alert('删除成功', {
-              confirmButtonText: '确定'
-            }).then(() => {
-              this.getUser(this.currentIndex)
-            })
-          }).catch(() => {
-            this.$alert('删除失败')
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          })
-        })
-      } else {
-        this.$alert('请先选择用户', {
-          confirmButtonText: '确定'
-        })
+    deleteUser (user) {
+      console.log('user', user)
+      const data = {
+        id: user.id
       }
+      return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
+    },
+    deleteUsers () {
+      this.$confirm('是否删除选中的用户', '提示', { type: 'warning' }).then(() => {
+        Promise.all(this.selectedUsers.map(this.deleteUser))
+          .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
+            console.error(e)
+            this.$alert('删除失败', '错误', { type: 'error' })
+          })
+          .then(this.getUser())
+      })
     }
   }
 }

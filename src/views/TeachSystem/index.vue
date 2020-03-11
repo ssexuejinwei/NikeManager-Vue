@@ -49,6 +49,12 @@
         >
           {{ teachChoose[3] }}
         </el-menu-item>
+        <el-menu-item
+          :key="teachChoose[4]"
+          index="/teach/team"
+        >
+          {{ teachChoose[4] }}
+        </el-menu-item>
       </el-menu>
     </page-header>
     <!--     <el-main>
@@ -66,7 +72,7 @@ export default {
     return {
       showIndex: 0,
       activeChoose: '/teach/student',
-      teachChoose: ['学员档案', '教练管理', '课程管理', '排课信息'],
+      teachChoose: ['学员档案', '教练管理', '课程管理', '排课信息', '队伍管理'],
       search: '',
       tabPosition: 'left'
     }

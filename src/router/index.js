@@ -49,6 +49,11 @@ const routes = [
             path: 'coach',
             component: () => import('@/views/TeachSystem/coach')
           },
+          // 队伍管理
+          {
+            path: 'team',
+            component: () => import('@/views/TeachSystem/team')
+          },
           // 课程管理
           {
             path: 'course',
@@ -69,6 +74,14 @@ const routes = [
       {
         path: '/teach/course/change',
         component: () => import('@/views/TeachSystem/components/courseEdit')
+      },
+      {
+        path: '/teach/team/add',
+        component: () => import('@/views/TeachSystem/components/teamAdd')
+      },
+      {
+        path: '/teach/team/change',
+        component: () => import('@/views/TeachSystem/components/teamEdit')
       },
       {
         path: '/user',

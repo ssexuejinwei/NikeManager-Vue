@@ -8,7 +8,7 @@
       <br>
       <el-main>
         <el-table
-          :data="courseTable"
+          :data="teamTable"
           highlight-current-row
           height="540"
           :border="true"
@@ -20,30 +20,31 @@
           />
           <el-table-column
             prop="name"
-            label="课程"
+            label="队伍名"
             class="borderBottom"
             align="center"
           />
           <el-table-column
-            prop="type"
+            prop="choose_sports"
             label="类型"
             class="borderBottom"
             align="center"
-          />
+          >
+            <template slot-scope="scope">
+              {{ teamTable[scope.$index].choose_sports === '0' ? '篮球' : '足球' }}
+            </template>
+          </el-table-column>
           <el-table-column
-            prop="age"
+            prop="age_min"
             label="年龄段"
             class="borderBottom"
             align="center"
-          />
+          >
+            <template slot-scope="scope">
+              {{ teamTable[scope.$index].age_min + '-' + teamTable[scope.$index].age_max + '岁' }}
+            </template>
+          </el-table-column>
           <el-table-column
-            prop="num"
-            label="人数"
-            class="borderBottom"
-            align="center"
-          />
-          <el-table-column
-            prop="edit"
             label="操作"
             class="borderBottom"
             align="center"
@@ -63,17 +64,17 @@
       <el-footer>
         <el-row style="margin-top:1.5rem; ">
           <el-col :span="3">
-            <router-link to="/teach/course/add">
-              <el-button>添加课程</el-button>
+            <router-link to="/teach/team/add">
+              <el-button>添加队伍</el-button>
             </router-link>
           </el-col>
           <el-col :span="5">
             <el-button
-              :disabled="!selectedCourses.length"
+              :disabled="!selectedTeams.length"
               class="delete-button"
               @click="deleteCourses"
             >
-              删除课程
+              删除队伍
             </el-button>
           </el-col>
         </el-row>
@@ -88,13 +89,13 @@ import qs from 'qs'
 export default {
   data () {
     return {
-      selectedCourses: [],
+      selectedTeams: [],
       chooseID: '', // 选中的id
       isChoose: false,
       isEdit: false,
       // activeIndexType:'篮球',
       // menuType: ['篮球','足球'],
-      courseTable: [],
+      teamTable: [],
       isLoading: false
     }
   },
@@ -107,21 +108,10 @@ export default {
     update () {
       this.isLoading = true
       this.courseTable = []
-      const api = '/sellerctr/getTeachingPlan'
+      const api = 'sellerctr/getTeam'
+      this.menuTeam = [] // 初始化team数组
       this.$axios.get(api).then((response) => {
-        const list = response.data.data
-        for (const teachPlan of list) {
-          const obj = {
-            id: teachPlan.id,
-            name: teachPlan.name,
-            type: teachPlan.type === '0' ? '篮球' : '足球',
-            age: teachPlan.age_min + '-' + teachPlan.age_max + '岁',
-            num: teachPlan.people_num === null ? '无' : teachPlan.people_num,
-            star: teachPlan.star,
-            training_id: teachPlan.training_id
-          }
-          this.courseTable.push(obj)
-        }
+        this.teamTable = response.data.data
         this.isLoading = false
       })
     },
@@ -152,9 +142,9 @@ export default {
     },
     handleModify (index, row) {
       this.$router.push({
-        path: '/teach/course/change',
+        path: '/teach/team/change',
         query: {
-          teachPlan: this.courseTable[index]
+          team: this.teamTable[index]
         }
       })
     },
