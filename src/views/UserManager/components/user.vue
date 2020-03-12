@@ -323,6 +323,7 @@ export default {
           const list = response.data.data.data
           this.total = response.data.data.total
           this.UserTableData = []
+          this.isLoading = false
           for (const user of list) {
             const obj = {
               id: parseInt(user.id),
@@ -340,7 +341,6 @@ export default {
             this.UserTableData.push(obj)
             this.activeIndexFilter = ''
           }
-          this.isLoading = false
         }).catch(() => {
           this.$alert('error')
         })
@@ -377,13 +377,14 @@ export default {
         const list = response.data.data.data
         this.total = response.data.data.total
         this.UserTableData = []
+        this.isLoading = false
         for (const user of list) {
           const obj = {
             id: parseInt(user.id),
             nickName: user.nick_name,
             wechat: user.open_id,
             name: user.name,
-            date: user.create_time.split(' ')[0],
+            date: user.create_time === null ? '' : user.create_time.split(' ')[0],
             sex: String(user.sex) === '0' ? '男' : '女',
             tel: user.tel,
             points: user.score,
@@ -393,6 +394,7 @@ export default {
           }
           this.UserTableData.push(obj)
         }
+      }).catch(() => {
         this.isLoading = false
       })
     },

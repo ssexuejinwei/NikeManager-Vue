@@ -292,10 +292,10 @@ export default {
         }
       }).then((response) => {
         this.courseDateArray = []
+        this.isLoading = false
         for (const data of Object.keys(response.data.data)) {
           this.courseDateArray.push(data)
         }
-        this.isLoading = false
       })
     },
     getData (key) {

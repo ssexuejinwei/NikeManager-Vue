@@ -530,6 +530,7 @@ export default {
         this.pagesForStudent = response.data.data.total_page
         // console.log(this.pagesForStudent)
         this.tableData = []
+        this.isLoading = false
         for (const student of list) {
           const obj = {
             id: student.id,
@@ -551,7 +552,6 @@ export default {
           }
           this.tableData.push(obj)
         }
-        this.isLoading = false
       })
     },
     getTempStudent (teamId) {

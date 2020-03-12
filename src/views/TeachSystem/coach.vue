@@ -290,6 +290,7 @@ export default {
       const api = '/sellerctr/getCoach'
       this.$axios.get(api).then((response) => {
         const list = response.data.data
+        this.isLoading = false
         for (const coach of list) {
           console.log(coach.tel)
           const obj = {
@@ -306,7 +307,6 @@ export default {
           }
           this.coachTable.push(obj)
         }
-        this.isLoading = false
       })
     },
     handleSave (val) {

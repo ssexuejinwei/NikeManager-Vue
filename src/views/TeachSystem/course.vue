@@ -110,6 +110,7 @@ export default {
       const api = '/sellerctr/getTeachingPlan'
       this.$axios.get(api).then((response) => {
         const list = response.data.data
+        this.isLoading = false
         for (const teachPlan of list) {
           const obj = {
             id: teachPlan.id,
@@ -122,7 +123,6 @@ export default {
           }
           this.courseTable.push(obj)
         }
-        this.isLoading = false
       })
     },
     submit () {
