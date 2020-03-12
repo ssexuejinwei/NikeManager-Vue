@@ -286,6 +286,7 @@ export default {
     },
     update () {
       this.isLoading = true
+      this.coachForm = []
       this.coachTable = []
       const api = '/sellerctr/getCoach'
       this.$axios.get(api).then((response) => {
