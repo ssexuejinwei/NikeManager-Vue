@@ -313,12 +313,22 @@
         <el-table :data="tempTableData">
           <el-table-column
             property="student_name"
-            label="学生"
-            width="150"
+            label="姓名"
           />
           <el-table-column
-            label="添加"
-            width="200"
+            property="sex"
+            label="性别"
+          />
+          <el-table-column
+            property="birth"
+            label="生日"
+          />
+          <el-table-column
+            property="team_name"
+            label="队伍"
+          />
+          <el-table-column
+            label="操作"
           >
             <template slot-scope="scope">
               <el-button
@@ -410,7 +420,7 @@ export default {
         birth: '',
         height: '',
         weight: '',
-        tel: '18314785647',
+        tel: '',
         pay: 0,
         physicalTraining: 0,
         ballTraining: 0,
@@ -560,9 +570,15 @@ export default {
         for (const student of list) {
           const student_id = student.id
           const name = student.name
+          const teamName = student.team_name
+          const birth = student.birthday
+          const sex = student.sex
           const obj = {
             student_id: student_id,
             student_name: name,
+            team_name: teamName,
+            birth: birth,
+            sex: sex === '0' ? '男' : '女',
             add: false
           }
           this.tempTableData.push(obj)
@@ -655,7 +671,7 @@ export default {
               }
             }
           }
-          this.menuTeam = this.menuTeam.sort()
+          // this.menuTeam = this.menuTeam.sort()
           this.menuTeam.splice(0, 0, '全部学员')
           this.activeIndexTeam = '全部学员'
           break
@@ -719,7 +735,7 @@ export default {
                 this.infoArray.push(obj)
               })// api-2请求完成
             }
-            this.menuTeam = this.menuTeam.sort()
+            // this.menuTeam = this.menuTeam.sort()
             this.menuTeam.splice(0, 0, '全部学员')
             this.activeIndexTeam = '全部学员'
           })
@@ -748,10 +764,36 @@ export default {
           ).then((response) => {
             teamName = response.data.data.team_name
             // console.log(teamName)
+            this.studentForm = {
+              name: '',
+              sex: '',
+              birth: '',
+              height: '',
+              weight: '',
+              tel: '',
+              pay: 0,
+              physicalTraining: 0,
+              ballTraining: 0,
+              ballChoice: 0,
+              mateName: ''
+            }
             this.$alert('<div><h1 class="teamSuccessHead">分配成功 </h1><p class="teamSuccessContent">' + student.name + '小朋友</p><p>被分配至' + teamName + '</p>', '', {
               dangerouslyUseHTMLString: true
             })
           }).catch((error) => {
+            this.studentForm = {
+              name: '',
+              sex: '',
+              birth: '',
+              height: '',
+              weight: '',
+              tel: '',
+              pay: 0,
+              physicalTraining: 0,
+              ballTraining: 0,
+              ballChoice: 0,
+              mateName: ''
+            }
             const status = error.response.status
             if (status === 200) {
               this.$alert('没有查找到家长账号,请小程序先注册')
