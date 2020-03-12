@@ -77,7 +77,7 @@
               删除队伍
             </el-button>
           </el-col>
-          <el-col style="text-align: right;">
+          <el-col :span="8" :offset="7">
             <el-pagination
               :current-page.sync="currentPage"
               :page-size="pageSize"
