@@ -816,8 +816,14 @@ export default {
 
     handleSelect (key) {
       this.curPageForStudent = 1
-      if (key.indexOf('team') !== -1) {
-        this.activeIndexTeam = key
+      if (key.indexOf('球') !== -1) {
+        this.activeIndexType = key
+        if (this.activeIndexTeam === '全部学员') {
+          this.update('readStudent')
+          this.getAllStudent()
+        } else {
+          this.update('readStudent')
+        }
       } else if (key.indexOf('岁') !== -1) {
         this.activeIndexAge = key
         if (this.activeIndexTeam === '全部学员') {
@@ -829,13 +835,7 @@ export default {
       } else if (key.indexOf('全部') !== -1) {
         this.activeIndexTeam = '全部学员'
       } else {
-        this.activeIndexType = key
-        if (this.activeIndexTeam === '全部学员') {
-          this.update('readStudent')
-          this.getAllStudent()
-        } else {
-          this.update('readStudent')
-        }
+        this.activeIndexTeam = key
       }
     },
     teamClass (index) {
