@@ -109,7 +109,7 @@
   </div>
 </template>
 <script>
-// import qs from 'qs'
+import qs from 'qs'
 export default {
   data () {
     return {
@@ -145,6 +145,17 @@ export default {
       }
     },
     save () {
+      const data = {
+        id: this.team.id,
+        name: this.teamForm.name
+      }
+      this.$axios.post('sellerctr/updateTeams', qs.stringify(data)).then((response) => {
+        this.$alert('保存成功').then(() => {
+          this.$router.go(-1)// 返回上一层
+        })
+      }).catch(() => {
+        this.$alert('取消失败')
+      })
     },
     cancel () {
       this.$router.go(-1)// 返回上一层

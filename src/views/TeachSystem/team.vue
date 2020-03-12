@@ -122,9 +122,7 @@ export default {
   methods: {
     update () {
       this.isLoading = true
-      this.courseTable = []
       const api = 'sellerctr/getTeams'
-      this.menuTeam = [] // 初始化team数组
       this.$axios.get(api, {
         params: {
           cur_page: this.currentPage
@@ -159,7 +157,6 @@ export default {
       const data = {
         id: team.id
       }
-      console.log(data)
       return this.$axios.post('/sellerctr/deleteTeams', qs.stringify(data))
     },
     handleModify (index, row) {
