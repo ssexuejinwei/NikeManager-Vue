@@ -172,7 +172,6 @@
           <el-pagination
             style="text-align: right;"
             layout="prev, pager, next"
-            :page-size="3"
             :total="courseTotal"
             @current-change="handleCoursePageChange"
           />
@@ -181,21 +180,19 @@
           v-show="menuIndex=='考勤'"
           class="attendTable"
         >
-          <el-calendar>
+          <el-calendar v-model="value">
             <template
               slot="dateCell"
               slot-scope="{date, data}"
             >
               <p
                 :id="getDate(date,data)"
-                size="medium"
-                style="width: 219px;height: 85px;"
-                :class="data.isSelected ?'is-selected':''"
+                :class="courseDateArray.indexOf(data.day) !== -1 ?'':'is-selected'"
                 @dblclick="handleSelected"
               >
                 {{ data.day.split('-').slice(2).join('') }}
+                <span v-if="courseDateArray.indexOf(data.day) !==-1" class="spanText">有课</span>
               </p>
-
               <el-dialog
                 title=""
                 :visible.sync="dialogTableVisible&&data.isSelected"
@@ -345,6 +342,8 @@ export default {
   },
   data () {
     return {
+      courseDateArray: [],
+      value: new Date(),
       squareImageUrl: '',
       outerVisible: false,
       dialogTableVisible: false,
@@ -386,11 +385,34 @@ export default {
     this.squareImageUrl = this.coach.avatar == null ? '' : this.coach.avatar
     console.log(this.coach.id)
     this.update()
+    this.getCourseDateArray()
     // this.$axios.get(){
 
     // }
   },
   methods: {
+    getCourseDateArray () {
+      console.log(' i am here')
+      const api_1 = '/sellerctr/getCoachAttendance'
+      const year = this.value.getFullYear()
+      const month = this.value.getMonth() + 1
+      const day = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+      if ((year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0)) {
+        day[1] = 29
+      }
+      this.$axios.get(api_1, {
+        params: {
+          id: this.coach.id,
+          start_time: year + '-' + month + '-1',
+          end_time: year + '-' + month + '-' + day[month - 1]
+        }
+      }).then((response) => {
+        this.courseDateArray = []
+        for (const data of response.data.data) {
+          this.courseDateArray.push(data.date)
+        }
+      })
+    },
     update () {
       const api_1 = '/sellerctr/getCoachSchedule'
       this.$axios.get(api_1, {
@@ -546,6 +568,10 @@ export default {
   }
   .absent{
     color:$Red;
+  }
+  .spanText{
+    margin-left: 20px;
+    color: #52bcf0
   }
   .editInfo{
     .el-container{

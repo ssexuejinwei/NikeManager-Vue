@@ -208,6 +208,10 @@
               label="课程"
             />
             <el-table-column
+              prop="date"
+              label="上课日期"
+            />
+            <el-table-column
               prop="time"
               label="上课时间"
             />
@@ -465,6 +469,7 @@ export default {
           }
           const jobj = {
             id: obj.id,
+            date: course.date,
             course: obj.name + '(' + obj.team_name + ')',
             time: obj.startTime.split(' ')[1] + '-' + obj.endTime.split(' ')[1],
             edit: ''

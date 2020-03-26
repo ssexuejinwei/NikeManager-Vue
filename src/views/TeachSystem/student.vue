@@ -43,13 +43,13 @@
               style="height: 33.5625rem;"
               @select="handleSelect"
             >
-              <template v-for="teamData in menuTeam">
+              <template v-for="(teamData, index) in menuTeam">
                 <el-menu-item
                   :key="teamData"
-                  :index="teamData"
+                  :index="teamData.id"
                   :class="teamClass(teamData)"
                 >
-                  {{ teamData }}
+                  {{ teamData.name }}
                 </el-menu-item>
               </template>
             </el-menu>
@@ -123,7 +123,7 @@
               :offset="2"
             >
               <el-button
-                v-if="activeIndexTeam==='全部学员' ? false : true"
+                v-if="activeIndexTeam=== '-1' ? false : true"
                 class="tempButton"
                 @click="addTemporaryStudent"
               >
@@ -135,7 +135,7 @@
               :offset="4"
             >
               <el-pagination
-                v-if="activeIndexTeam=='全部学员'"
+                v-if="activeIndexTeam === '-1'"
                 :page-size="pageSizeForStudent"
                 layout="prev, pager, next"
                 :current-page.sync="curPageForStudent"
@@ -154,7 +154,6 @@
       >
         <el-form
           :model="studentForm"
-          :rules="rules"
         >
           <el-form-item
             label="姓名"
@@ -241,7 +240,7 @@
           :visible.sync="innerVisible"
           append-to-body
         >
-          <el-form :model="studentForm" :rules="rules">
+          <el-form :model="studentForm">
             <el-form-item
               label="体能训练"
               prop="physicalTraining"
@@ -372,27 +371,6 @@ export default {
     PEdit
   },
   data () {
-    // 电话号码验证规则
-    var checkPhone = (rule, value, callback) => {
-      const phoneReg = /^1[3|4|5|7|8][0-9]{9}$/
-      if (!value) {
-        return callback(new Error('电话号码不能为空'))
-      }
-      setTimeout(() => {
-        // Number.isInteger是es6验证数字是否为整数的方法,实际输入的数字总是识别成字符串
-        // 所以在前面加了一个+实现隐式转换
-
-        if (!Number.isInteger(+value)) {
-          callback(new Error('请输入数字值'))
-        } else {
-          if (phoneReg.test(value)) {
-            callback()
-          } else {
-            callback(new Error('电话号码格式不正确'))
-          }
-        }
-      }, 100)
-    }
     return {
       isLoading: false,
       isEdit: false, // 是否点击了操作按钮
@@ -410,7 +388,7 @@ export default {
       ballChoiceRadio: 0,
       activeIndexAge: '3-4岁',
       activeIndexType: '篮球',
-      activeIndexTeam: 'team-01',
+      activeIndexTeam: '-1',
       outerVisible: false,
       innerVisible: false,
       tempVisible: false,
@@ -431,53 +409,48 @@ export default {
       menuAge: ['3-4岁', '4-5岁', '5-6岁'],
       ageClass: ['', '', ''],
       menuType: ['篮球', '足球'],
-      menuTeam: ['team-01', 'team-02', 'team-03'],
+      menuTeam: [],
       tableData: [],
       tempTableData: [],
       leftMenu: 'leftMenu',
       rules: {
         name: [
-          { required: true, message: '请输入姓名', trigger: 'blur' },
-          { min: 2, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { required: true }
         ],
         sex: [
-          { required: true, message: '请填写身高', trigger: 'blur' }
+          { required: true }
         ],
         height: [
-          { required: true, message: '请填写身高', trigger: 'blur' }
-          // { type: 'number', message: '身高必须为数字值'}
+          { required: true }
         ],
         birth: [
-          { required: true, message: '请选择日期', trigger: 'change' }
+          { required: true }
         ],
         weight: [
-          { required: true, message: '请填写体重', trigger: 'blur' }
+          { required: true }
           // { type: 'number', message: '体重必须为数字值'}
         ],
         pay: [
-          { required: true, message: '请选择支付方式', trigger: 'blur' }
-          // { type: 'number', message: '体重必须为数字值'}
+          { required: true }
         ],
         tel: [
-          { required: true, message: '请填写联系方式', trigger: 'blur' },
-          { validator: checkPhone, trigger: 'blur' }
+          { required: true }
         ],
         points: [
-          { required: true, message: '请填写积分', trigger: 'blur' },
-          { type: 'number', message: '积分必须为数字值' }
+          { required: true }
         ]
       }
     }
   },
   watch: {
     activeIndexTeam (newValue) {
-      if (newValue === '全部学员') {
+      if (newValue === '-1') {
         this.getAllStudent()
         return
       }
       let isHave = false
       for (const info of this.infoArray) {
-        if (info.ageKey === this.activeIndexAge && info.type === this.activeIndexType && info.teamName === this.activeIndexTeam) {
+        if (info.ageKey === this.activeIndexAge && info.type === this.activeIndexType && info.teamID === this.activeIndexTeam) {
           this.tableData = info.tableData
           isHave = true
         }
@@ -486,7 +459,7 @@ export default {
         this.tableData = []
       }
       for (const info of this.infoArray) {
-        if (info.teamName === this.activeIndexTeam) {
+        if (info.teamID === this.activeIndexTeam) {
           this.current_teamId = info.teamID
           break
         }
@@ -607,7 +580,7 @@ export default {
           }
           this.tableData.push(stuObj)
         }
-        this.activeIndexTeam = name
+        this.activeIndexTeam = this.current_teamId
       })
       this.infoArray = []
       const api_1 = 'sellerctr/getTeam'
@@ -665,15 +638,18 @@ export default {
           this.menuTeam = [] // 初始化team数组
           for (const info of this.infoArray) {
             if (info.ageKey === this.activeIndexAge && info.type === this.activeIndexType) {
-              this.menuTeam.push(info.teamName)
-              if (info.teamName === this.menuTeam[0]) {
+              this.menuTeam.push({
+                name: info.teamName,
+                id: info.teamID
+              })
+              if (info.teamID === this.menuTeam[0].id) {
                 this.tableData = info.tableData
               }
             }
           }
           // this.menuTeam = this.menuTeam.sort()
-          this.menuTeam.splice(0, 0, '全部学员')
-          this.activeIndexTeam = '全部学员'
+          this.menuTeam.splice(0, 0, { name: '全部学员', id: -1 })
+          this.activeIndexTeam = -1
           break
         case 'getStudent': {
           this.infoArray = []
@@ -693,12 +669,19 @@ export default {
               const ageKey = age_min + '-' + age_max + '岁'
               // 初始化team 数组
               if (ageKey === this.activeIndexAge && choose_sports === this.activeIndexType) {
-                this.menuTeam.push(name)
+                // console.log('i am here')
+                this.menuTeam.push({
+                  name: name,
+                  id: id
+                })
               }
-              this.activeIndexTeam = this.menuTeam[0]
+              if (this.menuTeam.length !== 0) {
+                this.activeIndexTeam = this.menuTeam[0].id
+              }
               if (this.menuTeam.length === 1) {
                 this.current_teamId = id
               }
+              // console.log(this.menuTeam)
               // get 具体成员
               const api_2 = '/sellerctr/getStudentsByTeamId?id=' + id
               this.$axios.get(api_2).then((response) => {
@@ -729,15 +712,15 @@ export default {
                   type: choose_sports,
                   tableData: tableData
                 }
-                if (obj.ageKey === this.activeIndexAge && obj.type === this.activeIndexType && obj.teamName === this.activeIndexTeam) {
+                if (obj.ageKey === this.activeIndexAge && obj.type === this.activeIndexType && obj.teamID === this.activeIndexTeam) {
                   this.tableData = obj.tableData
                 }
                 this.infoArray.push(obj)
               })// api-2请求完成
             }
             // this.menuTeam = this.menuTeam.sort()
-            this.menuTeam.splice(0, 0, '全部学员')
-            this.activeIndexTeam = '全部学员'
+            this.menuTeam.splice(0, 0, { name: '全部学员', id: '-1' })
+            this.activeIndexTeam = '-1'
           })
           break
         }
@@ -860,7 +843,7 @@ export default {
       this.curPageForStudent = 1
       if (key.indexOf('球') !== -1) {
         this.activeIndexType = key
-        if (this.activeIndexTeam === '全部学员') {
+        if (this.activeIndexTeam === '-1') {
           this.update('readStudent')
           this.getAllStudent()
         } else {
@@ -868,14 +851,14 @@ export default {
         }
       } else if (key.indexOf('岁') !== -1) {
         this.activeIndexAge = key
-        if (this.activeIndexTeam === '全部学员') {
+        if (this.activeIndexTeam === '-1') {
           this.update('readStudent')
           this.getAllStudent()
         } else {
           this.update('readStudent')
         }
-      } else if (key.indexOf('全部') !== -1) {
-        this.activeIndexTeam = '全部学员'
+      } else if (key === '-1') {
+        this.activeIndexTeam = '-1'
       } else {
         this.activeIndexTeam = key
       }

@@ -170,7 +170,7 @@
           />
         </el-form-item>
         <el-form-item
-          label="微信ID"
+          label="微信号"
           prop="wechat"
           :label-width="formLabelWidth"
         >
@@ -246,9 +246,6 @@ export default {
         ],
         workAge: [
           { required: true, message: '请输入工龄', trigger: 'blur' }
-        ],
-        wechat: [
-          { required: true, message: '请输入微信', trigger: 'blur' }
         ],
         tel: [
           { required: true, message: '请输入联系电话', trigger: 'blur' }

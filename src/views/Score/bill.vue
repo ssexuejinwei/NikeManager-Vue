@@ -13,7 +13,7 @@
           style="width: 100px"
         >
           <el-option label="用户名" value="name" />
-          <el-option label="手机号码" value="tel" />
+          <!-- <el-option label="手机号码" value="tel" /> -->
           <el-option label="订单号" value="order_number" />
           <el-option label="名称" value="title" />
           <!-- <el-option label="等级" value="level"></el-option> -->

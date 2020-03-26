@@ -13,7 +13,7 @@
           style="width: 100px"
         >
           <el-option label="用户名" value="name" />
-          <el-option label="手机号码" value="tel" />
+          <!-- <el-option label="手机号码" value="tel" /> -->
         </el-select>
         <el-button slot="append" icon="el-icon-search" @click="handleSearch" />
       </el-input>

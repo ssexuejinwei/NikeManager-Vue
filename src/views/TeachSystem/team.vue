@@ -21,9 +21,14 @@
           <el-table-column
             prop="name"
             label="队伍名"
-            class="borderBottom"
             align="center"
-          />
+          >
+            <template slot-scope="scope">
+              <span :class="teamTable[scope.$index].name.indexOf('未分配') !== -1 ? 'hightlight' : 'borderBottom'">
+                {{ teamTable[scope.$index].name }}
+              </span>
+            </template>
+          </el-table-column>
           <el-table-column
             prop="choose_sports"
             label="类型"
@@ -112,7 +117,7 @@ export default {
   },
   watch: {
     currentPage () {
-      console.log(this.currentPage)
+      // console.log(this.currentPage)
       this.update()
     }
   },
@@ -130,6 +135,7 @@ export default {
       }).then((response) => {
         this.total = response.data.data.total
         this.teamTable = response.data.data.data
+        // console.log(this.teamTable)
         this.isLoading = false
       })
     },
@@ -186,6 +192,9 @@ export default {
           display: none;
         }
         .el-table{
+          .hightlight{
+            color: red;
+          }
           .el-button{
                 color:#52bcf0 ;
                 border-color: #52bcf0;

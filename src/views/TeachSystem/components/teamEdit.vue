@@ -85,7 +85,7 @@
               size="large"
               style="text-align: center;"
             >
-              <el-button @click="handleRest(0)">
+              <el-button v-if="false" @click="handleRest(0)">
                 重置
               </el-button>
             </el-form-item>
