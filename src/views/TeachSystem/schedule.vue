@@ -123,7 +123,57 @@
                 </el-button>
               </div>
             </el-dialog>
-
+            <!-- 删除菜单 -->
+            <el-dialog
+              :title="getTitle(data.day,state)"
+              :visible.sync="state=='delete'&&deleteVisible&&data.isSelected"
+            >
+              <el-table
+                :data="scheduleTable"
+                @selection-change="handleTableSelect"
+              >
+                <el-table-column
+                  type="selection"
+                />
+                <el-table-column
+                  label="课程名"
+                  prop="tp_name"
+                />
+                <el-table-column
+                  label="教练名"
+                  prop="coach_name"
+                />
+                <el-table-column
+                  label="队伍名"
+                  prop="team_name"
+                />
+                <el-table-column
+                  label="日期"
+                  prop="date"
+                />
+                <el-table-column
+                  label="时间段"
+                >
+                  <template slot-scope="scope">
+                    {{ scheduleTable[scope.$index].start_time.split(' ')[1] + '--' + scheduleTable[scope.$index].end_time.split(' ')[1] }}
+                  </template>
+                </el-table-column>
+              </el-table>
+              <div
+                slot="footer"
+                class="dialog-footer"
+              >
+                <el-button @click="(()=>{deleteVisible = false;buttonType[state] = 'info'})">
+                  取消
+                </el-button>
+                <el-button
+                  type="primary"
+                  @click="deleteSchedules"
+                >
+                  删除
+                </el-button>
+              </div>
+            </el-dialog>
             <!-- 编辑菜单 -->
             <el-dialog
               :title="getTitle(data.day,state)"
@@ -153,7 +203,6 @@
         <el-row class="scheduleButton">
           <el-col
             :span="5"
-            :offset="2"
           >
             <el-button
               :type="buttonType['schedule']"
@@ -164,7 +213,6 @@
           </el-col>
           <el-col
             :span="5"
-            :offset="2"
           >
             <el-button
               :type="buttonType['checkAttend']"
@@ -175,7 +223,16 @@
           </el-col>
           <el-col
             :span="5"
-            :offset="2"
+          >
+            <el-button
+              :type="buttonType['delete']"
+              @click="buttonClick('delete')"
+            >
+              &nbsp;删除&nbsp;
+            </el-button>
+          </el-col>
+          <el-col
+            :span="5"
           >
             <el-button
               :type="buttonType['edit']"
@@ -204,6 +261,7 @@ export default {
       value: new Date(),
       fullscreenLoading: false,
       editVisible: false,
+      deleteVisible: false,
       dialogTableVisible: false,
       scheduleVisible: false,
       checkAttendVisible: false,
@@ -242,13 +300,15 @@ export default {
       timeList: ['16:00-17:00', '17:00-18:00', '18:00-19:00'],
       state: 'lookup',
       showMenu: 'none',
-      buttonType: { schedule: 'info', checkAttend: 'info', edit: 'info' },
+      buttonType: { schedule: 'info', checkAttend: 'info', edit: 'info', delete: 'info' },
       activeIndex: '1',
       tableData: [],
       optionsSchedule: [],
       optionsCheckAttend: [],
       optionsEdit: [],
-      isLoading: false
+      isLoading: false,
+      scheduleTable: [],
+      selectedSchedules: []
     }
   },
   watch: {
@@ -276,6 +336,30 @@ export default {
     this.getCourseDateArray()
   },
   methods: {
+    handleTableSelect (val) {
+      this.selectedSchedules = val
+    },
+    deleteSchedules () {
+      this.$confirm('是否删除选中的排课', '提示', { type: 'warning' }).then(() => {
+        Promise.all(this.selectedSchedules.map(this.deleteSchedule))
+          .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
+            console.error(e)
+            this.$alert('删除失败', '错误', { type: 'error' })
+          })
+          .then(() => {
+            this.deleteVisible = false
+            this.buttonType.delete = 'info'
+            this.getData('edit')
+            this.getCourseDateArray()
+          })
+      })
+    },
+    deleteSchedule (schedule) {
+      const data = {
+        id: schedule.id
+      }
+      return this.$axios.post('/sellerctr/deleteSchedule', qs.stringify(data))
+    },
     getCourseDateArray () {
       this.isLoading = true
       const api_1 = '/sellerctr/getSchedule'
@@ -315,6 +399,7 @@ export default {
           }
         }).then((response) => {
           this.scheduleList = response.data.data
+          console.log(this.scheduleList)
         })
       } else if (key === 'edit') {
         if (this.dateCurrent === '') {
@@ -683,6 +768,25 @@ export default {
             }
           })
           break
+        case 'delete':
+          this.$axios.get('/sellerctr/getSchedule', {
+            params: {
+              start_time: this.dateCurrent,
+              end_time: this.dateCurrent
+            }
+          }).then((response) => {
+            this.scheduleTable = response.data.data[this.dateCurrent]
+            if (typeof (this.scheduleTable) === 'undefined') {
+              this.$alert('今日无排课信息', {
+                confirmButtonText: '确定'
+              }).then(() => {
+                this.buttonType[type] = 'info'
+              })
+              return
+            }
+            this.deleteVisible = true
+          })
+          break
         case 'edit':
           var api_2 = '/sellerctr/getSchedule'
           this.$axios.get(api_2, {
@@ -841,6 +945,9 @@ export default {
           this.update(key)
           break
         case 'edit':
+          this.update(key)
+          break
+        case 'delete':
           this.update(key)
           break
         default:
