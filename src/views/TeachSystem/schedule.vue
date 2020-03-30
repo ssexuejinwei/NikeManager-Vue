@@ -22,6 +22,19 @@
               :title="getTitle(data.day,state)"
               :visible.sync="state =='schedule'&&scheduleVisible&&data.isSelected"
             >
+              <el-time-picker
+                v-model="timePickerValue"
+                is-range
+                range-separator="至"
+                start-placeholder="开始时间"
+                end-placeholder="结束时间"
+                placeholder="选择时间范围"
+                @change="handleTimePicker"
+              />
+              <el-button style="margin-left: 10px;" :disabled="addDuration === ''" @click="timeAdd">
+                添加
+              </el-button>
+              <br><br>
               <el-cascader-panel
                 :options="optionsSchedule"
                 @change="((data) =>{scheduleChange(data,state)})"
@@ -308,10 +321,16 @@ export default {
       optionsEdit: [],
       isLoading: false,
       scheduleTable: [],
-      selectedSchedules: []
+      selectedSchedules: [],
+      children_team: [],
+      timePickerValue: '',
+      addDuration: ''
     }
   },
   watch: {
+    timePickerValue (newValue) {
+      console.log(newValue)
+    },
     value (newValue, oldValue) {
       const oldYear = oldValue.getFullYear()
       const oldMonth = oldValue.getMonth()
@@ -336,6 +355,26 @@ export default {
     this.getCourseDateArray()
   },
   methods: {
+    handleTimePicker (val) {
+      const start_time = val[0].getHours() + ':' + val[0].getMinutes()
+      const end_time = val[1].getHours() + ':' + val[1].getMinutes()
+      // const start_time = val[0].getHours() + ':' + val[0].getMinutes() + ':' + val[0].getSeconds()
+      // const end_time = val[1].getHours() + ':' + val[1].getMinutes() + ':' + val[1].getSeconds()
+      this.addDuration = start_time + '-' + end_time
+    },
+    timeAdd () {
+      if (this.addDuration !== '') {
+        const data = this.optionsSchedule[0]
+        this.optionsSchedule.push({
+          value: this.addDuration,
+          label: this.addDuration,
+          children: data.children
+        })
+        this.addDuration = ''
+      } else {
+        alert('请先选择时间段')
+      }
+    },
     handleTableSelect (val) {
       this.selectedSchedules = val
     },
@@ -432,6 +471,24 @@ export default {
                   id: team.id,
                   name: team.name
                 }
+                this.$axios.get('/sellerctr/getTeachingPlanBySameTeam', {
+                  params: {
+                    id: team.id
+                  }
+                }).then((response) => {
+                  const children_course = []
+                  for (const course of response.data.data) {
+                    children_course.push({
+                      value: course.id,
+                      label: course.name
+                    })
+                  }
+                  this.children_team.push({
+                    value: team.id,
+                    label: team.name,
+                    children: children_course
+                  })
+                })
                 this.teamList.push(obj)
               }
               // 获取课程
@@ -670,31 +727,12 @@ export default {
             label: '18:00-19:00',
             children: []
           }]
-          var children_course = []
-          // 先遍历course
-          for (const course of this.courseList) {
-            const obj = {
-              value: course.id,
-              label: course.name
-            }
-            children_course.push(obj)
-          }
-
-          var children_team = []
-          for (const team of this.teamList) {
-            const obj = {
-              value: team.id,
-              label: team.name,
-              children: children_course
-            }
-            children_team.push(obj)
-          }
           var children_coach = []
           for (const coach of this.coachList) {
             const obj = {
               value: coach.id,
               label: coach.name,
-              children: children_team
+              children: this.children_team
             }
             children_coach.push(obj)
           }

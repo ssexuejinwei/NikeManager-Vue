@@ -154,6 +154,7 @@
       >
         <el-form
           :model="studentForm"
+          :rules="rules"
         >
           <el-form-item
             label="姓名"
@@ -240,7 +241,7 @@
           :visible.sync="innerVisible"
           append-to-body
         >
-          <el-form :model="studentForm">
+          <el-form :model="studentForm" :rules="rules">
             <el-form-item
               label="体能训练"
               prop="physicalTraining"
@@ -371,6 +372,26 @@ export default {
     PEdit
   },
   data () {
+    // 电话号码验证规则
+    var checkPhone = (rule, value, callback) => {
+      const phoneReg = /^1[3|4|5|7|8][0-9]{9}$/
+      if (!value) {
+        return callback(new Error('电话号码不能为空'))
+      }
+      setTimeout(() => {
+        // Number.isInteger是es6验证数字是否为整数的方法,实际输入的数字总是识别成字符串
+        // 所以在前面加了一个+实现隐式转换
+        if (!Number.isInteger(+value)) {
+          callback(new Error('请输入数字值'))
+        } else {
+          if (phoneReg.test(value)) {
+            callback()
+          } else {
+            callback(new Error('电话号码格式不正确'))
+          }
+        }
+      }, 100)
+    }
     return {
       isLoading: false,
       isEdit: false, // 是否点击了操作按钮
@@ -414,30 +435,31 @@ export default {
       tempTableData: [],
       leftMenu: 'leftMenu',
       rules: {
-        name: [
-          { required: true }
-        ],
         sex: [
-          { required: true }
+          { required: true, message: '请填写身高', trigger: 'blur' }
         ],
         height: [
-          { required: true }
+          { required: true, message: '请填写身高', trigger: 'blur' }
+          // { type: 'number', message: '身高必须为数字值'}
         ],
         birth: [
-          { required: true }
+          { required: true, message: '请选择日期', trigger: 'change' }
         ],
         weight: [
-          { required: true }
+          { required: true, message: '请填写体重', trigger: 'blur' }
           // { type: 'number', message: '体重必须为数字值'}
         ],
         pay: [
-          { required: true }
+          { required: true, message: '请选择支付方式', trigger: 'blur' }
+          // { type: 'number', message: '体重必须为数字值'}
         ],
         tel: [
-          { required: true }
+          { required: true, message: '请填写联系方式', trigger: 'blur' },
+          { validator: checkPhone, trigger: 'blur' }
         ],
         points: [
-          { required: true }
+          { required: true, message: '请填写积分', trigger: 'blur' },
+          { type: 'number', message: '积分必须为数字值' }
         ]
       }
     }
